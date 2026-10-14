@@ -1,0 +1,26 @@
+---
+import 'katex/dist/katex.min.css';
+import '../styles/global.css';
+import { url } from '../lib/url';
+interface Props { title: string; description: string }
+const { title, description } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{title}</title><meta name="description" content={description} />
+    <link rel="canonical" href={canonical} /><meta property="og:title" content={title} /><meta property="og:description" content={description} />
+  </head>
+  <body>
+    <header><a class="brand" href={url('')}>AIXON</a><nav><a href={url('atlas/')}>아틀라스</a><a href={url('coverage/')}>커버리지</a><a href={url('about/')}>방법론</a></nav><label class="quick">빠른 검색 <input id="quick-search" autocomplete="off" placeholder="개념 검색" /><output id="quick-results"></output></label></header>
+    <main data-pagefind-body><slot /></main><footer>AIXON · 정적 Knowledge Atlas</footer>
+    <script>
+      import { url } from '../lib/url';
+      const input = document.querySelector<HTMLInputElement>('#quick-search'); const output = document.querySelector<HTMLOutputElement>('#quick-results');
+      let index: Array<{name:string; id:string; aliases?:string[]; url:string}> = []; fetch(url('node-index.json')).then(r => r.ok ? r.json() : []).then((x: typeof index) => index = x);
+      input?.addEventListener('input', () => { const q = input.value.toLowerCase().trim(); if (output) output.innerHTML = q ? index.filter(n => [n.name, n.id, ...(n.aliases || [])].join(' ').toLowerCase().includes(q)).slice(0,8).map(n => `<a href="${n.url}">${n.name}</a>`).join('') || '결과 없음' : ''; });
+    </script>
+  </body>
+</html>

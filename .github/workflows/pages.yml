@@ -1,0 +1,21 @@
+name: Pages
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+permissions: {contents: read, pages: write, id-token: write}
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: {name: github-pages, url: '${{ steps.deployment.outputs.page_url }}'}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22, cache: npm}
+      - run: npm ci
+      - run: AIXON_BUILD=public AIXON_BASE=/${{ github.event.repository.name }}/ AIXON_SITE=https://${{ github.repository_owner }}.github.io npx astro build
+      - run: npx pagefind --site dist
+      - uses: actions/upload-pages-artifact@v3
+        with: {path: dist}
+      - id: deployment
+        uses: actions/deploy-pages@v4

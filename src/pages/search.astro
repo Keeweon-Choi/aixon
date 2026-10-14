@@ -1,0 +1,4 @@
+---
+import Base from '../layouts/Base.astro'; import { url } from '../lib/url';
+---
+<Base title="검색 | AIXON" description="AIXON 전체 검색"><h1>검색</h1><div id="search"></div><script>import { url } from '../lib/url'; import(url('pagefind/pagefind-ui.js')).then(({PagefindUI})=>new PagefindUI({element:'#search',showSubResults:true,baseUrl:url('')}));</script></Base>

@@ -1,8 +1,12 @@
 node_modules/
 dist/
+dist-public/
 .astro/
+.astro-config/
+.venv
 .venv/
 __pycache__/
+*.pyc
 .pytest_cache/
 data/cache/
 artifacts/verification/runs/
