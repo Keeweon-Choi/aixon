@@ -1,2 +1,48 @@
-import type { APIRoute } from 'astro'; import { getGraph, entityPath, claimPath, publicSummary } from '../lib/graph'; import { url } from '../lib/url';
-export const GET: APIRoute = () => { const g=getGraph(); const nodes=Object.entries(g.entities).filter(([id])=>!['Claim','Source'].includes(g.types[id])).map(([id,n]:any)=>({id,type:g.types[id],name:n.name||n.title,aliases:n.aliases||[],fields:n.fields||[],year:g.introYears[id],summary:publicSummary(n,g.build),status:n.status||'active',url:url(entityPath(id,g))})); const edges:any[]=Object.values(g.claims).map((c:any)=>({id:c.id,kind:'claim',predicate:c.predicate,source:c.subject,target:c.object,status:c.status,reviewed:c.review?.decision==='approve',url:url(claimPath(c.id))})); for(const [child,ps] of Object.entries(g.parents))for(const parent of ps)edges.push({id:`parent:${child}>${parent}`,kind:'taxonomy',source:child,target:parent}); for(const [field, members] of Object.entries(g.memberships)) for(const member of members) edges.push({id:`member:${member}>${field}`,kind:'membership',source:member,target:field}); return new Response(JSON.stringify({graph_version:'build',build:g.build,nodes,edges}),{headers:{'Content-Type':'application/json'}}); };
+import type { APIRoute } from 'astro';
+import { getGraph, entityPath, claimPath, publicSummary } from '../lib/graph';
+import { url } from '../lib/url';
+export const GET: APIRoute = () => {
+  const g = getGraph();
+  const nodes = Object.entries(g.entities)
+    .filter(([id]) => !['Claim', 'Source'].includes(g.types[id]))
+    .map(([id, n]: any) => ({
+      id,
+      type: g.types[id],
+      name: n.name || n.title,
+      aliases: n.aliases || [],
+      fields: n.fields || [],
+      year: g.introYears[id],
+      summary: publicSummary(n, g.build),
+      status: n.status || 'active',
+      url: url(entityPath(id, g)),
+    }));
+  const edges: any[] = Object.values(g.claims).map((c: any) => ({
+    id: c.id,
+    kind: 'claim',
+    predicate: c.predicate,
+    source: c.subject,
+    target: c.object,
+    status: c.status,
+    reviewed: c.review?.decision === 'approve',
+    url: url(claimPath(c.id)),
+  }));
+  for (const [child, ps] of Object.entries(g.parents))
+    for (const parent of ps)
+      edges.push({
+        id: `parent:${child}>${parent}`,
+        kind: 'taxonomy',
+        source: child,
+        target: parent,
+      });
+  for (const [field, members] of Object.entries(g.memberships))
+    for (const member of members)
+      edges.push({
+        id: `member:${member}>${field}`,
+        kind: 'membership',
+        source: member,
+        target: field,
+      });
+  return new Response(JSON.stringify({ graph_version: 'build', build: g.build, nodes, edges }), {
+    headers: { 'Content-Type': 'application/json' },
+  });
+};

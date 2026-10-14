@@ -1,0 +1,13 @@
+---
+import SoftmaxTemperatureLab from '../../islands/SoftmaxTemperatureLab';
+import { getGraph } from '../../lib/graph';
+
+const { id } = Astro.props;
+const graph = getGraph();
+if (graph.types[id] !== 'LabExperiment') throw new Error(`Unknown Lab: ${id}`);
+const items = Object.values(graph.entities).filter(
+  (e) => e.kind === 'lab_prediction' && e.lab === id,
+);
+---
+
+{id === 'lab:softmax-temperature' && <SoftmaxTemperatureLab client:visible items={items} />}

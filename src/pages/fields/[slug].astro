@@ -1,5 +1,37 @@
 ---
-import Base from '../../layouts/Base.astro'; import { getGraph, entityPath } from '../../lib/graph'; import { url } from '../../lib/url';
-const g=getGraph(); export function getStaticPaths(){const graph=getGraph(); return Object.values(graph.fields).map((field:any)=>({params:{slug:field.id.split(':')[1]},props:{field}}));} const {field}=Astro.props; const children=Object.values(g.fields).filter((x:any)=>(x.parents||[]).includes(field.id)); const members=g.memberships[field.id]||[];
+import Base from '../../layouts/Base.astro';
+import { getGraph, entityPath } from '../../lib/graph';
+import { url } from '../../lib/url';
+const g = getGraph();
+export function getStaticPaths() {
+  const graph = getGraph();
+  return Object.values(graph.fields).map((field: any) => ({
+    params: { slug: field.id.split(':')[1] },
+    props: { field },
+  }));
+}
+const { field } = Astro.props;
+const children = Object.values(g.fields).filter((x: any) => (x.parents || []).includes(field.id));
+const members = g.memberships[field.id] || [];
 ---
-<Base title={`${field.name} | AIXON`} description={field.summary}><h1>{field.name}</h1><p>{field.summary}</p><h2>하위 분야</h2><ul>{children.map((x:any)=><li><a href={url(entityPath(x.id,g))}>{x.name}</a></li>)}</ul><h2>소속 개념</h2><ul>{members.map(id=><li><a href={url(entityPath(id,g))}>{g.entities[id]?.name||id}</a></li>)}</ul></Base>
+
+<Base title={`${field.name} | AIXON`} description={field.summary}>
+  <h1>{field.name}</h1>
+  <p>{field.summary}</p>
+  <h2>하위 분야</h2>
+  <ul>
+    {children.map((x: any) => (
+      <li>
+        <a href={url(entityPath(x.id, g))}>{x.name}</a>
+      </li>
+    ))}
+  </ul>
+  <h2>소속 개념</h2>
+  <ul>
+    {members.map((id) => (
+      <li>
+        <a href={url(entityPath(id, g))}>{g.entities[id]?.name || id}</a>
+      </li>
+    ))}
+  </ul>
+</Base>

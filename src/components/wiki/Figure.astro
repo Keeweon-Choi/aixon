@@ -1,4 +1,8 @@
 ---
 const { id, alt = '' } = Astro.props;
 ---
-<figure class="figure" id={id} aria-label={alt}><slot /><figcaption>{alt}</figcaption></figure>
+
+<figure class="figure" id={id} aria-label={alt}>
+  <slot />
+  <figcaption>{alt}</figcaption>
+</figure>

@@ -282,7 +282,7 @@ export interface LabModule<P, R> {
 - 관찰 포인트: T → 0이면 argmax 원-핫에 가까워지고, T → ∞이면 균등분포에 가까워진다. logit에 상수를 더해도 결과가 같다(shift invariance).
 
 **모드 B — Scaled Dot-Product**
-- 입력: `d_k ∈ {1, 4, 16, 64, 256, 1024}`, 키 개수 n = 8, scaling on/off, seed.
+- 입력: `d_k ∈ {1, 4, 16, 64, 256, 512, 1024}`(아래 표와 E2E-2가 512를 쓴다), 키 개수 n = 8, scaling on/off, seed.
 - 계산: `q, k_j ~ N(0, I_{d_k})`(seed 고정) → logits `q·k_j`(scaling을 켜면 `/√d_k`) → attention 가중치.
 - 통계 패널(seed 고정 1,000 표본): 경험적 `Var(q·k)` 대 `d_k`(로그-로그 기울기 1), 평균 최대 가중치(포화 정도), softmax Jacobian 노름(기울기 크기) — scaling 유무에 따라.
 - 수식 연결: Transformer 논문 §3.2.1과 각주 4. "성분이 평균 0, 분산 1인 독립 확률변수라면 `q·k = Σ q_i k_i`는 평균 0, 분산 `d_k`"(Evidence 인용과 같은 문장을 보여 주고 Evidence Inspector로 링크한다).

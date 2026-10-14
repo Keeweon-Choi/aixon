@@ -1,4 +1,7 @@
 ---
 const { kind = 'note' } = Astro.props;
 ---
-<aside class={`callout ${kind}`}><slot /></aside>
+
+<aside class={`callout ${kind}`}>
+  <slot />
+</aside>

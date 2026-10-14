@@ -1,0 +1,14 @@
+dist/
+dist-public/
+node_modules/
+.astro/
+artifacts/
+src/content/wiki/
+tests/fixtures/
+docs/
+data/
+specs/
+study/
+*.md
+package-lock.json
+tools/fixtures/

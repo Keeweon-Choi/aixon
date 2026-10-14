@@ -1,4 +1,8 @@
 ---
 const { id, level, title } = Astro.props;
 ---
-<section class="wiki-section" id={id} data-level={level}><h2>{title}</h2><slot /></section>
+
+<section class="wiki-section" id={id} data-level={level}>
+  <h2>{title}</h2>
+  <slot />
+</section>

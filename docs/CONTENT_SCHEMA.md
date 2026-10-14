@@ -70,7 +70,7 @@ updated_at: 2026-10-15                          # 필수
 | `<Cite>` | 출처 인용(위첨자 번호) | `src`(Source ID) 또는 `claim`(Claim ID), `loc`(예: "§3.2.1, 각주 4") | 대상 존재(V-CITE-1), frontmatter `sources`/`claims`에 포함(V-CITE-3) |
 | `<Callout>` | 주의·정리 상자 | `kind`(note·warning·key) | — |
 | `<Figure>` | 직접 만든 그림 | `id`(frontmatter `figures`에 있어야 함), children(인라인 SVG) | `origin: self-made`, `alt` 필수 |
-| `<SoftmaxTemperatureLab>` | Lab island | `client:visible` | `labs`에 `lab:softmax-temperature` |
+| `<Lab id>` | Lab island 래퍼(빌드 시 그래프에서 Lab과 `lab_prediction` 문항을 읽어 island에 넘김, 안에서 `client:visible`) | — | `id`가 `labs`에 있고 Graph에 있어야 함 |
 
 수식: `$…$`, `$$…$$`(remark-math → rehype-katex, 빌드 시 렌더링). 코드: 마크다운 코드 블록(Shiki). **검증 코드 블록**: 언어 뒤에 `verify`를 붙인다(```` ```python verify ````). 블록은 독립 실행할 수 있어야 하고(`numpy`만 허용), 문서의 숫자를 `assert`로 확인해야 한다. `tools/validate_content.py`가 추출해 실행한다(V-CODE-1).
 
