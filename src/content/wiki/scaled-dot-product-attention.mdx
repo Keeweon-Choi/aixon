@@ -1,0 +1,48 @@
+---
+id: wiki:scaled-dot-product-attention
+entity: method:scaled-dot-product-attention
+title: Scaled Dot-Product Attention
+subtitle: query·key·value로 정보를 섞는 Transformer의 핵심 연산
+status: draft
+levels: [intuition, fundamentals, deep]
+sections: [overview, mechanism, math, code, visual, history]
+authors: [{id: agent:codex, role: draft}]
+ai_generated: true
+review: null
+published_at: null
+sources: [src:arxiv:1706.03762v7]
+claims: [clm:intro-sdpa, clm:sdpa-needs-softmax]
+labs: [lab:softmax-temperature]
+figures: [{id: fig-flow, origin: self-made, alt: QKᵀ에서 softmax를 거쳐 V로 가는 흐름}]
+updated_at: 2026-10-15
+---
+<Section id="overview" level="intuition" title="개요와 직관">
+<Level of="intuition">각 query는 key를 비교해 value의 가중합을 만듭니다.</Level>
+</Section>
+
+<Section id="mechanism" level="fundamentals" title="핵심 작동 원리">
+<ConceptLink id="concept:softmax">Softmax</ConceptLink>가 점수를 확률로 바꿉니다. <Cite claim="clm:intro-sdpa" loc="§3.2.1" />
+</Section>
+
+<Section id="math" level="fundamentals" title="수학적 기초">
+$$\operatorname{Attention}(Q,K,V)=\operatorname{softmax}(QK^\top/\sqrt{d_k})V$$
+<Cite src="src:arxiv:1706.03762v7" loc="§3.2.1" />
+</Section>
+
+<Section id="code" level="fundamentals" title="구현">
+```python verify
+import math
+x = [0.0, 1.0]
+p = [math.exp(v) / sum(math.exp(y) for y in x) for v in x]
+assert abs(sum(p) - 1) < 1e-12
+```
+</Section>
+
+<Section id="visual" level="intuition" title="시각적 설명">
+<Figure id="fig-flow" alt="QKᵀ에서 softmax를 거쳐 V로 가는 흐름"><svg viewBox="0 0 300 60"><text x="5" y="35">QKᵀ</text><path d="M45 30h60" stroke="currentColor"/><text x="110" y="35">softmax</text><path d="M175 30h60" stroke="currentColor"/><text x="240" y="35">× V</text></svg></Figure>
+<SoftmaxTemperatureLab client:visible />
+</Section>
+
+<Section id="history" level="deep" title="역사적 발전">
+Transformer는 이 attention 형태를 제시했습니다. <Cite claim="clm:intro-sdpa" />
+</Section>

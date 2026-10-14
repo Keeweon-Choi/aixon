@@ -1,12 +1,8 @@
 node_modules/
 dist/
+dist-public/
 .astro/
 .venv/
-__pycache__/
-.pytest_cache/
-data/cache/
-artifacts/verification/runs/
-test-results/
+artifacts/
 playwright-report/
-.env
-*.local
+test-results/

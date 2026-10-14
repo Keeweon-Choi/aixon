@@ -1,0 +1,6 @@
+---
+import { getGraph, claimPath } from '../../lib/graph'; import { url } from '../../lib/url';
+const { src, claim, loc } = Astro.props; const graph = getGraph(); const id = src || claim; if (!id || !(src ? graph.sources[id] : graph.claims[id])) throw new Error(`Unknown Cite: ${id}`);
+const target = claim ? url(claimPath(claim)) : String(graph.sources[src].url || '#');
+---
+<sup class="cite"><a href={target} title={loc || id}>[{id.replace(/^(src|clm):/, '')}]</a></sup>
