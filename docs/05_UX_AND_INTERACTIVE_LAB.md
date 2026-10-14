@@ -3,6 +3,8 @@
 > 화면 구조, 그래프 시각화, Interactive Lab 아키텍처. 화면에 필요한 데이터는 [03](03_DATA_MODEL.md), API는 [06 §5](06_SYSTEM_ARCHITECTURE.md#5-rest-api-계약), 경로 로직은 [04](04_LEARNING_ENGINE.md)에 있다.
 > 작성 2026-10-15 · 상태: MVP 설계안 v1
 
+> **범위 상태(2026-10-15 방향 수정)**: v0.1 화면 구성은 [WIKI_CONTENT_ARCHITECTURE.md §7](WIKI_CONTENT_ARCHITECTURE.md)이 대체한다. 이 문서의 원칙(U1–U6), 그래프 표기 규칙(§4.3), 접근성(§4.5), Lab 아키텍처(§5)는 그대로 유효하다. Learn·Path Detail·Remember 화면(§3.4, §3.5, §3.9)은 P2다. 선수 DAG 배치는 ELK.js 대신 dagre를 쓴다(ADR-020).
+
 ---
 
 ## 1. UX 원칙
@@ -174,10 +176,10 @@ flowchart LR
 
 ### 4.2 Prerequisite DAG (Learn, Path Detail)
 
-- **ELK.js `layered`** 알고리즘, 방향 `DOWN`(기초가 위, 목표가 아래). 노드는 KU 하나에 필요한 차원 칩이 붙은 형태다(`softmax [설명]`, `SDPA [설명 · 유도]`). `(u,d)` 노드를 단위별로 묶어 그림이 복잡해지지 않게 한다.
+- **dagre 계층형 배치**(ADR-020), 방향 위→아래(기초가 위, 목표가 아래). 노드는 KU 하나에 필요한 차원 칩이 붙은 형태다(`softmax [설명]`, `SDPA [설명 · 유도]`). `(u,d)` 노드를 단위별로 묶어 그림이 복잡해지지 않게 한다.
 - 간선 라벨은 차원 조건이다("유도하려면"). OR 그룹은 작은 마름모 노드(⋁)로 묶는다.
 - 노드 상태 색과 모양: 생략(회색 + ✓), 진단(노랑 + ?), 학습(파랑), 현재(굵은 테두리), 숙달(초록 + ★). 색맹을 고려해 아이콘을 항상 함께 쓴다.
-- 레이아웃은 **Web Worker**에서 계산하고 `(graph_version, plan_id)` 키로 캐시한다.
+- 레이아웃 결과는 `(graph_version, 뷰)` 키로 캐시한다(dagre는 수십 노드에서 충분히 빠르므로 Web Worker를 쓰지 않는다).
 
 ### 4.3 간선·배지 표기 규칙
 
@@ -203,7 +205,17 @@ flowchart LR
 
 ### 4.4 라이브러리 비교와 선택
 
-<!-- RESEARCH-G: 조사 결과 반영 위치 -->
+| 라이브러리 | 렌더링 | 배치 | 접근성 | 크기·라이선스(npm, 2026-10-15) | 판단 |
+|---|---|---|---|---|---|
+| **React Flow** (`@xyflow/react` 12.12) | DOM(노드 = React 컴포넌트) | 내장 없음(dagre·ELK와 결합) | 문서화된 키보드·ARIA 지원. 기본값은 모든 노드·간선이 Tab 정지점이라 간선 포커스를 꺼야 한다 | MIT. 공식 스트레스 예제 450노드 | **채택**(Atlas·Trace·지역 그래프) |
+| **dagre** (`@dagrejs/dagre` 3.1) | — | 계층형 배치 | — | TS로 재작성, 약 17KB gzip, MIT | **채택**(ADR-020) |
+| ELK.js 0.12 | — | layered 등 고급 배치, Web Worker | — | 약 467KB gzip, EPL-2.0 OR GPL-3.0(수정 없이 배포 시 출처 고지만 필요) | 보류 |
+| Cytoscape.js 3.34 | Canvas(WebGL은 3.31부터 미리보기) | 다수 내장 | 앱 수준에서 구현해야 함 | MIT | 대규모 지도 필요 시 |
+| Sigma.js 4.0 + graphology | WebGL2 | 별도 | 제한적 | MIT, React 바인딩은 v3만 | 수천 노드 전체 지도(P2) |
+| D3 7.9 | SVG | 직접 | 직접 | ISC | 쓰지 않음(시간축은 한 줄 계산) |
+| KaTeX 0.19 / MathJax 4 | 빌드 시 HTML+MathML / 런타임 | — | MathJax 4는 한국어 음성 지원, KaTeX의 숨은 MathML 방식은 덜 안정적이라고 평가 | 둘 다 MIT·Apache | **KaTeX 빌드 시 렌더링**(클라이언트 비용 0, MathML 포함). 접근성 불만이 기록되면 MathJax 재검토 |
+
+상세와 출처: [docs/research/G_viz_tech.md](research/G_viz_tech.md).
 
 ### 4.5 성능·검색·접근성
 

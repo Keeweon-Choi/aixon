@@ -1,0 +1,11 @@
+# E2E learner fixture (docs/04 §9): CV engineer who already demonstrated dot product and matrix multiplication,
+# and claims (self-report only) to know softmax.
+learner: me
+self_reports:
+  - {unit: concept:softmax, familiarity: 3, at: "2026-10-12T09:00:00Z"}
+attempts:
+  - {item: ai:dot-product-01, correct: true, hinted: false, at: "2026-10-12T10:00:00Z"}
+  - {item: ai:dot-product-02, correct: true, hinted: false, at: "2026-10-12T10:02:00Z"}
+  - {item: ai:matmul-01, correct: true, hinted: false, at: "2026-10-12T10:05:00Z"}
+  - {item: ai:matmul-02, correct: true, hinted: false, at: "2026-10-12T10:07:00Z"}
+overrides: []

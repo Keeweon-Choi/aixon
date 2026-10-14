@@ -12,9 +12,8 @@ import unicodedata
 import urllib.parse
 import urllib.request
 import xml.etree.ElementTree as ET
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
-
 
 ARXIV_URL = "https://export.arxiv.org/api/query"
 USER_AGENT = "aixon-verify/0.1"
@@ -178,7 +177,7 @@ def fetch_entries(identifiers: list[str], cache: Path, offline: bool) -> tuple[d
                         with urllib.request.urlopen(request, timeout=60) as response:
                             raw = response.read()
                         break
-                    except Exception as exc:  # noqa: BLE001 - retried, then reported per id
+                    except Exception as exc:
                         if attempt == 3 or not ("429" in str(exc) or "503" in str(exc) or "timed out" in str(exc)):
                             raise
                         time.sleep(15 * (attempt + 1))
@@ -186,7 +185,7 @@ def fetch_entries(identifiers: list[str], cache: Path, offline: bool) -> tuple[d
                 cache.mkdir(parents=True, exist_ok=True)
                 path.write_bytes(raw)
             entries.update(parse_atom(raw))
-        except Exception as exc:  # each requested id needs an observable result
+        except Exception as exc:  # noqa: BLE001 - each requested id needs an observable result
             errors.update({identifier: str(exc) for identifier in batch})
     return entries, errors
 

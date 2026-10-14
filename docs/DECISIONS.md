@@ -19,6 +19,12 @@
 | 012 | 근거·신뢰도 표현 | 인용 기계 대조 + 사람 검토 분리, confidence는 서열 |
 | 013 | 인증 | MVP에는 없음(localhost 바인딩) |
 | 014 | 식별자 | 타입 접두 slug, Paper = work(버전은 Source) |
+| 015 | v0.1 사이트 아키텍처 | **Astro + MDX + React Islands 정적 사이트**(서버·DB·LLM 없음) — ADR-004·008을 v0.1에서 대체 |
+| 016 | 검색 | Pagefind(전문) + 빌드 시 노드 색인 JSON(빠른 검색) — ADR-009를 v0.1에서 대체 |
+| 017 | 콘텐츠 공개 관문 | preview/public 두 빌드, public은 사람이 승인한 것만 |
+| 018 | 배포 | GitHub Pages(Actions), base 경로·디렉터리 URL. 실제 배포는 사용자 승인 뒤 |
+| 019 | 제품 범위 재조정 | Atlas + Wiki가 P0, 개인 학습 기능(04 문서)은 P2 |
+| 020 | 선수 DAG 배치 | dagre(약 17KB) 채택, ELK.js는 필요할 때 — ADR-010 일부 수정 |
 
 ---
 
@@ -138,3 +144,46 @@
 - **근거**: 사람이 읽고 git diff로 검토할 수 있다. 외부 ID는 없거나(NeurIPS에는 DOI가 없음), 여러 개거나(OpenAlex에 preprint와 proceedings가 따로 있음), 바뀔 수 있다(병합). Evidence가 버전을 가리키므로 절 번호가 버전마다 달라도 안전하다.
 - **트레이드오프**: slug 충돌(같은 저자·연도·별칭)은 별칭을 바꿔 사람이 피해야 한다. 기억하기 쉬운 연도(예: ViT를 "2021"로 기억)와 slug 연도가 다를 수 있어서 aliases에 게재 연도 표기를 함께 둔다.
 - **재검토 조건**: 큐레이션 그래프를 다른 사람과 공유하거나 병합할 때 전역 고유성을 위해 네임스페이스 접두를 검토한다.
+
+---
+
+## ADR-015 v0.1은 Astro + MDX + React Islands 정적 사이트 (ADR-004·008을 v0.1에서 대체)
+
+- **맥락**: 2026-10-15 사용자 방향 수정 — AIXON v0.1은 "AI 전체 Knowledge Graph + 개념별 교육 Wiki"이고, 공개 웹사이트(GitHub Pages)가 P0다. 개인 데이터(숙련도·이력)는 P2로 미뤘다. 서버·DB·LLM 없이 동작하는 구조를 우선한다.
+- **결정**: Astro 7 + MDX + React 19 islands. 그래프 YAML은 빌드 시 읽고 검증한다. Wiki는 Content Collections(zod 스키마)로 관리한다. 수식은 빌드 시 KaTeX, 코드는 Shiki, 그래프·Lab은 island다.
+- **대안**: React + Vite SPA(이전 설계, ADR-008), Next.js 정적 export, Docusaurus/VitePress 같은 문서 사이트 생성기.
+- **근거**: WIKI_CONTENT_ARCHITECTURE §3 비교표. 페이지마다 HTML이 생성되므로 SEO가 되고 GitHub Pages에서 직접 링크·새로고침이 된다. MDX 안에 React island를 둘 수 있어 Lab을 Wiki 안에 넣을 수 있다. YAML 정본 → 빌드 시 로드라는 기존 설계(ADR-001·002)가 그대로 맞는다. 문서 사이트 생성기는 그래프 페이지(Entity·Claim·Coverage) 생성이 어색하다.
+- **트레이드오프**: 프레임워크가 하나 는다. 개인 상태 기능(P2)이 들어오면 클라이언트 저장소나 백엔드가 필요하다(그때 ADR-003·011을 되살린다).
+- **재검토 조건**: 개인 계정·학습 이력(P2) 착수, 페이지 수가 수만 개를 넘어 빌드가 10분을 넘을 때.
+- **기존 ADR과의 관계**: ADR-001(YAML 정본)·002(메모리 그래프, 이제 빌드 시)·005·006·007(Lab 브라우저 계산)·012·014는 그대로 유효하다. ADR-003(SQLite)·004(FastAPI 모놀리스)·008(Vite SPA + FastAPI)·011(규칙 기반 숙련도)·013(인증 없음)은 **P2 설계로 보존**한다.
+
+## ADR-016 검색: Pagefind + 노드 색인 JSON (ADR-009를 v0.1에서 대체)
+
+- **결정**: 빌드 뒤 `pagefind --site dist`로 Wiki·Entity 본문 전문 검색 색인을 만든다. 따로 `node-index.json`(이름·별칭·ID)을 만들어 헤더의 빠른 검색이 부분 문자열로 노드를 찾게 한다.
+- **근거**: 정적 사이트에서 서버 없이 동작한다. 노드 이름 검색은 부분 일치가 필요하고, 한국어 2글자 검색어("주의", "학습")도 찾아야 한다. SQLite FTS5 trigram은 3글자 미만을 못 찾는다(조사 G).
+- **재검토 조건**: Pagefind의 한국어 결과 품질이 실사용에서 부족하다고 기록될 때.
+
+## ADR-017 콘텐츠 공개 관문: preview / public 두 빌드
+
+- **결정**: `AIXON_BUILD=preview`(로컬 기본)는 모든 콘텐츠를 상태 배지와 함께 보여 준다. `AIXON_BUILD=public`(GitHub Pages)은 `published` Wiki, `review.decision: approve`인 Claim, 승인된 AI 요약만 내보낸다.
+- **근거**: 사용자 요구 — "AI 생성 콘텐츠의 자동 게시를 금지하고, 인간의 검토 또는 명확하게 정의된 승인 과정을 요구한다", "콘텐츠가 존재한다는 이유만으로 검증 완료 상태를 부여하지 않는다". 기계 검증(인용 대조·스키마·계산)은 검토를 돕지만 승인을 대신하지 않는다.
+- **트레이드오프**: 사용자가 검토하기 전까지 공개 사이트는 이름과 분류 위주로만 보인다. 검토 속도가 공개 콘텐츠의 양을 정한다.
+- **재검토 조건**: 신뢰할 만한 외부 검토자가 생기거나, 특정 콘텐츠 유형(예: 서지 메타데이터처럼 기계로 확인되는 사실)을 자동 승인 범위로 정하자는 사용자 결정이 있을 때.
+
+## ADR-018 배포: GitHub Pages
+
+- **결정**: `.github/workflows/pages.yml`이 public 빌드(`AIXON_BASE=/<repo>/`)를 만들어 GitHub Pages에 배포한다. `trailingSlash: "always"` + 디렉터리 형식으로 모든 URL이 실제 `index.html`이다. 로컬 E2E는 같은 base 경로를 `astro preview`로 재현한다.
+- **실행 범위**: 워크플로 파일과 로컬 재현 검증까지 한다. **실제 push·배포는 사용자 승인 뒤에 한다**(/goal의 "외부 배포·자동 push 금지", 저장소 미생성).
+- **재검토 조건**: 사용자 도메인이 필요하거나 GitHub Pages 제한(용량 1GB, 대역폭)에 닿을 때.
+
+## ADR-019 제품 범위 재조정: Atlas + Wiki가 P0
+
+- **결정**: P0 = AI 전체 분야 Knowledge Graph, Interactive Atlas, Wiki 콘텐츠 모델과 렌더러, 개념 교육 페이지, 수식·코드·다이어그램, Graph ↔ Wiki 이동, 검색, 근거·참고문헌, 검증된 시드 콘텐츠, GitHub Pages 배포(설정), 검증 하네스. P2 = 계정, 개인 숙련도, 맞춤 학습 경로, 학습 이력·복습, LLM API, 다중 사용자 백엔드.
+- **설계 보존**: 04 문서(학습 엔진)와 `tools/seedtool.py`의 `plan`·`mastery` 기준 구현 및 테스트(M1–M9, P1–P14)는 P2를 위해 유지한다. 시드의 objectives·assessment_items도 유지하며, Wiki의 Lab 예측 문제로 쓴다(저장 없음).
+- **근거**: 사용자 결정(2026-10-15 "Product Direction Revision").
+
+## ADR-020 선수 DAG 배치: dagre (ADR-010 일부 수정)
+
+- **결정**: 계층형 그래프 배치는 `@dagrejs/dagre` 3.x로 한다. ELK.js는 쓰지 않는다.
+- **근거**: 조사 G — dagre 3.x는 TypeScript로 다시 작성되어 유지보수되고 있고 gzip 약 17KB다. elkjs 0.12는 약 467KB다. 화면에 보이는 노드를 80개 이하로 제한하는 설계에서는 dagre의 배치 품질로 충분하다. React Flow는 그대로 쓴다.
+- **재검토 조건**: 교차가 많아 읽기 어렵다는 기록이 반복되거나, 포트 제약·부분 고정 배치가 필요할 때(ELK의 `partitioning` 옵션).

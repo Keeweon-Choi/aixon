@@ -3,6 +3,8 @@
 > 학습자 모델, 증거 기반 숙련도 갱신, 결정적(deterministic) 학습 경로 계획을 정의한다. 계획기가 쓰는 그래프 의미는 [02 §6.1](02_DOMAIN_ONTOLOGY.md#61-prerequisite-graph의-형식-의미), 저장은 [03 §4](03_DATA_MODEL.md#4-개인-데이터-sqlite-스키마).
 > 작성 2026-10-15 · 상태: MVP 설계안 v1 · `algorithm_version: planner-v1`, `rule_version: mastery-v1`
 
+> **범위 상태(2026-10-15 방향 수정)**: 이 문서의 학습자 모델·경로 계획·숙련도 갱신은 **P2**다(ADR-019). 설계와 기준 구현(`tools/seedtool.py plan|mastery`, 테스트 M1–M9·P1–P14)은 P2 착수를 위해 유지한다. v0.1 사이트는 개인 상태를 저장하지 않는다. 조사 E(docs/research/E_learning_science.md)의 권고 — 연속 정답 기준, 자기평가 신뢰도 상관 약 .29, 건너뛴 선수 지식을 '추정(presumed)'으로 표시 — 는 P2 착수 때 §3·§4.2에 반영한다(ISSUE_LOG I-12).
+
 ---
 
 ## 1. 요구사항과 원칙
@@ -64,7 +66,8 @@ mastered_now     = evidence_score ≥ 3 ∧ |positive| ≥ 2 ∧ last.correct �
 ever_mastered    = 응답을 시간순으로 다시 재생하는 동안 mastered_now가 한 번이라도 참이었음
 
 state =
-  응답 없음:    self_report(u) 가 d를 주장하면 claimed, 아니면 unknown
+  응답 없음:    self_report(u) 가 d를 주장하고 **그 단위의 어떤 차원에도 응답이 없으면** claimed, 아니면 unknown
+                (평가 증거가 하나라도 생기면 자기보고 주장은 효력을 잃는다 — mastery-v1.1, 회귀 테스트 P15b)
   mastered_now: mastered
   ever_mastered: needs_review
   그 외:        practicing
@@ -151,13 +154,15 @@ function plan(targets, G, L, opt):
   dfs(n):
     if n ∉ S or state[n] == done: return
     state[n] = on_stack
-    for m in hard_preds(n) ∩ S (정렬 순서): dfs(m)
+    for m in hard_preds(n) ∩ S (다른 단위의 선수 먼저, 같은 단위의 낮은 차원(차원 함의)은 마지막): dfs(m)
     for m in soft_preds(n) ∩ S (정렬 순서):
       if state[m] != on_stack: dfs(m)                         # 권장 간선이 순환을 만들면 그 간선만 무시
     state[n] = done; order.append(n)
 
   # 4) 진단 우선: opt.diagnostics_first 이면 DIAGNOSE/REVIEW 단계를 상대 순서를 유지한 채 맨 앞으로
-  # 5) 같은 단위의 연속 LEARN 단계(recognize→explain 등)를 하나로 합친다: dimension=최고 차원, covers=[...]
+  # 5) 같은 단위의 **연속** LEARN 단계(recognize→explain 등)를 하나로 합친다: dimension=최고 차원, covers=[...]
+  #    (연속이 아닌 단계를 합치면 사이에 있는 노드의 선수 조건을 깨뜨릴 수 있다 — 회귀 테스트 P16.
+  #     pass 2가 차원 함의를 마지막에 방문하므로 한 단위의 차원들은 보통 연속으로 모인다.)
   # 6) 단계마다 자료·문항·Lab 배정 (§4.5), 이유 생성 (§4.4)
   # 7) 경고: 제외된 disputed/proposed 선수 Claim, 문항 부족(W101), 자료 없음(W102), assumed_background
   return Plan(order, skipped, choices, warnings, inputs_hash, used_claims)
@@ -266,7 +271,17 @@ function plan(targets, G, L, opt):
 
 ## 7. 학습자 상태 추정 알고리즘 비교
 
-<!-- RESEARCH-E: 조사 결과 반영 위치 -->
+| 모델 | 필요한 데이터 | 단일 사용자에서 | 판단 |
+|---|---|---|---|
+| Bayesian Knowledge Tracing | 기술별 파라미터 4개를 적합할 응답 기록(많은 학습자) | 기본 파라미터로는 "2–5회 연속 정답" 규칙과 비슷해진다. 학습률 항 때문에 정답률 30%인 학습자가 20문항 안에 숙달로 판정될 수 있다(조사 E의 자체 계산, 약 33%) | 채택 안 함 |
+| Deep Knowledge Tracing | 수만 건 이상의 순서 데이터 | 적합 불가. Khajah et al. 2016은 단순 모델과 큰 차이가 없음을 보였다 | 채택 안 함 |
+| Item Response Theory | 문항당 다수 응답자의 보정 데이터 | 문항 난이도를 추정할 응답자가 없다 | 채택 안 함 |
+| Elo 계열(Pelánek) | 문항·학습자 동시 갱신, 비교적 적은 데이터 | 가능하지만 이점이 작다. Pelánek & Řihák(2017/2018): 모델 선택보다 **무엇을 증거로 세고 임계값을 어디에 두는지**가 더 중요하다 | P2 이후 실험 |
+| Knowledge Space Theory | 선수 구조(surmise relation) | 계획기의 가지치기 가정과 같다. "학습 준비가 된 개념(outer fringe)" 표시에 쓴다 | 개념 채택(§4.2, Explore 학습 경계) |
+| 규칙 기반(mastery-v1) | 없음 | 설명 가능하고 재계산할 수 있다 | **P2 MVP 채택**(§3) |
+| FSRS-6(복습 일정) | 없어도 기본 파라미터로 동작. 개인화는 약 1,000회 복습 뒤 | py-fsrs 6.3.2·ts-fsrs 5.4.2(MIT). py-fsrs 최적화기는 512회 미만이면 기본값을 유지한다 | P2 복습에 채택(짧은 회상 문항, 오답 Again·정답 Good) |
+
+**조사 E가 P2 설계에 남긴 수정 사항**(ISSUE_LOG I-12): ① 숙달 기준을 "서로 다른 문항 2개·점수 3"에서 "**힌트 없는 첫 시도 연속 정답 + 하루 뒤 새 변형 문항 정답**"으로 강화하는 안을 검토한다. ② 수준(지수이동평균 α≈0.7)과 증거의 양을 따로 보여 준다. ③ 자기평가와 실제 성적의 상관은 약 .29이므로 자기보고는 진단 문항을 부르는 신호로만 쓴다(현재 설계와 같다). ④ 가지치기로 건너뛴 선수 지식은 "추정(presumed)"으로 표시하고 짧은 확인으로 확정한다. ⑤ 역량 차원의 엄격한 순서(R < E < D·I·A)는 개정 Bloom 분류가 버린 가정이다. "implement"의 의미도 다르다. P2에서 차원 체계를 다시 검토한다. 상세: [docs/research/E_learning_science.md](research/E_learning_science.md).
 
 ---
 

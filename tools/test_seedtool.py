@@ -8,7 +8,14 @@ from pathlib import Path
 import pytest
 import yaml
 
-from tools.seedtool import check_quotes, compute_mastery, graph_version, load_graph, plan, validate
+from tools.seedtool import (
+    check_quotes,
+    compute_mastery,
+    graph_version,
+    load_graph,
+    plan,
+    validate,
+)
 
 HERE = Path(__file__).parent
 
@@ -47,7 +54,7 @@ def pg(tmp_path, units, rels=(), items=None, minutes=None, name="plan"):
         em = {d: v for (unit, d), v in minutes.items() if unit == u}
         if em: rec["estimated_minutes"] = em
         raw["concepts"].append(rec)
-        raw["resources"].append({"id": f"res:{u}", "name": u, "url": "https://example.invalid", "format": "text", "explains": [{"unit": f"concept:{u}", "dimensions": dims}]})
+        raw["resources"].append({"id": f"res:{u}", "name": u, "url": "https://example.invalid", "format": "text", "verified_at": "2026-01-01", "explains": [{"unit": f"concept:{u}", "dimensions": dims}]})
         for d in dims:
             for n in range(1, items.get((u, d), 2) + 1):
                 raw["assessment_items"].append({"id": iid(u, d, n), "name": f"{u}{d}{n}", "assesses": {"unit": f"concept:{u}", "dimension": d}, "kind": "numeric", "prompt": "1+1", "answer": 2, "tolerance": 0, "rationale": "r"})
@@ -301,3 +308,75 @@ def test_t18_p15_seed_if_present():
     g = load_graph(seed); assert not [x for x in validate(g) if x.code.startswith("G")]
     if not (learner.exists() and expected.exists()): pytest.skip("e2e fixtures not present")
     assert plan(g, yaml.safe_load(learner.read_text()), g["entities"]["lo:vit-attention-math"]["targets"]) == json.loads(expected.read_text())
+
+
+def _assert_topological(graph, out):
+    """Every step's hard requirements that are in the plan must appear in an earlier step (or the same merged step)."""
+    from tools.seedtool import _requirement_groups
+    pos = {}
+    for idx, step in enumerate(out["steps"]):
+        for d in step["covers"]:
+            pos[(step["unit"], d)] = idx
+    for idx, step in enumerate(out["steps"]):
+        for d in step["covers"]:
+            for kind, _key, vals in _requirement_groups(graph, (step["unit"], d)):
+                for child, _cid in vals:
+                    if child in pos:
+                        assert pos[child] <= idx, f"{step['unit']}@{d} (step {idx}) before its prerequisite {child} (step {pos[child]})"
+
+
+def test_p16_no_merge_across_dependent_step(tmp_path):
+    # xray@explain requires alpha@explain; alpha@derive additionally requires charlie@explain.
+    # DFS order: alpha@R, alpha@E, xray@R, xray@E, charlie@R, charlie@E, alpha@D.
+    # alpha's explain and derive steps are not consecutive, so they must stay separate (04 §4.3 step 5).
+    g, _ = pg(tmp_path, {"alpha": ["recognize", "explain", "derive"], "xray": ["recognize", "explain"], "charlie": ["recognize", "explain"]},
+              rels=[("alpha", "xray", "explain", "explain", None, "verified", "PREREQUISITE_OF"),
+                    ("charlie", "alpha", "derive", "explain", None, "verified", "PREREQUISITE_OF")], name="p16")
+    out = plan(g, {}, [{"unit": "concept:xray", "dimension": "explain"}, {"unit": "concept:alpha", "dimension": "derive"}])
+    assert [s["unit"] for s in out["steps"]].count("concept:alpha") == 2, out["steps"]
+    _assert_topological(g, out)
+
+
+def test_seed_plan_is_topological_for_every_objective():
+    root = HERE.parent
+    seed = root / "data/seed/seed_graph.yaml"
+    if not seed.exists(): pytest.skip("seed graph not present")
+    graph = load_graph(seed)
+    for oid, rec in graph["entities"].items():
+        if graph["types"].get(oid) == "LearningObjective":
+            _assert_topological(graph, plan(graph, {}, rec["targets"]))
+
+
+def test_p15b_seed_replanning_sequence():
+    """Hand-derived replanning sequence for lo:vit-attention-math (docs/04 §9 steps 5–9)."""
+    root = HERE.parent
+    seed, learner_path = root / "data/seed/seed_graph.yaml", root / "data/seed/learner_e2e.yaml"
+    if not (seed.exists() and learner_path.exists()): pytest.skip("seed fixtures not present")
+    graph = load_graph(seed); learner = yaml.safe_load(learner_path.read_text()); targets = graph["entities"]["lo:vit-attention-math"]["targets"]
+    def skel(lr): return [(s["action"], s["unit"].split(":")[1], tuple(s["covers"])) for s in plan(graph, lr, targets)["steps"]]
+    def att(item, ok, minute): return {"item": item, "correct": ok, "hinted": False, "at": f"2026-10-15T10:{minute:02d}:00Z"}
+    E = ("recognize", "explain")
+    assert skel(learner)[0] == ("diagnose", "softmax", ("explain",))
+    # 6: the diagnostic reveals a gap (numeric item wrong) -> softmax is learned, no diagnose step remains
+    learner["attempts"] += [att("ai:softmax-01", False, 1), att("ai:softmax-02", True, 2)]
+    assert skel(learner) == [("learn", "softmax", E), ("learn", "softmax-temperature", E), ("learn", "variance-of-sum", E),
+                             ("learn", "scaled-dot-product-attention", ("recognize", "explain", "derive")), ("learn", "multi-head-attention", E)]
+    # 7–8: softmax and temperature (incl. the lab prediction items) are demonstrated -> they drop out
+    learner["attempts"] += [att("ai:softmax-01", True, 3), att("ai:softmax-temperature-01", True, 4), att("ai:lab-softmax-temp-01", True, 5), att("ai:lab-softmax-temp-02", True, 6)]
+    assert skel(learner) == [("learn", "variance-of-sum", E), ("learn", "scaled-dot-product-attention", ("recognize", "explain", "derive")), ("learn", "multi-head-attention", E)]
+    # moving a lab slider or reading is not evidence: the plan is unchanged without attempts (no event types exist for it)
+    # 9: the rest is demonstrated -> nothing left; sdpa@explain is implied by sdpa@derive mastery
+    learner["attempts"] += [att("ai:variance-of-sum-01", True, 7), att("ai:variance-of-sum-02", True, 8), att("ai:sdpa-derive-02", True, 9), att("ai:sdpa-derive-01", True, 10),
+                            att("ai:mha-01", True, 11), att("ai:mha-02", True, 12)]
+    out = plan(graph, learner, targets)
+    assert out["steps"] == []
+    assert {(s["unit"].split(":")[1], s["dimension"], s["reason"]) for s in out["skipped"]} >= {("scaled-dot-product-attention", "derive", "mastered"), ("multi-head-attention", "explain", "mastered")}
+
+
+def test_g020_required_fields_and_g021_identifier_types(tmp_path):
+    def change(raw):
+        raw.setdefault("papers", []).append({"id": "paper:float2016-id", "title": "t", "authors": ["a"], "earliest_public_date": "2016-11-01", "identifiers": {"arxiv": 1611.0353}})
+        raw.setdefault("problems", []).append({"id": "problem:no-question", "name": "p", "summary": "s"})
+    issues = validate(mini(tmp_path, change)[0])
+    assert any(x.code == "G021" and x.ref == "paper:float2016-id" for x in issues)
+    assert any(x.code == "G020" and x.ref == "problem:no-question" and "question" in x.message for x in issues)

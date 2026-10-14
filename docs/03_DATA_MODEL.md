@@ -3,6 +3,8 @@
 > 온톨로지([02](02_DOMAIN_ONTOLOGY.md))를 실제 저장 형식으로 옮긴 문서. 큐레이션 그래프의 **YAML 스키마**, 개인 학습 데이터의 **SQLite 스키마**, 외부 학술 데이터 **수집 파이프라인**을 정의한다.
 > 작성 2026-10-15 · 상태: MVP 설계안 v1
 
+> **범위 상태(2026-10-15 방향 수정)**: §2(YAML 스키마)·§3(빌드 시 그래프)·§5(데이터 소스·수집)·§8(seedtool)은 v0.1 정적 사이트에 그대로 쓴다. §4(개인 데이터 SQLite)는 **P2**다. Wiki 문서 스키마는 [CONTENT_SCHEMA.md](CONTENT_SCHEMA.md).
+
 ---
 
 ## 1. 저장 전략 한눈에 보기
@@ -325,7 +327,17 @@ erDiagram
 
 ### 5.1 데이터 소스 비교
 
-<!-- RESEARCH-D: 조사 결과 반영 위치 -->
+| 소스 | 주는 것 | 접근·한도(2026-10-15 확인) | 라이선스·재배포 | AIXON에서의 역할 | 주의 |
+|---|---|---|---|---|---|
+| **arXiv** (API, HTML) | 정본 메타데이터, 버전 이력, HTML 전문(LaTeXML) | 키 없음, 3초에 1회·연결 1개 | 메타데이터 CC0, 전문은 논문별 라이선스(대개 비독점 배포) | **식별자·제목·날짜 검증**(`verify_identifiers.py`), **인용 원문 대조**(`seedtool quotes`), 참고문헌 정답 | OAI-PMH `<created>`는 최신 버전 날짜라 v1 날짜로 쓰면 안 됨 |
+| **OpenAlex** | Works, Topics(4 domain → 26 field → 252 subfield → 4,516 topic), 인용 | 키 없이 일일 1,000 credit(단건 무료, list 1, search 10), 무료 키는 일일 $1 상당 | CC0, 스냅샷 제공 | 분야 매핑(참고용), 인용 후보 | 같은 논문이 여러 work로 나뉨(ResNet·ViT·BERT 등 2개, DeiT 3개), **Transformer·BERT preprint 레코드 메타데이터 오염**, 병합 ID는 404, Concepts는 동결 |
+| **Semantic Scholar** | paperId(preprint+출판본 병합), externalIds(ArXiv·DOI·DBLP·MAG·CorpusId), 인용·인용 의도·영향 인용 | 키 없는 공용 풀이 혼잡(27회 중 14회 429), 키 발급 시 1 RPS | API 재배포 금지, Datasets ODC-BY | externalIds 교차 확인, 인용 후보 | 참고문헌 오연결(오탐 4/49), 연도 필드가 arXiv 날짜 |
+| **Crossref** | 출판사 DOI 메타데이터 | 공개 풀 단건 5/s·목록 1/s | 메타데이터 사실 CC0, 초록은 별도 | 학회·저널 DOI 확인 | NeurIPS·ICLR·ICML은 DOI 없음 |
+| **DBLP** | CS 학회명 정규화 | API는 봇 차단, XML 덤프(1.1GB, CC0)는 받을 수 있음 | CC0 | 학회명 정규화(P1, 덤프) | 스크립트 접근 불가 |
+| **OpenReview** | ICLR 등 리뷰·버전 | API가 봇 차단 | — | 수동 참고 | — |
+| **Papers with Code** | (종료, 2025-07) | Hugging Face로 리다이렉트, 덤프는 HF `pwc-archive`(CC BY-SA 4.0) | — | 사용 안 함 | 메서드 행의 70%가 스팸으로 보임(조사 B) |
+
+**인용 관계 실측**(시드 14편, arXiv HTML 참고문헌에서 만든 정답 46쌍): S2는 46쌍 중 45쌍을 찾았지만 오탐 4건이 섞였고(정밀도 91.8%), OpenAlex는 오탐 0건에 38–39쌍을 찾았다. 둘을 합친 뒤 원문 참고문헌으로 확인하면 46쌍이 모두 맞다. 그래서 자동 CITES(P1)는 **두 소스의 합집합을 후보로 쓰고, arXiv HTML 참고문헌으로 확인된 것만 verified**로 둔다. 상세: [docs/research/D_data_sources.md](research/D_data_sources.md).
 
 ### 5.2 식별자 매핑
 

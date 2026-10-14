@@ -15,11 +15,12 @@ import json
 import re
 import sys
 import unicodedata
-import urllib.request
 import urllib.parse
+import urllib.request
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 import yaml
 
@@ -362,6 +363,23 @@ def validate(graph: dict) -> list[Issue]:
             bad |= not (choice or number)
         elif kind == "self_explanation": bad |= not isinstance(item.get("rubric"), list) or not item["rubric"]
         if bad: _issue(out, "G018", iid, "invalid assessment item")
+    # G020 required fields (docs/03 §2.2) and G021 identifier value types.
+    required = {"ResearchField": ["name"], "ResearchProblem": ["name", "summary", "question"], "Concept": ["name", "summary", "dimensions"],
+                "Method": ["name", "summary", "dimensions"], "Model": ["name", "summary", "dimensions"], "Paper": ["title", "authors", "earliest_public_date", "identifiers"],
+                "Dataset": ["name", "summary"], "Metric": ["name", "summary", "direction"], "Benchmark": ["name", "dataset", "metrics", "split"],
+                "LearningObjective": ["name", "targets"], "LearningResource": ["name", "format", "verified_at", "explains"], "LabExperiment": ["name", "component", "version", "parameters", "demonstrates", "items"],
+                "Source": ["kind", "url", "retrieved_at"], "Claim": ["predicate", "subject", "object", "status", "confidence"]}
+    for ident, rec in sorted(e.items()):
+        for field in required.get(t[ident], []):
+            if rec.get(field) in (None, "", [], {}): _issue(out, "G020", ident, f"required field missing: {field}")
+        if t[ident] == "LearningResource" and not (rec.get("url") or rec.get("lab")): _issue(out, "G020", ident, "required field missing: url or lab")
+        if t[ident] == "Source" and rec.get("kind") == "paper_version" and not rec.get("paper"): _issue(out, "G020", ident, "required field missing: paper")
+        if t[ident] == "Paper":
+            for key, val in sorted((rec.get("identifiers") or {}).items()):
+                vals = val if key == "openalex" else [val]
+                if key == "openalex" and not isinstance(val, list): vals = [val]
+                for v in vals:
+                    if not isinstance(v, str) or not v.strip(): _issue(out, "G021", ident, f"identifier {key} must be a non-empty string, got {type(v).__name__}")
     # W101/W102 closure is calculated by the same deterministic prerequisite walker used by plan.
     for oid, objective in sorted((i, r) for i, r in e.items() if t[i] == "LearningObjective"):
         nodes = _closure(graph, [(x.get("unit"), x.get("dimension")) for x in objective.get("targets", []) or []], all_or=True)
@@ -474,7 +492,7 @@ def compute_mastery(graph: dict, learner: dict) -> dict:
         last = rows[-1][1] if rows else None
         mastered = bool(last and score >= 3 and len(positives) >= 2 and last.get("correct") and not last.get("hinted"))
         report = reports.get(u, (None, {}))[1]; familiarity = report.get("familiarity", 0)
-        claimed = familiarity >= 4 or (familiarity >= 3 and d in {"recognize", "explain"})
+        claimed = (familiarity >= 4 or (familiarity >= 3 and d in {"recognize", "explain"})) and not any(k[0] == u for k in grouped)  # evidence on any dimension of the unit supersedes self-report (mastery-v1.1)
         state = "mastered" if mastered else "needs_review" if ever else "practicing" if rows else "claimed" if claimed else "unknown"
         confidence = "high" if mastered and score >= 4 and any(WEIGHT.get(graph["entities"].get(x.get("item"), {}).get("kind"), 0) == 2 for x in positives) else "medium" if mastered else "low" if state in {"practicing", "needs_review"} else None
         result[(u, d)] = {"state": state, "evidence_score": score, "positive_items": sorted(x.get("item") for x in positives), "confidence": confidence, "last_attempt_at": last.get("at") if last else None, "ever_mastered": ever, "self_report": familiarity if report else None}
@@ -581,7 +599,11 @@ def plan(graph: dict, learner: dict, targets: list[dict], options: dict | None =
     def dfs(n):
         if n in marked or n not in states: return
         marked.add(n)
-        for kind, _key, vals in _requirement_groups(graph, n):
+        groups = _requirement_groups(graph, n)
+        # Order pass: other units' prerequisites first, the same unit's lower dimension last, so a unit's
+        # dimensions end up adjacent and merge into one step without breaking topological order (04 §4.3).
+        groups = [x for x in groups if x[1] != "dimension_implication"] + [x for x in groups if x[1] == "dimension_implication"]
+        for kind, _key, vals in groups:
             candidates = vals[:1] if kind == "and" else vals
             for child, cid in candidates:
                 if child in states and (kind == "and" or cid in used): dfs(child)
@@ -593,14 +615,15 @@ def plan(graph: dict, learner: dict, targets: list[dict], options: dict | None =
     # Any defensive additions whose parent was skipped still need a stable position.
     order += [n for n in sorted(states, key=lambda x: (x[0], RANK[x[1]])) if n not in order]
     if opts.get("diagnostics_first", True): order = [n for n in order if states[n]["classification"] in {"DIAGNOSE", "REVIEW"}] + [n for n in order if states[n]["classification"] not in {"DIAGNOSE", "REVIEW"}]
+    # Merge only CONSECUTIVE LEARN nodes of the same unit (04 §4.3 step 5). Moving an earlier dimension later
+    # (e.g. to the unit's last occurrence) can place it after a node that requires it (regression P16).
     merged = []
-    last_learn = {n[0]: index for index, n in enumerate(order) if states[n]["classification"] == "LEARN"}
-    for index, n in enumerate(order):
-        if states[n]["classification"] == "LEARN" and last_learn[n[0]] != index:
-            continue
+    for n in order:
         cls = states[n]["classification"]
-        covers = [x[1] for x in order if x[0] == n[0] and states[x]["classification"] == "LEARN"] if cls == "LEARN" else [n[1]]
-        merged.append({"action": cls.lower(), "unit": n[0], "dimension": n[1], "covers": covers, "why": _why_chain(n, first_parent), "optional": states[n]["optional"]})
+        if cls == "LEARN" and merged and merged[-1]["action"] == "learn" and merged[-1]["unit"] == n[0]:
+            merged[-1]["dimension"] = n[1]; merged[-1]["covers"].append(n[1]); merged[-1]["why"] = _why_chain(n, first_parent)
+            continue
+        merged.append({"action": cls.lower(), "unit": n[0], "dimension": n[1], "covers": [n[1]], "why": _why_chain(n, first_parent), "optional": states[n]["optional"]})
     steps = []
     for idx, step in enumerate(merged, 1):
         u, covers = step["unit"], step["covers"]
@@ -646,7 +669,7 @@ def plan(graph: dict, learner: dict, targets: list[dict], options: dict | None =
 
 def _why_chain(n, parents):
     chain = []
-    while n in parents and parents[n]:
+    while parents.get(n):
         parent, via = parents[n]; chain.append({"from": f"{n[0]}@{n[1]}", "to": f"{parent[0]}@{parent[1]}", "via": via}); n = parent
     return chain
 
@@ -701,8 +724,8 @@ def check_quotes(graph: dict, cache_dir: str | Path | None = None, offline=False
                     req = urllib.request.Request(url, headers={"User-Agent": "aixon-seedtool/0.1"})
                     with urllib.request.urlopen(req, timeout=30) as response: data, content_type = response.read(), response.headers.get_content_type()
                     cache.mkdir(parents=True, exist_ok=True); path.write_bytes(data)
-                    meta.write_text(json.dumps({"url": url, "fetched_at": dt.datetime.now(dt.timezone.utc).isoformat(), "sha256": hashlib.sha256(data).hexdigest(), "content_type": content_type}, ensure_ascii=False, sort_keys=True, indent=2), encoding="utf-8")
-            except Exception as exc:
+                    meta.write_text(json.dumps({"url": url, "fetched_at": dt.datetime.now(dt.UTC).isoformat(), "sha256": hashlib.sha256(data).hexdigest(), "content_type": content_type}, ensure_ascii=False, sort_keys=True, indent=2), encoding="utf-8")
+            except Exception as exc:  # noqa: BLE001 - reported per evidence row as fetch_error
                 rows.append({**base, "status": "fetch_error", "detail": str(exc)}); continue
             digest = hashlib.sha256(data).hexdigest()
             if source.get("content_sha256") and source["content_sha256"] != digest:
