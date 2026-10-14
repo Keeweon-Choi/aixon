@@ -252,7 +252,7 @@ def test_or_cost_counts_shared_descendant_once(tmp_path):
 
 
 def test_assumed_background_warning_includes_items(tmp_path):
-    g, raw = pg(tmp_path, {"a": ["recognize", "explain"]}, name="background")
+    _g, raw = pg(tmp_path, {"a": ["recognize", "explain"]}, name="background")
     raw["graph"]["assumed_background"] = ["algebra", "logs"]
     warning = next(x for x in plan(load(tmp_path, raw, "background-items"), {}, [{"unit": "concept:a", "dimension": "explain"}])["warnings"] if x["code"] == "assumed_background")
     assert warning == {"code": "assumed_background", "ref": "graph", "items": ["algebra", "logs"]}
