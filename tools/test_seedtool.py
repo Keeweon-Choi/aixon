@@ -1,0 +1,277 @@
+"""Focused T/M/P and quote scenarios for seedtool."""
+from __future__ import annotations
+
+import copy
+import json
+from pathlib import Path
+
+import pytest
+import yaml
+
+from tools.seedtool import check_quotes, compute_mastery, graph_version, load_graph, plan, validate
+
+HERE = Path(__file__).parent
+
+
+def load(tmp_path, raw, name="graph"):
+    path = tmp_path / f"{name}.yaml"
+    path.write_text(yaml.safe_dump(raw, sort_keys=False), encoding="utf-8")
+    return load_graph(path)
+
+
+def mini(tmp_path, mutate=None, name="mini"):
+    raw = yaml.safe_load((HERE / "fixtures/mini_graph.yaml").read_text())
+    if mutate: mutate(raw)
+    return load(tmp_path, raw, name), raw
+
+
+def cs(g): return {x.code for x in validate(g)}
+
+
+def claim(ident, predicate, subject, obj, status="verified", **q):
+    evidence = [{"source": "src:test:notes", "type": "definitional_dependency", "stance": "supports", "quote": "Definition evidence."}]
+    if status == "disputed": evidence.append({"source": "src:test:notes", "type": "definitional_dependency", "stance": "contradicts", "quote": "Contrary evidence."})
+    out = {"id": ident, "predicate": predicate, "subject": subject, "object": obj, "qualifiers": q, "status": status, "confidence": "high", "evidence": evidence}
+    if status == "verified": out["verification"] = {"method": "review", "by": "t", "at": "2026-01-01"}
+    if status == "rejected": out["rejected_reason"] = "rejected"
+    return out
+
+
+def pg(tmp_path, units, rels=(), items=None, minutes=None, name="plan"):
+    """rels are (subject, object, for_dimension, required_dimension, group, status, predicate)."""
+    items, minutes = items or {}, minutes or {}
+    raw = {"schema_version": 1, "graph": {"id": "test"}, "concepts": [], "resources": [], "assessment_items": [], "claims": [],
+           "sources": [{"id": "src:test:notes", "name": "n", "kind": "web_page", "url": "https://example.invalid", "retrieved_at": "2026-01-01"}]}
+    for u, dims in units.items():
+        rec = {"id": f"concept:{u}", "name": u, "summary": u, "dimensions": dims}
+        em = {d: v for (unit, d), v in minutes.items() if unit == u}
+        if em: rec["estimated_minutes"] = em
+        raw["concepts"].append(rec)
+        raw["resources"].append({"id": f"res:{u}", "name": u, "url": "https://example.invalid", "format": "text", "explains": [{"unit": f"concept:{u}", "dimensions": dims}]})
+        for d in dims:
+            for n in range(1, items.get((u, d), 2) + 1):
+                raw["assessment_items"].append({"id": iid(u, d, n), "name": f"{u}{d}{n}", "assesses": {"unit": f"concept:{u}", "dimension": d}, "kind": "numeric", "prompt": "1+1", "answer": 2, "tolerance": 0, "rationale": "r"})
+    for n, (s, o, fd, rd, group, status, pred) in enumerate(rels, 1):
+        q = {"for_dimension": fd, "required_dimension": rd}
+        if group: q["group"] = group
+        raw["claims"].append(claim(f"clm:relation-{n}", pred, f"concept:{s}", f"concept:{o}", status, **q))
+    return load(tmp_path, raw, name), raw
+
+
+def iid(u, d, n): return f"ai:{u}-{d}-{n:02d}"
+def att(item, correct=True, hinted=False, at="2026-01-01"): return {"item": item, "correct": correct, "hinted": hinted, "at": at}
+def mastered(u, d="explain"): return [att(iid(u, d, 1)), att(iid(u, d, 2), at="2026-01-02")]
+
+
+# 02_DOMAIN_ONTOLOGY.md §9.1
+def test_t1(tmp_path):
+    _, r = mini(tmp_path); r["claims"].append(claim("clm:t1", "PREREQUISITE_OF", "concept:algebra", "method:nope", for_dimension="explain", required_dimension="explain")); assert "G003" in cs(load(tmp_path, r, "t1"))
+
+
+def test_t2(tmp_path):
+    _, r = mini(tmp_path); r["claims"].append(claim("clm:t2", "INTRODUCES", "concept:softmax", "method:attention")); assert "G004" in cs(load(tmp_path, r, "t2"))
+
+
+def test_t3(tmp_path):
+    _, r = mini(tmp_path); r["papers"] = [{"id": f"paper:{x}", "title": x, "authors": [x], "earliest_public_date": "2020-01-01", "identifiers": {"arxiv": "same"}} for x in "ab"]; assert "G005" in cs(load(tmp_path, r, "t3"))
+
+
+def test_t4(tmp_path):
+    _, r = mini(tmp_path); r["methods"].append({"id": "method:other", "name": "o", "summary": "o", "dimensions": ["recognize", "explain"]}); x = claim("clm:t4", "EXTENDS", "method:attention", "method:other"); x["evidence"] = []; r["claims"].append(x); assert "G007" in cs(load(tmp_path, r, "t4"))
+
+
+def test_t5(tmp_path):
+    _, r = mini(tmp_path); r["claims"].append(claim("clm:t5", "PREREQUISITE_OF", "concept:softmax", "concept:algebra", for_dimension="explain", required_dimension="explain")); assert "G008" in cs(load(tmp_path, r, "t5"))
+
+
+def test_t6(tmp_path):
+    g, _ = pg(tmp_path, {"a": ["recognize", "explain", "derive"], "b": ["recognize", "explain"]}, [("b", "a", "derive", "explain", None, "verified", "PREREQUISITE_OF"), ("a", "b", "explain", "derive", None, "verified", "PREREQUISITE_OF")], name="t6"); assert "G008" in cs(g)
+
+
+def test_t7(tmp_path):
+    g, _ = pg(tmp_path, {"a": ["recognize", "explain", "analyze"], "b": ["recognize", "explain"]}, [("b", "a", "analyze", "explain", None, "verified", "PREREQUISITE_OF"), ("a", "b", "explain", "recognize", None, "verified", "PREREQUISITE_OF")], name="t7"); assert not [x for x in validate(g) if x.code.startswith("G")]
+
+
+def test_t8(tmp_path):
+    _, r = mini(tmp_path); r["claims"].append(claim("clm:t8", "PREREQUISITE_OF", "concept:algebra", "method:attention", for_dimension="explain", required_dimension="explain", group="only")); assert "G009" in cs(load(tmp_path, r, "t8"))
+
+
+def test_t9(tmp_path):
+    _, r = mini(tmp_path); r["methods"].append({"id": "method:class-token", "name": "ct", "summary": "ct", "dimensions": ["recognize", "explain"]}); r["assessment_items"].append({"id": "ai:ct", "name": "ct", "assesses": {"unit": "method:class-token", "dimension": "derive"}, "kind": "numeric", "prompt": "x", "answer": 1, "tolerance": 0, "rationale": "x"}); assert "G010" in cs(load(tmp_path, r, "t9"))
+
+
+def test_t10(tmp_path):
+    _, r = mini(tmp_path); r["methods"].append({"id": "method:other", "name": "o", "summary": "o", "dimensions": ["recognize", "explain"]}); r["claims"] += [claim("clm:ab", "COMPARED_WITH", "method:attention", "method:other", benchmark="benchmark:no"), claim("clm:ba", "COMPARED_WITH", "method:other", "method:attention", benchmark="benchmark:no")]; assert "G012" in cs(load(tmp_path, r, "t10"))
+
+
+def test_t11(tmp_path):
+    _, r = mini(tmp_path); r["methods"].append({"id": "method:other", "name": "o", "summary": "o", "dimensions": ["recognize", "explain"]}); r["claims"].append(claim("clm:t11", "ADAPTS", "method:attention", "method:other", from_field="field:x", to_field="field:x")); assert "G013" in cs(load(tmp_path, r, "t11"))
+
+
+def test_t12(tmp_path):
+    _, r = mini(tmp_path); r["methods"].append({"id": "method:other", "name": "o", "summary": "o", "dimensions": ["recognize", "explain"]}); r["papers"] = [{"id": "paper:old", "title": "o", "authors": ["o"], "earliest_public_date": "2017-01-01"}, {"id": "paper:new", "title": "n", "authors": ["n"], "earliest_public_date": "2020-01-01"}]; r["claims"] += [claim("clm:io", "INTRODUCES", "paper:old", "method:attention"), claim("clm:in", "INTRODUCES", "paper:new", "method:other"), claim("clm:t12", "EXTENDS", "method:attention", "method:other")]; assert "G014" in cs(load(tmp_path, r, "t12"))
+
+
+def test_t13(tmp_path):
+    _, r = mini(tmp_path); r["methods"].append({"id": "method:other", "name": "o", "summary": "o", "dimensions": ["recognize", "explain"]}); r["datasets"] = [{"id": "dataset:x", "name": "x", "summary": "x"}]; r["metrics"] = [{"id": "metric:x", "name": "x", "summary": "x", "direction": "lower_is_better"}]; r["benchmarks"] = [{"id": "benchmark:x", "name": "x", "summary": "x", "dataset": "dataset:x", "metrics": ["metric:x"]}]; x = claim("clm:t13", "IMPROVES_ON", "method:attention", "method:other", benchmark="benchmark:x", metric="metric:x", subject_value=4, object_value=2); x["evidence"] = [{"source": "src:mini:notes", "type": "experimental_result", "stance": "supports", "quote": "Table.", "locator": {"table": "1"}}]; r["claims"].append(x); assert "G015" in cs(load(tmp_path, r, "t13"))
+
+
+def test_t14(tmp_path):
+    _, r = mini(tmp_path); rejected, active = copy.deepcopy(r["claims"][0]), copy.deepcopy(r["claims"][0]); rejected.update({"id": "clm:rejected", "status": "rejected", "rejected_reason": "no"}); active.update({"id": "clm:active", "status": "proposed"}); r["claims"] += [rejected, active]; assert "G016" in cs(load(tmp_path, r, "t14"))
+
+
+def test_t15(tmp_path):
+    _, r = mini(tmp_path); r["assessment_items"][0].pop("tolerance"); assert "G018" in cs(load(tmp_path, r, "t15"))
+
+
+def test_t16(tmp_path):
+    _, r = mini(tmp_path); r["papers"] = [{"id": f"paper:{x}", "title": x, "authors": [x], "earliest_public_date": "2020-01-01"} for x in "ab"]; x = claim("clm:cites", "CITES", "paper:a", "paper:b"); x["evidence"] = [{"source": "src:mini:notes", "type": "bibliographic_metadata", "stance": "supports", "quote": "Reference."}]; r["claims"].append(x); g = load(tmp_path, r, "t16"); plan(g, {}, [{"unit": "method:attention", "dimension": "derive"}]); assert not [x for x in g["claims"].values() if x["predicate"] == "EXTENDS"]
+
+
+def test_t17(tmp_path):
+    g, _ = pg(tmp_path, {"a": ["recognize", "explain"], "b": ["recognize", "explain"]}, [("b", "a", "explain", "explain", None, "disputed", "PREREQUISITE_OF")], name="t17"); out = plan(g, {}, [{"unit": "concept:a", "dimension": "explain"}]); assert [x["unit"] for x in out["steps"]] == ["concept:a"] and any(x["code"] == "excluded_claim" for x in out["warnings"])
+
+
+# 04_LEARNING_ENGINE.md §8.1
+def test_m1(tmp_path):
+    g, _ = mini(tmp_path); s = compute_mastery(g, {"attempts": [att("ai:softmax-01")]})[("concept:softmax", "explain")]; assert (s["state"], s["evidence_score"]) == ("practicing", 1)
+
+
+def test_m2(tmp_path):
+    g, _ = mini(tmp_path); s = compute_mastery(g, {"attempts": [att("ai:softmax-01"), att("ai:softmax-02", at="2026-01-02")]})[("concept:softmax", "explain")]; assert (s["state"], s["evidence_score"], s["confidence"]) == ("mastered", 3, "medium")
+
+
+def test_m3(tmp_path):
+    g, _ = mini(tmp_path); s = compute_mastery(g, {"attempts": [att("ai:algebra-01"), att("ai:algebra-02", at="2026-01-02")]})[("concept:algebra", "explain")]; assert (s["state"], s["evidence_score"], s["confidence"]) == ("mastered", 4, "high")
+
+
+def test_m4(tmp_path):
+    g, _ = mini(tmp_path); s = compute_mastery(g, {"attempts": [att("ai:algebra-01", hinted=True), att("ai:algebra-02", hinted=True, at="2026-01-02")]})[("concept:algebra", "explain")]; assert (s["state"], s["evidence_score"]) == ("practicing", 0)
+
+
+def test_m5(tmp_path):
+    g, _ = mini(tmp_path); a = [att("ai:algebra-01"), att("ai:algebra-02", at="2")]; assert compute_mastery(g, {"attempts": a})[("concept:algebra", "explain")]["state"] == "mastered"; a.append(att("ai:algebra-01", False, at="3")); assert compute_mastery(g, {"attempts": a})[("concept:algebra", "explain")]["state"] == "needs_review"; a.append(att("ai:algebra-01", at="4")); assert compute_mastery(g, {"attempts": a})[("concept:algebra", "explain")]["state"] == "mastered"
+
+
+def test_m6(tmp_path):
+    g, _ = mini(tmp_path); assert compute_mastery(g, {"self_reports": [{"unit": "concept:softmax", "familiarity": 3, "at": "1"}]})[("concept:softmax", "explain")]["state"] == "claimed"
+
+
+def test_m7(tmp_path):
+    g, _ = mini(tmp_path); a = [att("ai:algebra-01", at=str(n)) for n in range(1, 4)] + [att("ai:algebra-02", at="4"), att("ai:softmax-01", at="5"), att("ai:softmax-02", at="6")]; final = compute_mastery(g, {"attempts": a}); [assert_same_prefix(g, a[:n]) for n in range(1, 7)]; assert final == compute_mastery(g, {"attempts": list(a)})
+
+
+def assert_same_prefix(g, attempts): assert compute_mastery(g, {"attempts": attempts}) == compute_mastery(g, {"attempts": list(attempts)})
+
+
+def test_m8(tmp_path):
+    g, _ = mini(tmp_path); assert compute_mastery(g, {"self_reports": [{"unit": "concept:softmax", "familiarity": 2, "at": "1"}], "lab_events": [{"lab": "x"}]})[("concept:softmax", "explain")]["state"] == "unknown"
+
+
+def test_m9(tmp_path):
+    g, _ = mini(tmp_path); learner = {"attempts": [att("ai:softmax-01"), att("ai:softmax-02", at="2026-01-02")]}; assert compute_mastery(g, learner)[("concept:softmax", "recognize")]["state"] == "unknown"; skip = plan(g, learner, [{"unit": "concept:softmax", "dimension": "recognize"}])["skipped"][0]; assert skip == {"unit": "concept:softmax", "dimension": "recognize", "reason": "implied_by_higher_dimension", "implied_by": "concept:softmax@explain", "evidence": {"evidence_score": 3, "items": ["ai:softmax-01", "ai:softmax-02"], "last_attempt_at": "2026-01-02"}}
+
+
+# 04_LEARNING_ENGINE.md §8.2
+def test_p1(tmp_path):
+    g, _ = pg(tmp_path, {x: ["recognize", "explain"] for x in "abc"}, [("b", "a", "explain", "explain", None, "verified", "PREREQUISITE_OF"), ("c", "b", "explain", "explain", None, "verified", "PREREQUISITE_OF")], name="p1"); assert [x["unit"] for x in plan(g, {}, [{"unit": "concept:a", "dimension": "explain"}])["steps"]] == ["concept:c", "concept:b", "concept:a"]
+
+
+def test_p2(tmp_path):
+    g, _ = pg(tmp_path, {x: ["recognize", "explain"] for x in "abc"}, [("b", "a", "explain", "explain", None, "verified", "PREREQUISITE_OF"), ("c", "b", "explain", "explain", None, "verified", "PREREQUISITE_OF")], name="p2"); out = plan(g, {"attempts": mastered("b")}, [{"unit": "concept:a", "dimension": "explain"}]); assert [x["unit"] for x in out["steps"]] == ["concept:a"] and out["skipped"][0]["evidence"]["items"] == [iid("b", "explain", 1), iid("b", "explain", 2)]
+
+
+def test_p3(tmp_path):
+    r = [("b", "a", "explain", "explain", None, "verified", "PREREQUISITE_OF"), ("c", "a", "explain", "explain", None, "verified", "PREREQUISITE_OF"), ("d", "b", "explain", "explain", None, "verified", "PREREQUISITE_OF"), ("d", "c", "explain", "explain", None, "verified", "PREREQUISITE_OF")]; g, _ = pg(tmp_path, {x: ["recognize", "explain"] for x in "abcd"}, r, name="p3"); assert [x["unit"] for x in plan(g, {}, [{"unit": "concept:a", "dimension": "explain"}])["steps"]] == ["concept:d", "concept:b", "concept:c", "concept:a"]
+
+
+def test_p4(tmp_path):
+    r = [("b", "a", "explain", "explain", None, "verified", "PREREQUISITE_OF"), ("c", "b", "explain", "explain", None, "verified", "PREREQUISITE_OF")]; g, _ = pg(tmp_path, {x: ["recognize", "explain"] for x in "abc"}, r, name="p4"); out = plan(g, {"self_reports": [{"unit": "concept:b", "familiarity": 3, "at": "1"}]}, [{"unit": "concept:a", "dimension": "explain"}]); assert [(x["action"], x["unit"]) for x in out["steps"]] == [("diagnose", "concept:b"), ("learn", "concept:a")]
+
+
+def test_p5(tmp_path):
+    r = [("b", "a", "explain", "explain", None, "verified", "PREREQUISITE_OF"), ("c", "b", "explain", "explain", None, "verified", "PREREQUISITE_OF")]; g, _ = pg(tmp_path, {x: ["recognize", "explain"] for x in "abc"}, r, name="p5"); out = plan(g, {"attempts": [att(iid("b", "explain", 1), False), att(iid("b", "explain", 2), at="2")]}, [{"unit": "concept:a", "dimension": "explain"}]); assert [(x["action"], x["unit"]) for x in out["steps"]] == [("learn", "concept:c"), ("learn", "concept:b"), ("learn", "concept:a")]
+
+
+def test_p6(tmp_path):
+    r = [("b", "a", "recognize", "recognize", "route", "verified", "PREREQUISITE_OF"), ("c", "a", "recognize", "recognize", "route", "verified", "PREREQUISITE_OF")]; g, _ = pg(tmp_path, {x: ["recognize", "explain"] for x in "abc"}, r, minutes={("b", "recognize"): 20, ("c", "recognize"): 50}, name="p6"); target = [{"unit": "concept:a", "dimension": "recognize"}]; base = plan(g, {}, target); assert base["choices"] == [{"group": "concept:a@recognize#route", "chosen": "concept:b", "alternatives": [{"unit": "concept:b", "dimension": "recognize", "claim": "clm:relation-1", "cost": 20}, {"unit": "concept:c", "dimension": "recognize", "claim": "clm:relation-2", "cost": 50}]}]; assert plan(g, {"attempts": mastered("b", "recognize")}, target)["choices"][0]["alternatives"][0]["cost"] == 0; assert plan(g, {}, target, {"prefer": {"concept:a@recognize#route": "concept:c"}})["choices"][0]["chosen"] == "concept:c"
+
+
+def test_p7(tmp_path):
+    u = {x: ["recognize", "explain"] for x in ("softmax", "temperature", "variance")}; u["sdpa"] = ["recognize", "explain", "derive"]; r = [("softmax", "sdpa", "explain", "explain", None, "verified", "PREREQUISITE_OF"), ("temperature", "sdpa", "derive", "explain", None, "verified", "PREREQUISITE_OF"), ("variance", "sdpa", "derive", "explain", None, "verified", "PREREQUISITE_OF")]; g, _ = pg(tmp_path, u, r, name="p7"); e = plan(g, {}, [{"unit": "concept:sdpa", "dimension": "explain"}]); d = plan(g, {}, [{"unit": "concept:sdpa", "dimension": "derive"}]); assert {x["unit"] for x in e["steps"]} == {"concept:softmax", "concept:sdpa"} and {x["unit"] for x in d["steps"]} >= {"concept:softmax", "concept:temperature", "concept:variance", "concept:sdpa"}
+
+
+def test_p8(tmp_path):
+    r = [("x", "a", "explain", "explain", None, "verified", "PREREQUISITE_OF"), ("y", "a", "explain", "explain", None, "verified", "PREREQUISITE_OF"), ("x", "y", "explain", "explain", None, "verified", "RECOMMENDED_BEFORE")]; g, _ = pg(tmp_path, {x: ["recognize", "explain"] for x in "axy"}, r, name="p8"); units = [x["unit"] for x in plan(g, {}, [{"unit": "concept:a", "dimension": "explain"}], {"include_recommended": True})["steps"]]; assert units.index("concept:x") < units.index("concept:y"); cyc, _ = pg(tmp_path, {x: ["recognize", "explain"] for x in "xy"}, [("y", "x", "explain", "explain", None, "verified", "PREREQUISITE_OF"), ("x", "y", "explain", "explain", None, "verified", "RECOMMENDED_BEFORE")], name="p8cyc"); assert [x["unit"] for x in plan(cyc, {}, [{"unit": "concept:x", "dimension": "explain"}], {"include_recommended": True})["steps"]] == ["concept:y", "concept:x"]
+
+
+def test_p9(tmp_path):
+    r = [("b", "a", "explain", "explain", None, "proposed", "PREREQUISITE_OF"), ("c", "a", "explain", "explain", None, "disputed", "PREREQUISITE_OF")]; g, _ = pg(tmp_path, {x: ["recognize", "explain"] for x in "abc"}, r, name="p9"); out = plan(g, {}, [{"unit": "concept:a", "dimension": "explain"}]); assert [x["unit"] for x in out["steps"]] == ["concept:a"] and {(x["claim"], x["status"]) for x in out["warnings"] if x["code"] == "excluded_claim"} == {("clm:relation-1", "proposed"), ("clm:relation-2", "disputed")}
+
+
+def test_p10(tmp_path):
+    g, raw = pg(tmp_path, {x: ["recognize", "explain"] for x in "abc"}, [("b", "a", "explain", "explain", None, "verified", "PREREQUISITE_OF"), ("c", "b", "explain", "explain", None, "verified", "PREREQUISITE_OF")], name="p10"); shuffled = copy.deepcopy(raw); [shuffled[k].reverse() for k in ("concepts", "resources", "assessment_items", "claims")]; g2 = load(tmp_path, shuffled, "p10s"); target = [{"unit": "concept:a", "dimension": "explain"}]; assert graph_version(g) == graph_version(g2) and json.dumps(plan(g, {}, target), sort_keys=True) == json.dumps(plan(g2, {}, target), sort_keys=True)
+
+
+def test_p11(tmp_path):
+    g, _ = pg(tmp_path, {x: ["recognize", "explain"] for x in "ab"}, [("b", "a", "explain", "explain", None, "verified", "PREREQUISITE_OF")], name="p11"); out = plan(g, {"overrides": [{"unit": "concept:b", "dimension": "explain", "action": "skip", "at": "1"}]}, [{"unit": "concept:a", "dimension": "explain"}]); assert out["skipped"] == [{"unit": "concept:b", "dimension": "explain", "reason": "override"}] and any(x["code"] == "overridden" for x in out["warnings"])
+
+
+def test_p12(tmp_path):
+    g, _ = pg(tmp_path, {"a": ["recognize", "explain"]}, name="p12");
+    with pytest.raises(ValueError, match="E_TARGET"): plan(g, {}, [{"unit": "concept:nope", "dimension": "explain"}])
+    with pytest.raises(ValueError, match="E_TARGET"): plan(g, {}, [{"unit": "concept:a", "dimension": "derive"}])
+
+
+def test_p13(tmp_path):
+    g, _ = pg(tmp_path, {"merge": ["recognize", "explain"], "bare": ["recognize", "explain"]}, items={("merge", "recognize"): 0, ("merge", "explain"): 2, ("bare", "recognize"): 0, ("bare", "explain"): 0}, name="p13"); refs = {x["ref"] for x in plan(g, {}, [{"unit": "concept:merge", "dimension": "explain"}, {"unit": "concept:bare", "dimension": "explain"}])["warnings"] if x["code"] == "unassessable"}; assert "concept:merge@explain" not in refs and "concept:bare@explain" in refs
+
+
+def test_p14(tmp_path):
+    r = [("b", "a", "explain", "explain", None, "verified", "PREREQUISITE_OF"), ("c", "a", "explain", "explain", "route", "verified", "PREREQUISITE_OF"), ("d", "a", "explain", "explain", "route", "verified", "PREREQUISITE_OF")]; g, _ = pg(tmp_path, {x: ["recognize", "explain"] for x in "abcd"}, r, minutes={("c", "explain"): 10, ("d", "explain"): 50}, name="p14"); learner = {"attempts": mastered("b") + mastered("c") + [att(iid("a", "explain", 1), False, at="3"), att(iid("a", "explain", 1), False, at="4")]}; out = plan(g, learner, [{"unit": "concept:a", "dimension": "explain"}]); reviews = [x for x in out["steps"] if x["action"] == "review"]; assert {x["unit"] for x in reviews} == {"concept:b", "concept:c"} and all(x["why"][0]["via"] in {"clm:relation-1", "clm:relation-2"} for x in reviews)
+
+
+def test_requirement_groups_match_exact_dimension_once(tmp_path):
+    r = [("b", "a", "explain", "explain", "route", "verified", "PREREQUISITE_OF"), ("c", "a", "explain", "explain", "route", "verified", "PREREQUISITE_OF")]
+    g, _ = pg(tmp_path, {"a": ["recognize", "explain", "derive"], "b": ["recognize", "explain"], "c": ["recognize", "explain"]}, r, name="exact")
+    out = plan(g, {}, [{"unit": "concept:a", "dimension": "derive"}])
+    assert [x["group"] for x in out["choices"]] == ["concept:a@explain#route"]
+
+
+def test_or_cost_counts_shared_descendant_once(tmp_path):
+    r = [("b", "a", "recognize", "recognize", "route", "verified", "PREREQUISITE_OF"), ("c", "a", "recognize", "recognize", "route", "verified", "PREREQUISITE_OF"), ("d", "b", "recognize", "recognize", None, "verified", "PREREQUISITE_OF"), ("e", "b", "recognize", "recognize", None, "verified", "PREREQUISITE_OF"), ("f", "d", "recognize", "recognize", None, "verified", "PREREQUISITE_OF"), ("f", "e", "recognize", "recognize", None, "verified", "PREREQUISITE_OF")]
+    g, _ = pg(tmp_path, {x: ["recognize", "explain"] for x in "abcdef"}, r, minutes={("b", "recognize"): 10, ("c", "recognize"): 50, ("d", "recognize"): 3, ("e", "recognize"): 4, ("f", "recognize"): 7}, name="cost-set")
+    assert plan(g, {}, [{"unit": "concept:a", "dimension": "recognize"}])["choices"][0]["alternatives"][0]["cost"] == 24
+
+
+def test_assumed_background_warning_includes_items(tmp_path):
+    g, raw = pg(tmp_path, {"a": ["recognize", "explain"]}, name="background")
+    raw["graph"]["assumed_background"] = ["algebra", "logs"]
+    warning = next(x for x in plan(load(tmp_path, raw, "background-items"), {}, [{"unit": "concept:a", "dimension": "explain"}])["warnings"] if x["code"] == "assumed_background")
+    assert warning == {"code": "assumed_background", "ref": "graph", "items": ["algebra", "logs"]}
+
+
+def qgraph(tmp_path, text, quote, digest=None, name="q"):
+    html = tmp_path / f"{name}.html"; html.write_text(text)
+    _, raw = mini(tmp_path, name=f"{name}0"); raw["claims"] = [raw["claims"][0]]; raw["sources"][0]["fulltext_url"] = html.as_uri(); raw["claims"][0]["evidence"][0]["quote"] = quote
+    if digest: raw["sources"][0]["content_sha256"] = digest
+    return load(tmp_path, raw, f"{name}1")
+
+
+def test_quote_found(tmp_path): assert check_quotes(qgraph(tmp_path, "<p>Exact source text.</p>", "Exact source text."), tmp_path / "cache")[0]["status"] == "found"
+def test_quote_not_found(tmp_path): assert check_quotes(qgraph(tmp_path, "<p>Source text.</p>", "Absent text."), tmp_path / "cache")[0]["status"] == "not_found"
+def test_quote_ligature_curly_soft_hyphen(tmp_path): assert check_quotes(qgraph(tmp_path, "<p>The ﬁeld’s co\u00adoperate.</p>", "The field's cooperate."), tmp_path / "cache")[0]["status"] == "found"
+def test_quote_hyphenated_line_breaks(tmp_path):
+    assert check_quotes(qgraph(tmp_path, "<p>hyphen-\nated</p>", "hyphenated", name="joined"), tmp_path / "cache")[0]["status"] == "found"
+    assert check_quotes(qgraph(tmp_path, "<p>data-\nefficient</p>", "data-efficient", name="kept"), tmp_path / "cache")[0]["status"] == "found"
+def test_quote_citation_marker_inside_inline_tags(tmp_path): assert check_quotes(qgraph(tmp_path, '<p>We employ a residual connection <cite>[<a href="#b11">11</a>]</cite> around each; co<span>operate</span>.</p>', "We employ a residual connection [11] around each; cooperate."), tmp_path / "cache")[0]["status"] == "found"
+def test_quote_offline_cache_miss(tmp_path): assert check_quotes(qgraph(tmp_path, "<p>Unused.</p>", "Unused."), tmp_path / "empty", offline=True)[0]["status"] == "no_text"
+def test_quote_source_changed_and_quote_result(tmp_path): assert [x["status"] for x in check_quotes(qgraph(tmp_path, "<p>Still here.</p>", "Still here.", "0" * 64), tmp_path / "cache")] == ["source_changed", "found"]
+
+
+def test_t18_p15_seed_if_present():
+    root = HERE.parent; seed, learner, expected = root / "data/seed/seed_graph.yaml", root / "data/seed/learner_e2e.yaml", root / "data/seed/expected_plan_e2e.json"
+    if not seed.exists(): pytest.skip("seed graph not present")
+    g = load_graph(seed); assert not [x for x in validate(g) if x.code.startswith("G")]
+    if not (learner.exists() and expected.exists()): pytest.skip("e2e fixtures not present")
+    assert plan(g, yaml.safe_load(learner.read_text()), g["entities"]["lo:vit-attention-math"]["targets"]) == json.loads(expected.read_text())

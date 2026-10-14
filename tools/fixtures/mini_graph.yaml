@@ -1,0 +1,129 @@
+schema_version: 1
+graph:
+  id: mini-atlas
+  name: Mini Atlas
+  description: Minimal deterministic planning graph
+concepts:
+  - id: concept:algebra
+    name: Algebra
+    summary: Basic symbolic algebra.
+    dimensions: [recognize, explain]
+  - id: concept:softmax
+    name: Softmax
+    summary: A normalized exponential function.
+    dimensions: [recognize, explain]
+methods:
+  - id: method:attention
+    name: Attention
+    summary: Weighted attention scoring.
+    dimensions: [recognize, explain, derive]
+objectives:
+  - id: lo:attention-derive
+    name: Derive attention
+    targets:
+      - unit: method:attention
+        dimension: derive
+resources:
+  - id: res:algebra-notes
+    name: Algebra notes
+    url: https://example.invalid/algebra
+    format: text
+    explains:
+      - unit: concept:algebra
+        dimensions: [recognize, explain]
+  - id: res:softmax-notes
+    name: Softmax notes
+    url: https://example.invalid/softmax
+    format: text
+    explains:
+      - unit: concept:softmax
+        dimensions: [recognize, explain]
+  - id: res:attention-notes
+    name: Attention notes
+    url: https://example.invalid/attention
+    format: text
+    explains:
+      - unit: method:attention
+        dimensions: [recognize, explain, derive]
+assessment_items:
+  - id: ai:algebra-01
+    name: Algebra one
+    assesses: {unit: concept:algebra, dimension: explain}
+    kind: numeric
+    prompt: What is one plus one?
+    answer: 2
+    tolerance: 0
+    rationale: Arithmetic.
+  - id: ai:algebra-02
+    name: Algebra two
+    assesses: {unit: concept:algebra, dimension: explain}
+    kind: numeric
+    prompt: What is two plus two?
+    answer: 4
+    tolerance: 0
+    rationale: Arithmetic.
+  - id: ai:softmax-01
+    name: Softmax one
+    assesses: {unit: concept:softmax, dimension: explain}
+    kind: mcq
+    prompt: Is softmax normalized?
+    choices: [No, Yes]
+    answer: 1
+    rationale: Yes.
+  - id: ai:softmax-02
+    name: Softmax two
+    assesses: {unit: concept:softmax, dimension: explain}
+    kind: numeric
+    prompt: Does softmax use exponentials?
+    answer: 1
+    tolerance: 0
+    rationale: Yes.
+  - id: ai:attention-01
+    name: Attention one
+    assesses: {unit: method:attention, dimension: derive}
+    kind: numeric
+    prompt: Derive an attention score.
+    answer: 1
+    tolerance: 0
+    rationale: Minimal fixture answer.
+  - id: ai:attention-02
+    name: Attention two
+    assesses: {unit: method:attention, dimension: derive}
+    kind: numeric
+    prompt: Derive a second attention score.
+    answer: 1
+    tolerance: 0
+    rationale: Minimal fixture answer.
+sources:
+  - id: src:mini:notes
+    name: Mini notes
+    kind: web_page
+    url: https://example.invalid/notes
+    retrieved_at: 2026-10-15
+claims:
+  - id: clm:algebra-prereq-softmax
+    predicate: PREREQUISITE_OF
+    subject: concept:algebra
+    object: concept:softmax
+    qualifiers: {required_dimension: explain, for_dimension: explain}
+    status: verified
+    confidence: high
+    verification: {method: review, by: curator, at: 2026-10-15}
+    evidence:
+      - source: src:mini:notes
+        type: definitional_dependency
+        stance: supports
+        quote: Algebra supports this explanation.
+  - id: clm:softmax-prereq-attention
+    predicate: PREREQUISITE_OF
+    subject: concept:softmax
+    object: method:attention
+    qualifiers: {required_dimension: explain, for_dimension: derive}
+    status: verified
+    confidence: high
+    verification: {method: review, by: curator, at: 2026-10-15}
+    evidence:
+      - source: src:mini:notes
+        type: definitional_dependency
+        stance: supports
+        quote: Softmax supports attention derivation.
