@@ -1,0 +1,5 @@
+---
+import Base from '../layouts/Base.astro'; import { getGraph } from '../lib/graph'; import { getCollection } from 'astro:content';
+const g=getGraph(); const w=await getCollection('wiki'); const byEntity=Object.fromEntries(w.map(x=>[x.data.entity,x.data.status]));
+---
+<Base title="커버리지 | AIXON" description="분야별 지식과 Wiki 커버리지"><h1>Knowledge Coverage</h1><table><thead><tr><th>분야</th><th>엔티티</th><th>Wiki</th><th>검증 Claim</th><th>검토 Claim</th></tr></thead><tbody>{Object.values(g.fields).map((f:any)=>{const ids=g.memberships[f.id]||[];const cs=Object.values(g.claims).filter((c:any)=>ids.includes(c.subject)||ids.includes(c.object));return <tr><td>{f.name}</td><td>{ids.length}</td><td>{ids.filter(id=>byEntity[id]).length}/{ids.length}</td><td>{cs.filter((c:any)=>c.status==='verified').length}</td><td>{cs.filter((c:any)=>c.review?.decision==='approve').length}</td></tr>})}</tbody></table><h2>Wiki가 없는 KU</h2><ul>{Object.keys(g.entities).filter(id=>['Concept','Method','Model'].includes(g.types[id])&&!byEntity[id]).map(id=><li>{g.entities[id].name}</li>)}</ul></Base>

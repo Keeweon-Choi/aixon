@@ -1,0 +1,5 @@
+---
+import Base from '../layouts/Base.astro'; import { getGraph, entityPath } from '../lib/graph'; import { url } from '../lib/url';
+const g = getGraph(); const top = Object.values(g.fields).filter((f: any) => !(f.parents || []).length); const entities = Object.keys(g.entities).filter(id => !['Claim','Source'].includes(g.types[id]));
+---
+<Base title="AIXON | AI 지식 지도" description="AI 연구 지식 그래프와 검증 가능한 Wiki"><h1>AI 지식 지도, AIXON</h1><p>연구 관계와 교육용 설명을 함께 탐색하는 정적 Knowledge Atlas입니다.</p><h2>상위 분야</h2><ul>{top.map((f:any) => <li><a href={url(entityPath(f.id, g))}>{f.name}</a> · {g.memberships[f.id]?.length || 0}개 노드</li>)}</ul><h2>커버리지</h2><p>{entities.length}개 엔티티 · {Object.keys(g.claims).length}개 공개 관계</p><h2>대표 Wiki</h2><a href={url('wiki/scaled-dot-product-attention/')}>Scaled Dot-Product Attention 읽기</a></Base>
