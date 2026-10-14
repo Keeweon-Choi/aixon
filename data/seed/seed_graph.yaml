@@ -12,120 +12,120 @@ graph:
 fields:
 - id: field:artificial-intelligence
   name: 인공지능
-  summary: 연구 주제를 분류하는 학술 분야다.
-  summary_by: agent:codex
+  summary: 지각·추론·학습·언어 같은 지적 능력을 계산으로 구현하는 방법을 연구하는 분야다.
+  summary_by: agent:claude-opus-5-5
   parents: []
   external_ids:
     openalex: https://openalex.org/subfields/1702
 - id: field:machine-learning
   name: 기계학습
-  summary: 연구 주제를 분류하는 학술 분야다.
-  summary_by: agent:codex
+  summary: 명시적인 규칙 대신 데이터에서 패턴을 학습해 예측이나 결정을 하는 알고리즘을 연구하는 인공지능의 한 분야다.
+  summary_by: agent:claude-opus-5-5
   parents:
   - field:artificial-intelligence
 - id: field:deep-learning
   name: 딥러닝
-  summary: 연구 주제를 분류하는 학술 분야다.
-  summary_by: agent:codex
+  summary: 여러 층으로 쌓은 신경망으로 데이터의 표현을 단계적으로 학습하는 기계학습 방법을 다룬다.
+  summary_by: agent:claude-opus-5-5
   parents:
   - field:machine-learning
 - id: field:representation-learning
   name: 표현 학습
-  summary: 연구 주제를 분류하는 학술 분야다.
-  summary_by: agent:codex
+  summary: 원시 데이터에서 과제에 유용한 특징(표현)을 사람이 설계하지 않고 자동으로 학습하는 방법을 다룬다.
+  summary_by: agent:claude-opus-5-5
   parents:
   - field:deep-learning
 - id: field:computer-vision
   name: 컴퓨터 비전
-  summary: 연구 주제를 분류하는 학술 분야다.
-  summary_by: agent:codex
+  summary: 이미지와 영상에서 물체·장면·움직임 같은 정보를 인식하고 이해하는 방법을 연구하는 분야다.
+  summary_by: agent:claude-opus-5-5
   parents:
   - field:artificial-intelligence
   external_ids:
     openalex: https://openalex.org/subfields/1707
 - id: field:image-classification
   name: 이미지 분류
-  summary: 연구 주제를 분류하는 학술 분야다.
-  summary_by: agent:codex
+  summary: 이미지 한 장 전체에 미리 정한 범주 중 하나를 붙이는 과제다.
+  summary_by: agent:claude-opus-5-5
   parents:
   - field:computer-vision
 - id: field:vision-transformers
   name: 비전 트랜스포머
-  summary: 연구 주제를 분류하는 학술 분야다.
-  summary_by: agent:codex
+  summary: 이미지를 패치 시퀀스로 바꿔 Transformer의 self-attention으로 처리하는 비전 모델 계열을 다룬다.
+  summary_by: agent:claude-opus-5-5
   parents:
   - field:computer-vision
   - field:deep-learning
 - id: field:natural-language-processing
   name: 자연어 처리
-  summary: 연구 주제를 분류하는 학술 분야다.
-  summary_by: agent:codex
+  summary: 사람의 언어로 된 텍스트와 음성을 컴퓨터가 이해하고 생성하도록 하는 방법을 연구하는 분야다.
+  summary_by: agent:claude-opus-5-5
   parents:
   - field:artificial-intelligence
   external_ids:
     openalex: https://openalex.org/T10181
 - id: field:machine-translation
   name: 기계 번역
-  summary: 연구 주제를 분류하는 학술 분야다.
-  summary_by: agent:codex
+  summary: 한 언어의 문장을 다른 언어의 같은 뜻 문장으로 자동 번역하는 과제다.
+  summary_by: agent:claude-opus-5-5
   parents:
   - field:natural-language-processing
 problems:
 - id: problem:overfitting-large-networks
-  name: overfitting large networks
-  summary: 모델 학습과 설계에서 다루는 연구 문제다.
-  summary_by: agent:codex
-  question: overfitting large networks을 어떻게 해결할 수 있는가?
+  name: 큰 신경망의 과적합
+  summary: 파라미터가 많은 신경망이 학습 데이터에만 맞춰져 새 데이터에서 성능이 떨어지는 문제다.
+  summary_by: agent:claude-opus-5-5
+  question: 큰 신경망이 학습 데이터를 외우지 않고 일반화하게 하려면 어떻게 해야 하는가?
 - id: problem:depth-vs-accuracy
-  name: depth vs accuracy
-  summary: 모델 학습과 설계에서 다루는 연구 문제다.
-  summary_by: agent:codex
-  question: depth vs accuracy을 어떻게 해결할 수 있는가?
+  name: 네트워크 깊이와 정확도
+  summary: 합성곱 신경망을 더 깊게 쌓으면 인식 정확도가 어떻게 달라지는지에 관한 문제다.
+  summary_by: agent:claude-opus-5-5
+  question: 네트워크를 더 깊게 만들면 정확도가 좋아지는가, 어떻게 깊게 만들 수 있는가?
 - id: problem:internal-covariate-shift
-  name: internal covariate shift
-  summary: 모델 학습과 설계에서 다루는 연구 문제다.
-  summary_by: agent:codex
-  question: internal covariate shift을 어떻게 해결할 수 있는가?
+  name: 내부 공변량 이동
+  summary: 학습 중 앞쪽 층의 파라미터가 바뀌면서 각 층 입력의 분포가 계속 달라지는 현상이다. Batch Normalization 논문은 이를 학습을 어렵게 하는 원인으로 제시했지만, 이후 연구는 이 설명에 반론을 냈다.
+  summary_by: agent:claude-opus-5-5
+  question: 층 입력 분포의 변화가 학습을 어렵게 하는가, 그렇다면 어떻게 줄일 수 있는가?
 - id: problem:degradation-in-deep-networks
-  name: degradation in deep networks
-  summary: 모델 학습과 설계에서 다루는 연구 문제다.
-  summary_by: agent:codex
-  question: degradation in deep networks을 어떻게 해결할 수 있는가?
+  name: 깊은 네트워크의 성능 저하
+  summary: 층을 더 쌓았을 때 과적합이 아닌데도 학습 오차 자체가 커지는 현상으로, ResNet 논문이 다룬 문제다.
+  summary_by: agent:claude-opus-5-5
+  question: 층을 더 쌓아도 학습 오차가 커지지 않게 하려면 어떻게 해야 하는가?
 - id: problem:fixed-length-bottleneck
-  name: fixed length bottleneck
-  summary: 모델 학습과 설계에서 다루는 연구 문제다.
-  summary_by: agent:codex
-  question: fixed length bottleneck을 어떻게 해결할 수 있는가?
+  name: 고정 길이 벡터 병목
+  summary: 인코더–디코더 번역 모델이 문장 전체를 고정 길이 벡터 하나로 압축해야 해서 긴 문장에서 성능이 떨어지는 문제다.
+  summary_by: agent:claude-opus-5-5
+  question: 문장 전체를 벡터 하나에 담지 않고 번역할 수 있는가?
 - id: problem:sequential-computation-in-rnns
-  name: sequential computation in rnns
-  summary: 모델 학습과 설계에서 다루는 연구 문제다.
-  summary_by: agent:codex
-  question: sequential computation in rnns을 어떻게 해결할 수 있는가?
+  name: RNN의 순차 계산
+  summary: 순환 신경망은 시간 단계마다 이전 상태가 필요해 한 학습 예제 안에서 병렬 계산이 어렵다는 문제다.
+  summary_by: agent:claude-opus-5-5
+  question: 순서대로 계산하지 않고도 시퀀스를 모델링할 수 있는가?
 - id: problem:batch-dependence-of-normalization
-  name: batch dependence of normalization
-  summary: 모델 학습과 설계에서 다루는 연구 문제다.
-  summary_by: agent:codex
-  question: batch dependence of normalization을 어떻게 해결할 수 있는가?
+  name: 정규화의 배치 의존성
+  summary: Batch Normalization의 효과가 미니배치 크기에 의존하고 순환 신경망에 적용하기 어렵다는 문제다.
+  summary_by: agent:claude-opus-5-5
+  question: 미니배치 통계 없이 층 입력을 정규화할 수 있는가?
 - id: problem:convolution-free-image-recognition
-  name: convolution free image recognition
-  summary: 모델 학습과 설계에서 다루는 연구 문제다.
-  summary_by: agent:codex
-  question: convolution free image recognition을 어떻게 해결할 수 있는가?
+  name: 합성곱 없는 이미지 인식
+  summary: 합성곱 층에 의존하지 않고 Transformer만으로 이미지 인식 성능을 낼 수 있는지에 관한 문제다.
+  summary_by: agent:claude-opus-5-5
+  question: 합성곱 없이 attention만으로 이미지를 인식할 수 있는가?
 - id: problem:vit-data-hunger
-  name: vit data hunger
-  summary: 모델 학습과 설계에서 다루는 연구 문제다.
-  summary_by: agent:codex
-  question: vit data hunger을 어떻게 해결할 수 있는가?
+  name: ViT의 대규모 데이터 의존
+  summary: ViT는 CNN보다 귀납적 편향이 약해 ImageNet 규모 데이터만으로 학습하면 비슷한 크기의 ResNet보다 정확도가 낮고, 아주 큰 데이터셋으로 사전학습해야 성능이 난다는 문제다.
+  summary_by: agent:claude-opus-5-5
+  question: 대규모 사전학습 데이터 없이 ViT를 잘 학습시킬 수 있는가?
 - id: problem:quadratic-attention-cost-high-resolution
-  name: quadratic attention cost high resolution
-  summary: 모델 학습과 설계에서 다루는 연구 문제다.
-  summary_by: agent:codex
-  question: quadratic attention cost high resolution을 어떻게 해결할 수 있는가?
+  name: 고해상도에서 attention의 이차 비용
+  summary: 전역 self-attention의 계산량이 토큰 수의 제곱에 비례해, 고해상도 이미지나 밀집 예측 과제에서 비용이 너무 커지는 문제다.
+  summary_by: agent:claude-opus-5-5
+  question: 고해상도 이미지에서 attention 계산량을 이미지 크기에 선형으로 줄일 수 있는가?
 concepts:
 - id: concept:dot-product
   name: 내적
-  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
-  summary_by: agent:codex
+  summary: 같은 길이의 두 벡터에서 같은 위치의 성분끼리 곱해 모두 더한 값으로, 두 벡터가 얼마나 같은 방향을 가리키는지 나타낸다.
+  summary_by: agent:claude-opus-5-5
   dimensions: &id001
   - recognize
   - explain
@@ -135,15 +135,15 @@ concepts:
     explain: 15
 - id: concept:matrix-multiplication
   name: 행렬 곱셈
-  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
-  summary_by: agent:codex
+  summary: 앞 행렬의 각 행과 뒤 행렬의 각 열의 내적을 모아 새 행렬을 만드는 연산으로, 신경망의 선형 변환을 한꺼번에 계산한다.
+  summary_by: agent:claude-opus-5-5
   dimensions: *id001
   estimated_minutes:
     explain: 20
 - id: concept:softmax
   name: Softmax
-  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
-  summary_by: agent:codex
+  summary: 실수 벡터(logit)의 각 값을 지수로 바꾼 뒤 그 합으로 나눠, 모든 값이 양수이고 합이 1인 확률 분포로 만드는 함수다.
+  summary_by: agent:claude-opus-5-5
   dimensions: &id003
   - recognize
   - explain
@@ -155,8 +155,8 @@ concepts:
     derive: 25
 - id: concept:softmax-temperature
   name: Softmax 온도
-  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
-  summary_by: agent:codex
+  summary: logit을 온도 T로 나눈 뒤 softmax를 취해, T가 작으면 분포가 뾰족해지고 크면 고르게 퍼지도록 조절하는 방법이다.
+  summary_by: agent:claude-opus-5-5
   dimensions:
   - recognize
   - explain
@@ -166,8 +166,8 @@ concepts:
     explain: 20
 - id: concept:variance-of-sum
   name: 합의 분산
-  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
-  summary_by: agent:codex
+  summary: 서로 독립인 확률변수들의 합의 분산은 각 분산의 합과 같다는 성질로, 내적 q·k의 분산이 d_k에 비례하는 이유를 설명한다.
+  summary_by: agent:claude-opus-5-5
   dimensions:
   - recognize
   - explain
@@ -176,28 +176,28 @@ concepts:
     explain: 20
 - id: concept:token-embedding
   name: 토큰 임베딩
-  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
-  summary_by: agent:codex
+  summary: 단어나 이미지 패치 같은 이산적인 입력 단위를 학습 가능한 고정 길이 실수 벡터로 바꾼 것이다.
+  summary_by: agent:claude-opus-5-5
   dimensions: &id004
   - recognize
   - explain
 - id: concept:attention-mechanism
   name: Attention 메커니즘
-  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
-  summary_by: agent:codex
+  summary: 출력의 각 위치가 입력의 여러 위치를 서로 다른 비중으로 참고하도록, 관련도 점수로 가중합을 만드는 신경망 구성 방식이다.
+  summary_by: agent:claude-opus-5-5
   dimensions: &id002
   - recognize
   - explain
   - analyze
 - id: concept:inductive-bias
   name: 귀납적 편향
-  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
-  summary_by: agent:codex
+  summary: 데이터만으로는 정해지지 않는 부분을 메우려고 모델 구조나 학습 방법에 미리 넣어 둔 가정으로, CNN의 지역성과 이동 등변성이 예다.
+  summary_by: agent:claude-opus-5-5
   dimensions: *id002
 - id: concept:receptive-field
   name: 수용 영역
-  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
-  summary_by: agent:codex
+  summary: 신경망의 한 출력 단위가 영향을 받는 입력 영역의 범위로, 합성곱 층을 쌓을수록 넓어진다.
+  summary_by: agent:claude-opus-5-5
   dimensions:
   - recognize
   - explain
@@ -205,23 +205,23 @@ concepts:
 methods:
 - id: method:convolutional-layer
   name: 합성곱 층
-  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
-  summary_by: agent:codex
+  summary: 작은 필터를 입력 위로 옮겨 가며 같은 가중치로 지역 패턴을 계산하는 층으로, 지역 연결과 가중치 공유가 특징이다.
+  summary_by: agent:claude-opus-5-5
   dimensions: *id003
 - id: method:relu
   name: ReLU
-  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
-  summary_by: agent:codex
+  summary: 입력이 양수면 그대로, 음수면 0을 내보내는 활성화 함수 max(0, x)로, tanh보다 깊은 합성곱 신경망을 훨씬 빠르게 학습시킨다.
+  summary_by: agent:claude-opus-5-5
   dimensions: *id004
 - id: method:dropout
   name: Dropout
-  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
-  summary_by: agent:codex
+  summary: 학습 중 은닉 유닛을 무작위로 꺼서 유닛들이 서로에게 의존하지 않게 만드는 정규화 방법이다.
+  summary_by: agent:claude-opus-5-5
   dimensions: *id004
 - id: method:batch-normalization
   name: Batch Normalization
-  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
-  summary_by: agent:codex
+  summary: 미니배치의 평균과 분산으로 층 입력을 정규화한 뒤 학습 가능한 크기·이동 파라미터를 적용하는 방법이다.
+  summary_by: agent:claude-opus-5-5
   dimensions:
   - recognize
   - explain
@@ -229,21 +229,21 @@ methods:
   - analyze
 - id: method:layer-normalization
   name: Layer Normalization
-  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
-  summary_by: agent:codex
+  summary: 미니배치 대신 한 샘플 안의 은닉 유닛들의 평균과 분산으로 정규화하는 방법으로, 배치 크기와 무관해 RNN과 Transformer에 쓰인다.
+  summary_by: agent:claude-opus-5-5
   dimensions:
   - recognize
   - explain
   - derive
 - id: method:residual-connection
   name: 잔차 연결
-  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
-  summary_by: agent:codex
+  summary: 층의 입력을 출력에 그대로 더하는 지름길 연결로, 층이 잔차 F(x)만 학습하게 해 매우 깊은 네트워크의 학습을 돕는다.
+  summary_by: agent:claude-opus-5-5
   dimensions: *id002
 - id: method:additive-attention
   name: Additive Attention
-  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
-  summary_by: agent:codex
+  summary: query와 key를 작은 피드포워드 신경망에 함께 넣어 점수를 계산하는 attention으로, Bahdanau 등의 신경망 기계 번역 논문에서 제안되었다.
+  summary_by: agent:claude-opus-5-5
   dimensions:
   - recognize
   - explain
@@ -252,8 +252,8 @@ methods:
   - Bahdanau attention
 - id: method:scaled-dot-product-attention
   name: Scaled Dot-Product Attention
-  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
-  summary_by: agent:codex
+  summary: query와 key의 내적을 √d_k로 나눈 뒤 softmax로 가중치를 구해 value를 섞는 attention 연산으로, Transformer의 기본 부품이다.
+  summary_by: agent:claude-opus-5-5
   dimensions: *id003
   formula: \mathrm{Attention}(Q,K,V)=\mathrm{softmax}\left(\frac{QK^{\top}}{\sqrt{d_k}}\right)V
   estimated_minutes:
@@ -261,66 +261,66 @@ methods:
     derive: 30
 - id: method:multi-head-attention
   name: Multi-Head Attention
-  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
-  summary_by: agent:codex
+  summary: attention을 서로 다른 선형 투영 공간에서 여러 개 나란히 계산한 뒤 이어 붙여, 여러 종류의 관계를 동시에 보도록 한 방법이다.
+  summary_by: agent:claude-opus-5-5
   dimensions: *id001
   estimated_minutes:
     explain: 25
 - id: method:positional-encoding
   name: 위치 인코딩
-  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
-  summary_by: agent:codex
+  summary: 순서 정보가 없는 self-attention에 각 토큰의 위치를 알려 주려고 입력 임베딩에 더하는 위치별 벡터다.
+  summary_by: agent:claude-opus-5-5
   dimensions:
   - recognize
   - explain
   - derive
 - id: method:feed-forward-network
   name: 피드포워드 네트워크
-  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
-  summary_by: agent:codex
+  summary: Transformer 층 안에서 각 위치에 독립적으로, 같은 두 층짜리 완전연결 신경망을 적용하는 부분이다.
+  summary_by: agent:claude-opus-5-5
   dimensions: *id004
 - id: method:transformer-encoder-layer
   name: Transformer 인코더 층
-  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
-  summary_by: agent:codex
+  summary: multi-head self-attention과 위치별 피드포워드 네트워크를 잔차 연결과 층 정규화로 감싼 블록으로, Transformer 인코더·BERT·ViT가 이 블록을 쌓아 만든다.
+  summary_by: agent:claude-opus-5-5
   dimensions: *id001
 - id: method:patch-embedding
   name: 패치 임베딩
-  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
-  summary_by: agent:codex
+  summary: 이미지를 겹치지 않는 작은 패치로 자르고 각 패치를 펼쳐 선형 투영해 토큰 벡터로 만드는 방법으로, ViT의 입력 단계다.
+  summary_by: agent:claude-opus-5-5
   dimensions: *id001
 - id: method:class-token
   name: 클래스 토큰
-  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
-  summary_by: agent:codex
+  summary: 시퀀스 맨 앞에 붙이는 학습 가능한 특별 토큰으로, 마지막 층에서 이 토큰의 출력을 전체 입력의 표현으로 써서 분류한다.
+  summary_by: agent:claude-opus-5-5
   dimensions: *id004
   aliases:
   - '[CLS] token'
 - id: method:transfer-learning
   name: 전이학습
-  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
-  summary_by: agent:codex
+  summary: 큰 데이터셋이나 다른 과제에서 미리 학습한 모델을 목표 과제에 맞게 미세조정해 쓰는 방법이다.
+  summary_by: agent:claude-opus-5-5
   dimensions: *id002
 - id: method:knowledge-distillation
   name: 지식 증류
-  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
-  summary_by: agent:codex
+  summary: 큰 교사 모델의 출력 분포(soft target)를 작은 학생 모델이 따라 하도록 학습시켜 지식을 옮기는 방법이다.
+  summary_by: agent:claude-opus-5-5
   dimensions: *id004
 - id: method:distillation-token
   name: 증류 토큰
-  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
-  summary_by: agent:codex
+  summary: DeiT에서 클래스 토큰과 함께 넣는 추가 토큰으로, 교사 모델의 예측을 맞추도록 학습해 증류 신호를 전달한다.
+  summary_by: agent:claude-opus-5-5
   dimensions: *id004
 - id: method:shifted-window-attention
   name: Shifted Window Attention
-  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
-  summary_by: agent:codex
+  summary: 이미지를 겹치지 않는 창으로 나눠 창 안에서만 self-attention을 계산하고, 층마다 창 위치를 어긋나게 옮겨 창 사이를 연결하는 방법이다.
+  summary_by: agent:claude-opus-5-5
   dimensions: *id002
 models:
 - id: model:alexnet
   name: AlexNet
-  summary: 논문에서 제안하거나 평가한 모델 계열이다.
-  summary_by: agent:codex
+  summary: ILSVRC-2012 이미지 분류에서 큰 차이로 우승한 깊은 합성곱 신경망으로, ReLU·dropout·GPU 학습을 썼다.
+  summary_by: agent:claude-opus-5-5
   dimensions: *id002
   variants: []
   aliases:
@@ -328,16 +328,16 @@ models:
   classification_note: 논문은 'AlexNet'이라는 이름을 쓰지 않는다
 - id: model:vgg
   name: VGG
-  summary: 논문에서 제안하거나 평가한 모델 계열이다.
-  summary_by: agent:codex
+  summary: 3×3 합성곱 필터만 쌓아 깊이를 16–19층까지 늘린 합성곱 신경망으로, 깊이가 정확도에 주는 영향을 보였다.
+  summary_by: agent:claude-opus-5-5
   dimensions: *id002
   variants:
   - VGG-16
   - VGG-19
 - id: model:resnet
   name: ResNet
-  summary: 논문에서 제안하거나 평가한 모델 계열이다.
-  summary_by: agent:codex
+  summary: 잔차 연결로 100층이 넘는 깊이까지 학습할 수 있게 한 합성곱 신경망으로, ILSVRC 2015 분류에서 1위를 했다.
+  summary_by: agent:claude-opus-5-5
   dimensions: *id002
   variants:
   - ResNet-18
@@ -347,24 +347,24 @@ models:
   - ResNet-152
 - id: model:transformer
   name: Transformer
-  summary: 논문에서 제안하거나 평가한 모델 계열이다.
-  summary_by: agent:codex
+  summary: 순환과 합성곱 없이 attention만으로 만든 인코더–디코더 시퀀스 변환 모델로, 기계 번역을 위해 제안되었다.
+  summary_by: agent:claude-opus-5-5
   dimensions: *id002
   variants:
   - base
   - big
 - id: model:bert
   name: BERT
-  summary: 논문에서 제안하거나 평가한 모델 계열이다.
-  summary_by: agent:codex
+  summary: 양방향 Transformer 인코더를 마스크 언어 모델과 다음 문장 예측으로 사전학습한 뒤 여러 언어 과제에 미세조정하는 모델이다.
+  summary_by: agent:claude-opus-5-5
   dimensions: *id002
   variants:
   - BERT-Base
   - BERT-Large
 - id: model:bit
   name: BiT
-  summary: 논문에서 제안하거나 평가한 모델 계열이다.
-  summary_by: agent:codex
+  summary: 'Big Transfer: 큰 데이터셋에서 사전학습한 ResNet을 간단한 방식으로 여러 과제에 전이하는 방법과 그 모델이다.'
+  summary_by: agent:claude-opus-5-5
   dimensions: *id002
   variants:
   - BiT-S
@@ -373,8 +373,8 @@ models:
   classification_note: -S/M/L은 사전학습 데이터·일정, 기본 아키텍처는 ResNet152x4
 - id: model:vit
   name: Vision Transformer
-  summary: 논문에서 제안하거나 평가한 모델 계열이다.
-  summary_by: agent:codex
+  summary: '이미지를 고정 크기 패치(예: 16×16)의 시퀀스로 바꿔 표준 Transformer 인코더로 처리하는 이미지 분류 모델이다.'
+  summary_by: agent:claude-opus-5-5
   dimensions: *id002
   variants:
   - ViT-B/16
@@ -384,8 +384,8 @@ models:
   - ViT (ICLR 2021)
 - id: model:deit
   name: DeiT
-  summary: 논문에서 제안하거나 평가한 모델 계열이다.
-  summary_by: agent:codex
+  summary: 강한 데이터 증강·정규화와 증류 토큰을 이용해 ImageNet만으로도 ViT를 효율적으로 학습시킨 모델이다.
+  summary_by: agent:claude-opus-5-5
   dimensions: *id002
   variants:
   - DeiT-Ti
@@ -393,8 +393,8 @@ models:
   - DeiT-B
 - id: model:swin
   name: Swin Transformer
-  summary: 논문에서 제안하거나 평가한 모델 계열이다.
-  summary_by: agent:codex
+  summary: 창 단위 attention과 창 이동, 계층적 특징 맵으로 이미지 크기에 선형인 계산량을 가지는 비전 Transformer다.
+  summary_by: agent:claude-opus-5-5
   dimensions: *id002
   variants:
   - Swin-T
@@ -702,74 +702,74 @@ papers:
 datasets:
 - id: dataset:imagenet
   name: ImageNet
-  summary: 연구에 쓰이는 데이터셋이다.
-  summary_by: agent:codex
+  summary: WordNet 계층에 맞춰 수집한 대규모 이미지 데이터베이스로, 이미지 분류 연구의 표준 자료가 되었다.
+  summary_by: agent:claude-opus-5-5
   size: 12 subtrees, 5247 synsets, 3.2 million images (논문 시점)
   access: public
   introduced_by: paper:deng2009-imagenet
 - id: dataset:imagenet-1k
   name: ImageNet-1K
-  summary: 연구에 쓰이는 데이터셋이다.
-  summary_by: agent:codex
+  summary: ILSVRC에서 쓰는 1,000개 클래스, 약 128만 장의 학습 이미지로 이루어진 ImageNet의 부분집합이다.
+  summary_by: agent:claude-opus-5-5
   size: 1k classes, 1.3M images (ILSVRC-2012)
   access: public
 - id: dataset:imagenet-21k
   name: ImageNet-21K
-  summary: 연구에 쓰이는 데이터셋이다.
-  summary_by: agent:codex
+  summary: 약 2만 1천 개 클래스, 약 1,400만 장 이미지로 이루어진 ImageNet 전체 판으로, 사전학습에 자주 쓰인다.
+  summary_by: agent:claude-opus-5-5
   size: 21k classes, 14M images
   access: public
 - id: dataset:jft-300m
   name: JFT-300M
-  summary: 연구에 쓰이는 데이터셋이다.
-  summary_by: agent:codex
+  summary: Google 내부의 약 3억 장 규모 이미지 데이터셋으로, 공개되지 않았으며 대규모 사전학습에 쓰였다.
+  summary_by: agent:claude-opus-5-5
   size: 18k classes, 303M images
   access: private
 - id: dataset:cifar-10
   name: CIFAR-10
-  summary: 연구에 쓰이는 데이터셋이다.
-  summary_by: agent:codex
+  summary: 32×32 컬러 이미지 6만 장을 10개 클래스로 나눈 작은 이미지 분류 데이터셋이다.
+  summary_by: agent:claude-opus-5-5
   access: public
 - id: dataset:wmt14-en-de
   name: WMT14 EN-DE
-  summary: 연구에 쓰이는 데이터셋이다.
-  summary_by: agent:codex
+  summary: WMT 2014 번역 대회의 영어–독일어 병렬 말뭉치로, 약 450만 문장 쌍이다.
+  summary_by: agent:claude-opus-5-5
   access: public
 - id: dataset:wmt14-en-fr
   name: WMT14 EN-FR
-  summary: 연구에 쓰이는 데이터셋이다.
-  summary_by: agent:codex
+  summary: WMT 2014 번역 대회의 영어–프랑스어 병렬 말뭉치로, 약 3,600만 문장 쌍이다.
+  summary_by: agent:claude-opus-5-5
   access: public
 metrics:
 - id: metric:top-1-accuracy
   name: Top-1 Accuracy
-  summary: 모델 성능을 수치로 나타내는 지표다.
-  summary_by: agent:codex
+  summary: 모델이 가장 높은 확률로 고른 클래스가 정답인 비율이다.
+  summary_by: agent:claude-opus-5-5
   direction: higher_is_better
   unit: '%'
 - id: metric:top-1-error
   name: Top-1 Error
-  summary: 모델 성능을 수치로 나타내는 지표다.
-  summary_by: agent:codex
+  summary: 모델이 가장 높은 확률로 고른 클래스가 정답이 아닌 비율로, 1에서 top-1 정확도를 뺀 값이다.
+  summary_by: agent:claude-opus-5-5
   direction: lower_is_better
   unit: '%'
 - id: metric:top-5-error
   name: Top-5 Error
-  summary: 모델 성능을 수치로 나타내는 지표다.
-  summary_by: agent:codex
+  summary: 확률 상위 5개 클래스 안에 정답이 없는 비율이다.
+  summary_by: agent:claude-opus-5-5
   direction: lower_is_better
   unit: '%'
 - id: metric:bleu
   name: BLEU
-  summary: 모델 성능을 수치로 나타내는 지표다.
-  summary_by: agent:codex
+  summary: 기계 번역 결과와 사람 번역 사이의 n-gram 일치 정도로 번역 품질을 재는 자동 지표다.
+  summary_by: agent:claude-opus-5-5
   direction: higher_is_better
   unit: ''
 benchmarks:
 - id: benchmark:imagenet-1k-val
   name: ImageNet-1K validation
-  summary: 이미지 분류 검증 벤치마크다.
-  summary_by: agent:codex
+  summary: ImageNet-1K의 검증 세트 5만 장으로, 정답이 공개되어 있어 분류 정확도를 보고할 때 주로 쓰인다.
+  summary_by: agent:claude-opus-5-5
   dataset: dataset:imagenet-1k
   metrics:
   - metric:top-1-accuracy
@@ -778,24 +778,24 @@ benchmarks:
   split: val
 - id: benchmark:ilsvrc-cls-test
   name: ILSVRC classification test
-  summary: 이미지 분류 시험 벤치마크다.
-  summary_by: agent:codex
+  summary: ILSVRC 분류 과제의 시험 세트로, 정답이 공개되지 않아 대회 평가 서버로 채점한다.
+  summary_by: agent:claude-opus-5-5
   dataset: dataset:imagenet-1k
   metrics:
   - metric:top-5-error
   split: test
 - id: benchmark:wmt14-en-de-newstest2014
   name: WMT14 EN-DE newstest2014
-  summary: 기계 번역 벤치마크다.
-  summary_by: agent:codex
+  summary: WMT14 영어–독일어 번역을 평가하는 newstest2014 시험 세트다.
+  summary_by: agent:claude-opus-5-5
   dataset: dataset:wmt14-en-de
   metrics:
   - metric:bleu
   split: newstest2014
 - id: benchmark:wmt14-en-fr-newstest2014
   name: WMT14 EN-FR newstest2014
-  summary: 기계 번역 벤치마크다.
-  summary_by: agent:codex
+  summary: WMT14 영어–프랑스어 번역을 평가하는 newstest2014 시험 세트다.
+  summary_by: agent:claude-opus-5-5
   dataset: dataset:wmt14-en-fr
   metrics:
   - metric:bleu

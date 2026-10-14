@@ -307,7 +307,12 @@ def test_t18_p15_seed_if_present():
     if not seed.exists(): pytest.skip("seed graph not present")
     g = load_graph(seed); assert not [x for x in validate(g) if x.code.startswith("G")]
     if not (learner.exists() and expected.exists()): pytest.skip("e2e fixtures not present")
-    assert plan(g, yaml.safe_load(learner.read_text()), g["entities"]["lo:vit-attention-math"]["targets"]) == json.loads(expected.read_text())
+    # graph_version/inputs_hash are content hashes of the graph file: any edit (e.g. a summary) changes them
+    # without changing the plan, so the golden comparison covers everything else.
+    volatile = {"graph_version", "inputs_hash"}
+    actual = plan(g, yaml.safe_load(learner.read_text()), g["entities"]["lo:vit-attention-math"]["targets"])
+    golden = json.loads(expected.read_text())
+    assert {k: v for k, v in actual.items() if k not in volatile} == {k: v for k, v in golden.items() if k not in volatile}
 
 
 def _assert_topological(graph, out):

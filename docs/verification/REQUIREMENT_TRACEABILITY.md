@@ -12,7 +12,7 @@
 | R-06 | J3 → J1 | Entity ID(불변) | `ConceptLink` → `/wiki/…` 또는 `/e/…`, `/atlas/#node-<id>` | `ConceptLink`, "그래프에서 보기" | `src/lib/url.ts`, 컴포넌트 | 깨진 참조 0 | V-LINK-1, V-DIST-LINK, E2E-1 |
 | R-07 | 모든 진입 | Entity 이름·별칭 | `node-index.json`, `/pagefind/`, `/search/` | 헤더 빠른 검색, Pagefind UI | `src/islands/QuickSearch`, pagefind | 2글자 한국어, 결과 → 이동 | V-SEARCH, E2E-5 |
 | R-08 | J5 신뢰 | Claim, Evidence, Source | `/claims/<slug>/` | Evidence Inspector, 참고문헌 | `src/pages/claims/` | 인용·위치·링크·상태·검토 | E2E-3, V-CITE-1…3 |
-| R-09 | 모든 것의 기준 | `data/seed/seed_graph.yaml`, fixtures | — | — | `tools/seedtool.py` | Claim 105, 인용 121/121, golden 계획 | V-QUOTE, test_seedtool(60) |
+| R-09 | 모든 것의 기준 | `data/seed/seed_graph.yaml`, fixtures | — | — | `tools/seedtool.py` | Claim 105, 인용 121/121, golden 계획 | V-QUOTE, `pytest tools` 60(seedtool 58 + 식별자 검증 2) |
 | R-10 | 공개 | — | `dist-public/`, `.github/workflows/pages.yml` | — | astro config(base, trailingSlash) | 직접 링크·새로고침 200 | E2E-6, V-DIST-LINK (실배포 NOT RUN) |
 | R-11 | 유지보수 | — | `make verify`, `artifacts/verification/runs/*/summary.json`, `ci.yml` | — | `Makefile`, `tools/*.py` | 한 명령으로 전 계층, 실패 시 non-zero | 하네스 자체 실행 기록 |
 | R-12 | J3 | LabExperiment, lab_prediction 문항, golden fixture | Wiki 안 island | `SoftmaxTemperatureLab` | `src/lib/lab/`, `src/islands/` | 화면 수치 = fixture(4자리) | V-LAB L1–L7, E2E-2 |
