@@ -34,6 +34,7 @@ SECTIONS = {
     "labs": ("LabExperiment", "lab"), "sources": ("Source", "src"), "claims": ("Claim", "clm"),
 }
 KU = {"Concept", "Method", "Model"}
+WIKI_TYPES = KU | {"ResearchField", "ResearchProblem", "Dataset", "Metric", "Benchmark"}
 DIMS = ("recognize", "explain", "derive", "implement", "analyze")
 RANK = {"recognize": 0, "explain": 1, "derive": 2, "implement": 2, "analyze": 2}
 WEIGHT = {"mcq": 1, "numeric": 2, "short_text": 2, "lab_prediction": 1, "self_explanation": 1}
@@ -153,6 +154,46 @@ def claim_content_hash(claim: dict) -> str:
     return hashlib.sha256(_dump(body).encode()).hexdigest()[:12]
 
 
+HUMAN_RE = re.compile(r"^human:[a-z0-9][a-z0-9_-]*$")
+SURFACE_RE = re.compile(r"[^0-9a-z\uac00-\ud7a3]+")
+
+
+def review_hash(record: dict) -> str:
+    """Content hash an approval is bound to: the record without its ``review`` (ADR-021)."""
+    body = {k: v for k, v in record.items() if k != "review"}
+    return hashlib.sha256(_dump(body).encode()).hexdigest()[:12]
+
+
+def approval_state(record: dict) -> str | None:
+    """None (no approval), "approved", "stale" (record changed after approval) or "invalid"."""
+    review = record.get("review")
+    if not isinstance(review, dict) or review.get("decision") != "approve":
+        return None
+    if not HUMAN_RE.match(str(review.get("by", ""))) or not review.get("at"):
+        return "invalid"
+    if review.get("reviewed_hash") != review_hash(record):
+        return "stale"
+    return "approved"
+
+
+def _tokens(text: str) -> list[str]:
+    return SURFACE_RE.sub(" ", unicodedata.normalize("NFKC", str(text)).lower()).split()
+
+
+def surface_forms(entity: dict) -> list[list[str]]:
+    """Token lists of name, aliases and key_terms used to check that a quote is about the entity (G023)."""
+    forms = [entity.get("name"), entity.get("title"), *(entity.get("aliases") or []), *(entity.get("key_terms") or [])]
+    return [t for t in (_tokens(x) for x in forms if x) if len("".join(t)) >= 2]
+
+
+def mentions(text: str, forms: list[list[str]]) -> bool:
+    """True if some form occurs as consecutive word prefixes ("patch embedding" matches "patch embeddings",
+    "vit" does not match "Dosovitskiy", "어텐션" matches "어텐션을")."""
+    words = _tokens(text)
+    return any(all(words[i + j].startswith(f[j]) for j in range(len(f)))
+               for f in forms for i in range(len(words) - len(f) + 1))
+
+
 def _issue(out, code, ref, msg):
     out.append(Issue(code, str(ref), msg))
 
@@ -243,7 +284,7 @@ def _valid_evidence(c: dict, g: dict) -> bool:
         return bool(types & {"author_statement", "experimental_result"}) and (p != "TRAINED_ON" or q.get("stage") in {"pretraining", "training", "finetuning"})
     if p in {"PART_OF", "IS_A"}: return bool(types & {"author_statement", "definitional_dependency", "third_party_statement"})
     if p in {"PREREQUISITE_OF", "RECOMMENDED_BEFORE"}:
-        return "definitional_dependency" in types or ("curator_rationale" in types and (c.get("review") or {}).get("decision") == "approve")
+        return "definitional_dependency" in types or ("curator_rationale" in types and approval_state(c) == "approved")
     return False
 
 
@@ -380,6 +421,55 @@ def validate(graph: dict) -> list[Issue]:
                 if key == "openalex" and not isinstance(val, list): vals = [val]
                 for v in vals:
                     if not isinstance(v, str) or not v.strip(): _issue(out, "G021", ident, f"identifier {key} must be a non-empty string, got {type(v).__name__}")
+    # G022 approvals must be human-signed and bound to the current content (ADR-021).
+    for ident, rec in sorted(e.items()):
+        state = approval_state(rec)
+        if state == "invalid": _issue(out, "G022", ident, "review must be by human:<id> with a date")
+        if state == "stale": _issue(out, "G022", ident, "stale review: record changed after approval (re-approve with tools/review.py)")
+    # G023 definitional_dependency evidence must mention the subject concept in at least one quote (ADR-022).
+    for cid, c in sorted(graph["claims"].items()):
+        if c.get("status") not in {"verified", "disputed"}:
+            continue
+        forms = surface_forms(e.get(c.get("subject"), {}))
+        quotes = [x.get("quote", "") for x in c.get("evidence", []) or []
+                  if x.get("type") == "definitional_dependency" and x.get("stance") == "supports"]
+        if forms and quotes and not any(mentions(q, forms) for q in quotes):
+            _issue(out, "G023", cid, "definitional_dependency quotes do not mention the subject (name/aliases/key_terms)")
+    # G024 slugs are unique across entities (wiki file names and URLs, ADR-023).
+    slugs: dict[str, list[str]] = {}
+    for ident in e:
+        if t[ident] in WIKI_TYPES: slugs.setdefault(ident.split(":", 1)[1], []).append(ident)
+    for slug, ids in sorted(slugs.items()):
+        if len(ids) > 1: _issue(out, "G024", ",".join(sorted(ids)), f"slug {slug} used by several entities")
+    # G025 links are https only (no javascript:, data:, http:).
+    for ident, rec in sorted(e.items()):
+        for key in ("url", "fulltext_url"):
+            if rec.get(key) and not str(rec[key]).startswith("https://"): _issue(out, "G025", ident, f"{key} must be https://")
+    # W107 domain entities belong to a field; W108 names collide; W109 copy-paste summaries; W110 slug-like names.
+    names: dict[str, set[str]] = {}
+    summaries: dict[str, list[str]] = {}
+    for ident, rec in sorted(e.items()):
+        if t[ident] in {"Concept", "Method", "Model", "Paper", "ResearchProblem"} and not rec.get("fields"):
+            _issue(out, "W107", ident, "not in any field")
+        if t[ident] in WIKI_TYPES:
+            for form in [entity_name for entity_name in (rec.get("name"), *(rec.get("aliases") or [])) if entity_name]:
+                names.setdefault(" ".join(_tokens(form)), set()).add(ident)
+            if rec.get("summary"): summaries.setdefault(str(rec["summary"]), []).append(ident)
+            name = str(rec.get("name", ""))
+            if re.fullmatch(r"[a-z0-9 -]+", name) and not rec.get("aliases"):
+                _issue(out, "W110", ident, f"slug-like name without aliases: {name}")
+    for form, ids in sorted(names.items()):
+        if len(ids) > 1: _issue(out, "W108", ",".join(sorted(ids)), f"same name or alias: {form}")
+    for text, ids in sorted(summaries.items()):
+        if len(ids) > 1: _issue(out, "W109", ",".join(ids), "identical summary")
+    # W111 a prerequisite that only re-uses its PART_OF evidence shows composition, not necessity.
+    part_quotes = {(c.get("subject"), c.get("object")): {x.get("quote") for x in c.get("evidence", []) or []}
+                   for c in graph["claims"].values() if c.get("predicate") == "PART_OF"}
+    for cid, c in sorted(graph["claims"].items()):
+        if c.get("predicate") == "PREREQUISITE_OF" and c.get("status") == "verified":
+            quotes = {x.get("quote") for x in c.get("evidence", []) or [] if x.get("stance") == "supports"}
+            if quotes and quotes <= part_quotes.get((c.get("subject"), c.get("object")), set()):
+                _issue(out, "W111", cid, "evidence identical to the PART_OF claim")
     # W101/W102 closure is calculated by the same deterministic prerequisite walker used by plan.
     for oid, objective in sorted((i, r) for i, r in e.items() if t[i] == "LearningObjective"):
         nodes = _closure(graph, [(x.get("unit"), x.get("dimension")) for x in objective.get("targets", []) or []], all_or=True)
@@ -754,7 +844,7 @@ def main(argv=None):
         print(_dump(payload) if args.json else "\n".join(f"{x.code} {x.ref}: {x.message}" for x in issues))
         return 1 if any(x.code.startswith("G") for x in issues) else 0
     if args.command == "quotes":
-        rows = check_quotes(graph, args.cache, args.offline); print(_dump(rows)); return 1 if any(x["status"] not in {"found", "no_fulltext_url"} for x in rows) else 0
+        rows = check_quotes(graph, args.cache, args.offline); print(_dump(rows)); return 1 if any(x["status"] != "found" for x in rows) else 0
     learner = _read_learner(args.learner)
     if args.command == "mastery":
         payload = {f"{u}@{d}": x for (u, d), x in compute_mastery(graph, learner).items()}; print(_dump(payload)); return 0

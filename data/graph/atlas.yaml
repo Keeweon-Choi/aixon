@@ -217,16 +217,6 @@ fields:
   parents:
   - field:learning-theory
 - summary_by: agent:codex
-  id: field:neural-tangent-kernels
-  name: 신경 접선 커널
-  aliases:
-  - Neural Tangent Kernel
-  - NTK
-  summary: 신경 접선 커널은 넓은 신경망의 학습 동역학을 커널로 근사하는 이론 분야이다.
-  parents:
-  - field:learning-theory
-  - field:deep-learning
-- summary_by: agent:codex
   id: field:gradient-methods
   name: 경사 기반 방법
   aliases:
@@ -360,24 +350,6 @@ fields:
   summary: 화자 인식은 음성으로 발화자의 신원을 분류하거나 검증하는 분야이다.
   parents:
   - field:speech-audio
-- summary_by: agent:codex
-  id: field:variational-autoencoders
-  name: 변분 오토인코더
-  aliases:
-  - Variational Autoencoders
-  - VAE
-  summary: 변분 오토인코더는 잠재변수 확률 모델과 변분 추론으로 데이터를 생성하는 분야이다.
-  parents:
-  - field:generative-models
-- summary_by: agent:codex
-  id: field:generative-adversarial-networks
-  name: 생성적 적대 신경망
-  aliases:
-  - Generative Adversarial Networks
-  - GAN
-  summary: 생성적 적대 신경망은 생성자와 판별자의 경쟁으로 데이터 표본을 생성하는 분야이다.
-  parents:
-  - field:generative-models
 - summary_by: agent:codex
   id: field:diffusion-models
   name: 확산 모델
@@ -515,15 +487,6 @@ fields:
   aliases:
   - Automated Planning
   summary: 자동 계획은 초기 상태와 목표 및 행동 모델에서 실행 계획을 합성하는 분야이다.
-  parents:
-  - field:search-planning
-- summary_by: agent:codex
-  id: field:monte-carlo-tree-search
-  name: 몬테카를로 트리 탐색
-  aliases:
-  - Monte Carlo Tree Search
-  - MCTS
-  summary: 몬테카를로 트리 탐색은 무작위 시뮬레이션으로 트리 행동의 가치를 추정하는 분야이다.
   parents:
   - field:search-planning
 - summary_by: agent:codex
@@ -1052,7 +1015,8 @@ concepts:
   - NTK
   summary: 신경 접선 커널은 매개변수 변화에 대한 신경망 출력 기울기의 내적으로 정의되는 커널이다.
   fields:
-  - field:neural-tangent-kernels
+  - field:learning-theory
+  - field:deep-learning
 - dimensions:
   - recognize
   - explain
@@ -1359,7 +1323,7 @@ methods:
   - VAE
   summary: 변분 오토인코더는 인코더와 확률적 잠재변수 및 디코더로 데이터를 생성하는 모델이다.
   fields:
-  - field:variational-autoencoders
+  - field:generative-models
 - dimensions:
   - recognize
   - explain
@@ -1371,7 +1335,7 @@ methods:
   - GAN
   summary: 생성적 적대 신경망은 생성자와 판별자가 미니맥스 게임을 수행하는 생성 모델이다.
   fields:
-  - field:generative-adversarial-networks
+  - field:generative-models
 - dimensions:
   - recognize
   - explain
@@ -1494,7 +1458,7 @@ methods:
   - MCTS
   summary: 몬테카를로 트리 탐색은 시뮬레이션 결과로 트리의 선택과 확장을 안내하는 방법이다.
   fields:
-  - field:monte-carlo-tree-search
+  - field:search-planning
 - dimensions:
   - recognize
   - explain
@@ -1849,7 +1813,7 @@ papers:
     arxiv: '1312.6114'
   fields:
   - field:variational-inference
-  - field:variational-autoencoders
+  - field:generative-models
 - metadata_checked:
     arxiv: '2026-10-15'
   id: paper:wilson2015-deepkernel
@@ -1894,7 +1858,8 @@ papers:
   identifiers:
     arxiv: '1806.07572'
   fields:
-  - field:neural-tangent-kernels
+  - field:learning-theory
+  - field:deep-learning
 - metadata_checked:
     arxiv: '2026-10-15'
   id: paper:kingma2014-adam
@@ -2041,7 +2006,7 @@ papers:
   identifiers:
     arxiv: '1406.2661'
   fields:
-  - field:generative-adversarial-networks
+  - field:generative-models
   aliases:
   - Generative Adversarial Nets
 - metadata_checked:

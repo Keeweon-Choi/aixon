@@ -70,57 +70,109 @@ fields:
   summary_by: agent:claude-opus-5-5
   parents:
   - field:natural-language-processing
+- id: field:ml-mathematics
+  name: 기계학습 수학 기초
+  aliases:
+  - mathematics for machine learning
+  summary: 선형대수·확률·미적분처럼 기계학습 방법을 이해하는 데 필요한 수학 지식을 묶은 기초 영역이다(연구 분야라기보다 학습용 분류).
+  summary_by: agent:claude-opus-5-5
+  parents:
+  - field:machine-learning
 problems:
 - id: problem:overfitting-large-networks
   name: 큰 신경망의 과적합
   summary: 파라미터가 많은 신경망이 학습 데이터에만 맞춰져 새 데이터에서 성능이 떨어지는 문제다.
   summary_by: agent:claude-opus-5-5
   question: 큰 신경망이 학습 데이터를 외우지 않고 일반화하게 하려면 어떻게 해야 하는가?
+  aliases:
+  - overfitting
+  - 과적합
+  fields:
+  - field:deep-learning
 - id: problem:depth-vs-accuracy
   name: 네트워크 깊이와 정확도
   summary: 합성곱 신경망을 더 깊게 쌓으면 인식 정확도가 어떻게 달라지는지에 관한 문제다.
   summary_by: agent:claude-opus-5-5
   question: 네트워크를 더 깊게 만들면 정확도가 좋아지는가, 어떻게 깊게 만들 수 있는가?
+  aliases:
+  - network depth
+  fields:
+  - field:image-classification
 - id: problem:internal-covariate-shift
   name: 내부 공변량 이동
   summary: 학습 중 앞쪽 층의 파라미터가 바뀌면서 각 층 입력의 분포가 계속 달라지는 현상이다. Batch Normalization 논문은 이를 학습을 어렵게 하는 원인으로 제시했지만, 이후 연구는 이 설명에 반론을 냈다.
   summary_by: agent:claude-opus-5-5
   question: 층 입력 분포의 변화가 학습을 어렵게 하는가, 그렇다면 어떻게 줄일 수 있는가?
+  aliases:
+  - internal covariate shift
+  fields:
+  - field:deep-learning
+  - field:optimization
 - id: problem:degradation-in-deep-networks
   name: 깊은 네트워크의 성능 저하
   summary: 층을 더 쌓았을 때 과적합이 아닌데도 학습 오차 자체가 커지는 현상으로, ResNet 논문이 다룬 문제다.
   summary_by: agent:claude-opus-5-5
   question: 층을 더 쌓아도 학습 오차가 커지지 않게 하려면 어떻게 해야 하는가?
+  aliases:
+  - degradation problem
+  fields:
+  - field:deep-learning
+  - field:optimization
 - id: problem:fixed-length-bottleneck
   name: 고정 길이 벡터 병목
   summary: 인코더–디코더 번역 모델이 문장 전체를 고정 길이 벡터 하나로 압축해야 해서 긴 문장에서 성능이 떨어지는 문제다.
   summary_by: agent:claude-opus-5-5
   question: 문장 전체를 벡터 하나에 담지 않고 번역할 수 있는가?
+  aliases:
+  - fixed-length vector bottleneck
+  fields:
+  - field:machine-translation
 - id: problem:sequential-computation-in-rnns
   name: RNN의 순차 계산
   summary: 순환 신경망은 시간 단계마다 이전 상태가 필요해 한 학습 예제 안에서 병렬 계산이 어렵다는 문제다.
   summary_by: agent:claude-opus-5-5
   question: 순서대로 계산하지 않고도 시퀀스를 모델링할 수 있는가?
+  aliases:
+  - sequential computation
+  fields:
+  - field:natural-language-processing
 - id: problem:batch-dependence-of-normalization
   name: 정규화의 배치 의존성
   summary: Batch Normalization의 효과가 미니배치 크기에 의존하고 순환 신경망에 적용하기 어렵다는 문제다.
   summary_by: agent:claude-opus-5-5
   question: 미니배치 통계 없이 층 입력을 정규화할 수 있는가?
+  aliases:
+  - batch dependence
+  fields:
+  - field:deep-learning
 - id: problem:convolution-free-image-recognition
   name: 합성곱 없는 이미지 인식
   summary: 합성곱 층에 의존하지 않고 Transformer만으로 이미지 인식 성능을 낼 수 있는지에 관한 문제다.
   summary_by: agent:claude-opus-5-5
   question: 합성곱 없이 attention만으로 이미지를 인식할 수 있는가?
+  aliases:
+  - convolution-free image recognition
+  fields:
+  - field:vision-transformers
 - id: problem:vit-data-hunger
   name: ViT의 대규모 데이터 의존
   summary: ViT는 CNN보다 귀납적 편향이 약해 ImageNet 규모 데이터만으로 학습하면 비슷한 크기의 ResNet보다 정확도가 낮고, 아주 큰 데이터셋으로 사전학습해야 성능이 난다는 문제다.
   summary_by: agent:claude-opus-5-5
   question: 대규모 사전학습 데이터 없이 ViT를 잘 학습시킬 수 있는가?
+  aliases:
+  - data hunger of ViT
+  fields:
+  - field:vision-transformers
 - id: problem:quadratic-attention-cost-high-resolution
   name: 고해상도에서 attention의 이차 비용
   summary: 전역 self-attention의 계산량이 토큰 수의 제곱에 비례해, 고해상도 이미지나 밀집 예측 과제에서 비용이 너무 커지는 문제다.
   summary_by: agent:claude-opus-5-5
   question: 고해상도 이미지에서 attention 계산량을 이미지 크기에 선형으로 줄일 수 있는가?
+  aliases:
+  - quadratic attention cost
+  fields:
+  - field:vision-transformers
+  - field:efficient-transformers
 concepts:
 - id: concept:dot-product
   name: 내적
@@ -133,6 +185,12 @@ concepts:
   formula: a\cdot b=\sum_i a_i b_i
   estimated_minutes:
     explain: 15
+  aliases:
+  - dot product
+  - inner product
+  - 점곱
+  fields:
+  - field:ml-mathematics
 - id: concept:matrix-multiplication
   name: 행렬 곱셈
   summary: 앞 행렬의 각 행과 뒤 행렬의 각 열의 내적을 모아 새 행렬을 만드는 연산으로, 신경망의 선형 변환을 한꺼번에 계산한다.
@@ -140,6 +198,13 @@ concepts:
   dimensions: *id001
   estimated_minutes:
     explain: 20
+  aliases:
+  - matrix multiplication
+  - matrix product
+  - matmul
+  - 행렬곱
+  fields:
+  - field:ml-mathematics
 - id: concept:softmax
   name: Softmax
   summary: 실수 벡터(logit)의 각 값을 지수로 바꾼 뒤 그 합으로 나눠, 모든 값이 양수이고 합이 1인 확률 분포로 만드는 함수다.
@@ -153,6 +218,11 @@ concepts:
   estimated_minutes:
     explain: 20
     derive: 25
+  aliases:
+  - softmax function
+  - 소프트맥스
+  fields:
+  - field:deep-learning
 - id: concept:softmax-temperature
   name: Softmax 온도
   summary: logit을 온도 T로 나눈 뒤 softmax를 취해, T가 작으면 분포가 뾰족해지고 크면 고르게 퍼지도록 조절하는 방법이다.
@@ -164,6 +234,12 @@ concepts:
   formula: p_i=\frac{e^{z_i/T}}{\sum_j e^{z_j/T}}
   estimated_minutes:
     explain: 20
+  aliases:
+  - softmax temperature
+  - temperature
+  - 온도 스케일링
+  fields:
+  - field:deep-learning
 - id: concept:variance-of-sum
   name: 합의 분산
   summary: 서로 독립인 확률변수들의 합의 분산은 각 분산의 합과 같다는 성질로, 내적 q·k의 분산이 d_k에 비례하는 이유를 설명한다.
@@ -174,6 +250,14 @@ concepts:
   - derive
   estimated_minutes:
     explain: 20
+  aliases:
+  - variance of a sum
+  - variance of sum
+  - 분산의 합
+  fields:
+  - field:ml-mathematics
+  key_terms:
+  - independent random variables
 - id: concept:token-embedding
   name: 토큰 임베딩
   summary: 단어나 이미지 패치 같은 이산적인 입력 단위를 학습 가능한 고정 길이 실수 벡터로 바꾼 것이다.
@@ -181,6 +265,12 @@ concepts:
   dimensions: &id004
   - recognize
   - explain
+  aliases:
+  - token embedding
+  - embedding
+  - 임베딩
+  fields:
+  - field:representation-learning
 - id: concept:attention-mechanism
   name: Attention 메커니즘
   summary: 출력의 각 위치가 입력의 여러 위치를 서로 다른 비중으로 참고하도록, 관련도 점수로 가중합을 만드는 신경망 구성 방식이다.
@@ -189,11 +279,23 @@ concepts:
   - recognize
   - explain
   - analyze
+  aliases:
+  - attention mechanism
+  - attention
+  - 어텐션
+  - 주의 메커니즘
+  fields:
+  - field:deep-learning
 - id: concept:inductive-bias
   name: 귀납적 편향
   summary: 데이터만으로는 정해지지 않는 부분을 메우려고 모델 구조나 학습 방법에 미리 넣어 둔 가정으로, CNN의 지역성과 이동 등변성이 예다.
   summary_by: agent:claude-opus-5-5
   dimensions: *id002
+  aliases:
+  - inductive bias
+  fields:
+  - field:learning-theory
+  - field:deep-learning
 - id: concept:receptive-field
   name: 수용 영역
   summary: 신경망의 한 출력 단위가 영향을 받는 입력 영역의 범위로, 합성곱 층을 쌓을수록 넓어진다.
@@ -202,22 +304,43 @@ concepts:
   - recognize
   - explain
   - derive
+  aliases:
+  - receptive field
+  fields:
+  - field:computer-vision
 methods:
 - id: method:convolutional-layer
   name: 합성곱 층
   summary: 작은 필터를 입력 위로 옮겨 가며 같은 가중치로 지역 패턴을 계산하는 층으로, 지역 연결과 가중치 공유가 특징이다.
   summary_by: agent:claude-opus-5-5
   dimensions: *id003
+  aliases:
+  - convolutional layer
+  - convolution
+  - conv layer
+  - 컨볼루션
+  fields:
+  - field:computer-vision
+  - field:deep-learning
 - id: method:relu
   name: ReLU
   summary: 입력이 양수면 그대로, 음수면 0을 내보내는 활성화 함수 max(0, x)로, tanh보다 깊은 합성곱 신경망을 훨씬 빠르게 학습시킨다.
   summary_by: agent:claude-opus-5-5
   dimensions: *id004
+  aliases:
+  - rectified linear unit
+  - 렐루
+  fields:
+  - field:deep-learning
 - id: method:dropout
   name: Dropout
   summary: 학습 중 은닉 유닛을 무작위로 꺼서 유닛들이 서로에게 의존하지 않게 만드는 정규화 방법이다.
   summary_by: agent:claude-opus-5-5
   dimensions: *id004
+  aliases:
+  - 드롭아웃
+  fields:
+  - field:deep-learning
 - id: method:batch-normalization
   name: Batch Normalization
   summary: 미니배치의 평균과 분산으로 층 입력을 정규화한 뒤 학습 가능한 크기·이동 파라미터를 적용하는 방법이다.
@@ -227,6 +350,12 @@ methods:
   - explain
   - derive
   - analyze
+  aliases:
+  - batch normalization
+  - BatchNorm
+  - 배치 정규화
+  fields:
+  - field:deep-learning
 - id: method:layer-normalization
   name: Layer Normalization
   summary: 미니배치 대신 한 샘플 안의 은닉 유닛들의 평균과 분산으로 정규화하는 방법으로, 배치 크기와 무관해 RNN과 Transformer에 쓰인다.
@@ -235,11 +364,26 @@ methods:
   - recognize
   - explain
   - derive
+  aliases:
+  - layer normalization
+  - LayerNorm
+  - 층 정규화
+  - 레이어 정규화
+  fields:
+  - field:deep-learning
 - id: method:residual-connection
   name: 잔차 연결
   summary: 층의 입력을 출력에 그대로 더하는 지름길 연결로, 층이 잔차 F(x)만 학습하게 해 매우 깊은 네트워크의 학습을 돕는다.
   summary_by: agent:claude-opus-5-5
   dimensions: *id002
+  aliases:
+  - residual connection
+  - residual learning
+  - shortcut connection
+  - skip connection
+  - 스킵 연결
+  fields:
+  - field:deep-learning
 - id: method:additive-attention
   name: Additive Attention
   summary: query와 key를 작은 피드포워드 신경망에 함께 넣어 점수를 계산하는 attention으로, Bahdanau 등의 신경망 기계 번역 논문에서 제안되었다.
@@ -250,6 +394,11 @@ methods:
   - derive
   aliases:
   - Bahdanau attention
+  - additive attention
+  - 가산 어텐션
+  fields:
+  - field:machine-translation
+  - field:deep-learning
 - id: method:scaled-dot-product-attention
   name: Scaled Dot-Product Attention
   summary: query와 key의 내적을 √d_k로 나눈 뒤 softmax로 가중치를 구해 value를 섞는 attention 연산으로, Transformer의 기본 부품이다.
@@ -259,6 +408,12 @@ methods:
   estimated_minutes:
     explain: 25
     derive: 30
+  aliases:
+  - scaled dot-product attention
+  - SDPA
+  - 스케일드 닷프로덕트 어텐션
+  fields:
+  - field:deep-learning
 - id: method:multi-head-attention
   name: Multi-Head Attention
   summary: attention을 서로 다른 선형 투영 공간에서 여러 개 나란히 계산한 뒤 이어 붙여, 여러 종류의 관계를 동시에 보도록 한 방법이다.
@@ -266,6 +421,13 @@ methods:
   dimensions: *id001
   estimated_minutes:
     explain: 25
+  aliases:
+  - multi-head attention
+  - MHA
+  - 멀티헤드 어텐션
+  - multi-head self-attention
+  fields:
+  - field:deep-learning
 - id: method:positional-encoding
   name: 위치 인코딩
   summary: 순서 정보가 없는 self-attention에 각 토큰의 위치를 알려 주려고 입력 임베딩에 더하는 위치별 벡터다.
@@ -274,21 +436,47 @@ methods:
   - recognize
   - explain
   - derive
+  aliases:
+  - positional encoding
+  - position embedding
+  - 위치 임베딩
+  fields:
+  - field:deep-learning
 - id: method:feed-forward-network
   name: 피드포워드 네트워크
   summary: Transformer 층 안에서 각 위치에 독립적으로, 같은 두 층짜리 완전연결 신경망을 적용하는 부분이다.
   summary_by: agent:claude-opus-5-5
   dimensions: *id004
+  aliases:
+  - feed-forward network
+  - position-wise feed-forward network
+  - FFN
+  - MLP block
+  fields:
+  - field:deep-learning
 - id: method:transformer-encoder-layer
   name: Transformer 인코더 층
   summary: multi-head self-attention과 위치별 피드포워드 네트워크를 잔차 연결과 층 정규화로 감싼 블록으로, Transformer 인코더·BERT·ViT가 이 블록을 쌓아 만든다.
   summary_by: agent:claude-opus-5-5
   dimensions: *id001
+  aliases:
+  - Transformer encoder layer
+  - Transformer encoder
+  - Transformer block
+  - 트랜스포머 인코더
+  fields:
+  - field:deep-learning
 - id: method:patch-embedding
   name: 패치 임베딩
   summary: 이미지를 겹치지 않는 작은 패치로 자르고 각 패치를 펼쳐 선형 투영해 토큰 벡터로 만드는 방법으로, ViT의 입력 단계다.
   summary_by: agent:claude-opus-5-5
   dimensions: *id001
+  aliases:
+  - patch embedding
+  - image patches
+  - 패치 분할
+  fields:
+  - field:vision-transformers
 - id: method:class-token
   name: 클래스 토큰
   summary: 시퀀스 맨 앞에 붙이는 학습 가능한 특별 토큰으로, 마지막 층에서 이 토큰의 출력을 전체 입력의 표현으로 써서 분류한다.
@@ -296,26 +484,54 @@ methods:
   dimensions: *id004
   aliases:
   - '[CLS] token'
+  - class token
+  - '[class] token'
+  - CLS 토큰
+  fields:
+  - field:vision-transformers
+  - field:natural-language-processing
 - id: method:transfer-learning
   name: 전이학습
   summary: 큰 데이터셋이나 다른 과제에서 미리 학습한 모델을 목표 과제에 맞게 미세조정해 쓰는 방법이다.
   summary_by: agent:claude-opus-5-5
   dimensions: *id002
+  aliases:
+  - transfer learning
+  - 전이 학습
+  fields:
+  - field:representation-learning
 - id: method:knowledge-distillation
   name: 지식 증류
   summary: 큰 교사 모델의 출력 분포(soft target)를 작은 학생 모델이 따라 하도록 학습시켜 지식을 옮기는 방법이다.
   summary_by: agent:claude-opus-5-5
   dimensions: *id004
+  aliases:
+  - knowledge distillation
+  - distillation
+  - 증류
+  fields:
+  - field:model-compression
 - id: method:distillation-token
   name: 증류 토큰
   summary: DeiT에서 클래스 토큰과 함께 넣는 추가 토큰으로, 교사 모델의 예측을 맞추도록 학습해 증류 신호를 전달한다.
   summary_by: agent:claude-opus-5-5
   dimensions: *id004
+  aliases:
+  - distillation token
+  fields:
+  - field:vision-transformers
 - id: method:shifted-window-attention
   name: Shifted Window Attention
   summary: 이미지를 겹치지 않는 창으로 나눠 창 안에서만 self-attention을 계산하고, 층마다 창 위치를 어긋나게 옮겨 창 사이를 연결하는 방법이다.
   summary_by: agent:claude-opus-5-5
   dimensions: *id002
+  aliases:
+  - shifted window attention
+  - shifted windows
+  - 시프티드 윈도 어텐션
+  fields:
+  - field:vision-transformers
+  - field:efficient-transformers
 models:
 - id: model:alexnet
   name: AlexNet
@@ -325,7 +541,10 @@ models:
   variants: []
   aliases:
   - AlexNet
+  - 알렉스넷
   classification_note: 논문은 'AlexNet'이라는 이름을 쓰지 않는다
+  fields:
+  - field:image-classification
 - id: model:vgg
   name: VGG
   summary: 3×3 합성곱 필터만 쌓아 깊이를 16–19층까지 늘린 합성곱 신경망으로, 깊이가 정확도에 주는 영향을 보였다.
@@ -334,6 +553,12 @@ models:
   variants:
   - VGG-16
   - VGG-19
+  aliases:
+  - VGGNet
+  - VGG-16
+  - VGG-19
+  fields:
+  - field:image-classification
 - id: model:resnet
   name: ResNet
   summary: 잔차 연결로 100층이 넘는 깊이까지 학습할 수 있게 한 합성곱 신경망으로, ILSVRC 2015 분류에서 1위를 했다.
@@ -345,6 +570,12 @@ models:
   - ResNet-50
   - ResNet-101
   - ResNet-152
+  aliases:
+  - Residual Network
+  - deep residual network
+  - 레즈넷
+  fields:
+  - field:image-classification
 - id: model:transformer
   name: Transformer
   summary: 순환과 합성곱 없이 attention만으로 만든 인코더–디코더 시퀀스 변환 모델로, 기계 번역을 위해 제안되었다.
@@ -353,6 +584,11 @@ models:
   variants:
   - base
   - big
+  aliases:
+  - 트랜스포머
+  fields:
+  - field:machine-translation
+  - field:deep-learning
 - id: model:bert
   name: BERT
   summary: 양방향 Transformer 인코더를 마스크 언어 모델과 다음 문장 예측으로 사전학습한 뒤 여러 언어 과제에 미세조정하는 모델이다.
@@ -361,6 +597,10 @@ models:
   variants:
   - BERT-Base
   - BERT-Large
+  aliases:
+  - 버트
+  fields:
+  - field:language-modeling
 - id: model:bit
   name: BiT
   summary: 'Big Transfer: 큰 데이터셋에서 사전학습한 ResNet을 간단한 방식으로 여러 과제에 전이하는 방법과 그 모델이다.'
@@ -371,6 +611,11 @@ models:
   - BiT-M
   - BiT-L
   classification_note: -S/M/L은 사전학습 데이터·일정, 기본 아키텍처는 ResNet152x4
+  aliases:
+  - Big Transfer
+  fields:
+  - field:image-classification
+  - field:representation-learning
 - id: model:vit
   name: Vision Transformer
   summary: '이미지를 고정 크기 패치(예: 16×16)의 시퀀스로 바꿔 표준 Transformer 인코더로 처리하는 이미지 분류 모델이다.'
@@ -381,7 +626,11 @@ models:
   - ViT-L/16
   - ViT-H/14
   aliases:
-  - ViT (ICLR 2021)
+  - ViT
+  - 비전 트랜스포머 모델
+  fields:
+  - field:vision-transformers
+  - field:image-classification
 - id: model:deit
   name: DeiT
   summary: 강한 데이터 증강·정규화와 증류 토큰을 이용해 ImageNet만으로도 ViT를 효율적으로 학습시킨 모델이다.
@@ -391,6 +640,10 @@ models:
   - DeiT-Ti
   - DeiT-S
   - DeiT-B
+  aliases:
+  - Data-efficient image Transformer
+  fields:
+  - field:vision-transformers
 - id: model:swin
   name: Swin Transformer
   summary: 창 단위 attention과 창 이동, 계층적 특징 맵으로 이미지 크기에 선형인 계산량을 가지는 비전 Transformer다.
@@ -401,6 +654,11 @@ models:
   - Swin-S
   - Swin-B
   - Swin-L
+  aliases:
+  - Swin
+  - 스윈 트랜스포머
+  fields:
+  - field:vision-transformers
 papers:
 - id: paper:deng2009-imagenet
   title: 'ImageNet: A Large-Scale Hierarchical Image Database'
@@ -423,6 +681,8 @@ papers:
   metadata_checked:
     arxiv: '2026-10-15'
     openalex: '2026-10-15'
+  fields:
+  - field:computer-vision
 - id: paper:krizhevsky2012-alexnet
   title: ImageNet Classification with Deep Convolutional Neural Networks
   authors:
@@ -440,6 +700,8 @@ papers:
   metadata_checked:
     arxiv: '2026-10-15'
     openalex: '2026-10-15'
+  fields:
+  - field:image-classification
 - id: paper:simonyan2014-vgg
   title: Very Deep Convolutional Networks for Large-Scale Image Recognition
   authors:
@@ -458,6 +720,8 @@ papers:
   metadata_checked:
     arxiv: '2026-10-15'
     openalex: '2026-10-15'
+  fields:
+  - field:image-classification
 - id: paper:ioffe2015-batchnorm
   title: 'Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift'
   authors:
@@ -476,6 +740,9 @@ papers:
   metadata_checked:
     arxiv: '2026-10-15'
     openalex: '2026-10-15'
+  fields:
+  - field:deep-learning
+  - field:optimization
 - id: paper:santurkar2018-bn-optimization
   title: How Does Batch Normalization Help Optimization?
   authors:
@@ -493,6 +760,9 @@ papers:
   metadata_checked:
     arxiv: '2026-10-15'
     openalex: '2026-10-15'
+  fields:
+  - field:deep-learning
+  - field:optimization
 - id: paper:he2015-resnet
   title: Deep Residual Learning for Image Recognition
   authors:
@@ -514,6 +784,9 @@ papers:
   metadata_checked:
     arxiv: '2026-10-15'
     openalex: '2026-10-15'
+  fields:
+  - field:image-classification
+  - field:deep-learning
 - id: paper:kolesnikov2019-bit
   title: 'Big Transfer (BiT): General Visual Representation Learning'
   authors:
@@ -537,6 +810,9 @@ papers:
   metadata_checked:
     arxiv: '2026-10-15'
     openalex: '2026-10-15'
+  fields:
+  - field:image-classification
+  - field:representation-learning
 - id: paper:dosovitskiy2020-vit
   title: 'An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale'
   authors:
@@ -564,6 +840,9 @@ papers:
   metadata_checked:
     arxiv: '2026-10-15'
     openalex: '2026-10-15'
+  fields:
+  - field:vision-transformers
+  - field:image-classification
 - id: paper:touvron2020-deit
   title: Training data-efficient image transformers & distillation through attention
   authors:
@@ -587,6 +866,8 @@ papers:
   metadata_checked:
     arxiv: '2026-10-15'
     openalex: '2026-10-15'
+  fields:
+  - field:vision-transformers
 - id: paper:liu2021-swin
   title: 'Swin Transformer: Hierarchical Vision Transformer using Shifted Windows'
   authors:
@@ -609,6 +890,8 @@ papers:
   metadata_checked:
     arxiv: '2026-10-15'
     openalex: '2026-10-15'
+  fields:
+  - field:vision-transformers
 - id: paper:bahdanau2014-attention
   title: Neural Machine Translation by Jointly Learning to Align and Translate
   authors:
@@ -626,6 +909,8 @@ papers:
   metadata_checked:
     arxiv: '2026-10-15'
     openalex: '2026-10-15'
+  fields:
+  - field:machine-translation
 - id: paper:ba2016-layernorm
   title: Layer Normalization
   authors:
@@ -644,6 +929,8 @@ papers:
   metadata_checked:
     arxiv: '2026-10-15'
     openalex: '2026-10-15'
+  fields:
+  - field:deep-learning
 - id: paper:vaswani2017-transformer
   title: Attention Is All You Need
   authors:
@@ -666,6 +953,9 @@ papers:
   metadata_checked:
     arxiv: '2026-10-15'
     openalex: '2026-10-15'
+  fields:
+  - field:machine-translation
+  - field:deep-learning
 - id: paper:devlin2018-bert
   title: 'BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding'
   authors:
@@ -686,6 +976,8 @@ papers:
   metadata_checked:
     arxiv: '2026-10-15'
     openalex: '2026-10-15'
+  fields:
+  - field:language-modeling
 - id: paper:hinton2015-distillation
   title: Distilling the Knowledge in a Neural Network
   authors:
@@ -699,6 +991,8 @@ papers:
     arxiv_doi: 10.48550/arXiv.1503.02531
   metadata_checked:
     arxiv: '2026-10-15'
+  fields:
+  - field:model-compression
 datasets:
 - id: dataset:imagenet
   name: ImageNet
@@ -2258,8 +2552,9 @@ claims:
   evidence:
   - source: src:pdf:krizhevsky2012-alexnet
     locator:
-      section: Abstract
-    quote: We trained a large, deep convolutional neural network to classify the 1.2 million high-resolution images in the ImageNet LSVRC-2010 contest
+      section: 1 Introduction
+      paragraph: 4
+    quote: Our network contains a number of new and unusual features which improve its performance and reduce its training time, which are detailed in Section 3.
     type: author_statement
     stance: supports
   review: null
@@ -2267,6 +2562,7 @@ claims:
     method: quote_match
     by: agent:claude-opus-5-5
     at: '2026-10-15'
+  note: '감사 F-02/F-03(2026-10-15): 술어를 직접 뒷받침하는 인용으로 교체·보강.'
 - id: clm:intro-vgg
   predicate: INTRODUCES
   subject: paper:simonyan2014-vgg
@@ -2277,9 +2573,10 @@ claims:
   evidence:
   - source: src:arxiv:1409.1556v6
     locator:
-      section: 2.2 Configurations
-      paragraph: 1
-    quote: The ConvNet configurations, evaluated in this paper, are outlined in Table 1, one per column.
+      section: 1 Introduction
+      paragraph: 3
+      html_id: S1.p3.1
+    quote: As a result, we come up with significantly more accurate ConvNet architectures
     type: author_statement
     stance: supports
   review: null
@@ -2287,6 +2584,7 @@ claims:
     method: quote_match
     by: agent:claude-opus-5-5
     at: '2026-10-15'
+  note: '감사 F-02/F-03(2026-10-15): 술어를 직접 뒷받침하는 인용으로 교체·보강.'
 - id: clm:intro-batchnorm
   predicate: INTRODUCES
   subject: paper:ioffe2015-batchnorm
@@ -2337,6 +2635,13 @@ claims:
   - source: src:arxiv:1512.03385v1
     locator:
       section: Abstract
+      html_id: abstract1.1
+    quote: We present a residual learning framework to ease the training of networks that are substantially deeper than those used previously.
+    type: author_statement
+    stance: supports
+  - source: src:arxiv:1512.03385v1
+    locator:
+      section: Abstract
     quote: We explicitly reformulate the layers as learning residual functions with reference to the layer inputs, instead of learning unreferenced functions.
     type: author_statement
     stance: supports
@@ -2345,6 +2650,7 @@ claims:
     method: quote_match
     by: agent:claude-opus-5-5
     at: '2026-10-15'
+  note: '감사 F-02/F-03(2026-10-15): 술어를 직접 뒷받침하는 인용으로 교체·보강.'
 - id: clm:intro-additive-attention
   predicate: INTRODUCES
   subject: paper:bahdanau2014-attention
@@ -2433,7 +2739,7 @@ claims:
   object: method:multi-head-attention
   qualifiers: {}
   status: verified
-  confidence: high
+  confidence: medium
   evidence:
   - source: src:arxiv:1706.03762v7
     locator:
@@ -2448,6 +2754,7 @@ claims:
     method: quote_match
     by: agent:claude-opus-5-5
     at: '2026-10-15'
+  note: '감사 F-02/F-03(2026-10-15): 논문이 "제안"을 동사로 명시하지 않는다. 설계 진술(we found it beneficial to linearly project…)과 Figure 2로 판단 — 사람 검토 필요.'
 - id: clm:intro-bert
   predicate: INTRODUCES
   subject: paper:devlin2018-bert
@@ -2496,8 +2803,16 @@ claims:
   evidence:
   - source: src:arxiv:2010.11929v2
     locator:
+      section: 1 Introduction
+      paragraph: 3
+      html_id: S1.p3.1
+    quote: Inspired by the Transformer scaling successes in NLP, we experiment with applying a standard Transformer directly to images, with the fewest possible modifications.
+    type: author_statement
+    stance: supports
+  - source: src:arxiv:2010.11929v2
+    locator:
       section: Abstract
-    quote: When pre-trained on large amounts of data and transferred to multiple mid-sized or small image recognition benchmarks (ImageNet, CIFAR-100, VTAB, etc.), Vision Transformer (ViT) attains excellent results compared to state-of-the-art convolutional networks while requiring substantially fewer computa
+    quote: Vision Transformer (ViT) attains excellent results compared to state-of-the-art convolutional networks
     type: author_statement
     stance: supports
   review: null
@@ -2505,6 +2820,7 @@ claims:
     method: quote_match
     by: agent:claude-opus-5-5
     at: '2026-10-15'
+  note: '감사 F-02/F-03(2026-10-15): 술어를 직접 뒷받침하는 인용으로 교체·보강.'
 - id: clm:intro-patch-embedding
   predicate: INTRODUCES
   subject: paper:dosovitskiy2020-vit
@@ -2535,9 +2851,16 @@ claims:
   evidence:
   - source: src:arxiv:2012.12877v2
     locator:
+      section: Abstract
+      html_id: abstract1.2
+    quote: In this work, we produce competitive convolution-free transformers by training on Imagenet only.
+    type: author_statement
+    stance: supports
+  - source: src:arxiv:2012.12877v2
+    locator:
       section: 1 Introduction
       paragraph: 3
-    quote: With our Data-efficient image Transformers (DeiT), we report large improvements over previous results, see Figure 1.
+    quote: With our Data-efficient image Transformers (DeiT), we report large improvements over previous results
     type: author_statement
     stance: supports
   review: null
@@ -2545,6 +2868,7 @@ claims:
     method: quote_match
     by: agent:claude-opus-5-5
     at: '2026-10-15'
+  note: '감사 F-02/F-03(2026-10-15): 술어를 직접 뒷받침하는 인용으로 교체·보강.'
 - id: clm:intro-distillation-token
   predicate: INTRODUCES
   subject: paper:touvron2020-deit
@@ -2693,7 +3017,8 @@ claims:
   - source: src:arxiv:1409.0473v7
     locator:
       section: Abstract
-    quote: we conjecture that the use of a fixed-length vector is a bottleneck in improving the performance of this basic encoder–decoder architecture
+      html_id: abstract1.1
+    quote: we conjecture that the use of a fixed-length vector is a bottleneck in improving the performance of this basic encoder–decoder architecture, and propose to extend this by allowing a model to automatically (soft-)search for parts of a source sentence that are relevant to predicting a target word
     type: author_statement
     stance: supports
   review: null
@@ -2701,6 +3026,7 @@ claims:
     method: quote_match
     by: agent:claude-opus-5-5
     at: '2026-10-15'
+  note: '감사 F-02/F-03(2026-10-15): 술어를 직접 뒷받침하는 인용으로 교체·보강.'
 - id: clm:layernorm-addresses-batch-dependence
   predicate: ADDRESSES
   subject: method:layer-normalization
@@ -2715,11 +3041,19 @@ claims:
     quote: However, the effect of batch normalization is dependent on the mini-batch size and it is not obvious how to apply it to recurrent neural networks.
     type: author_statement
     stance: supports
+  - source: src:arxiv:1607.06450v1
+    locator:
+      section: Abstract
+      html_id: abstract1.1
+    quote: Unlike batch normalization, layer normalization performs exactly the same computation at training and test times. It is also straightforward to apply to recurrent neural networks by computing the normalization statistics separately at each time step.
+    type: author_statement
+    stance: supports
   review: null
   verification:
     method: quote_match
     by: agent:claude-opus-5-5
     at: '2026-10-15'
+  note: '감사 F-02/F-03(2026-10-15): 술어를 직접 뒷받침하는 인용으로 교체·보강.'
 - id: clm:transformer-addresses-sequential
   predicate: ADDRESSES
   subject: model:transformer
@@ -2728,6 +3062,14 @@ claims:
   status: verified
   confidence: high
   evidence:
+  - source: src:arxiv:1706.03762v7
+    locator:
+      section: 1 Introduction
+      paragraph: 4
+      html_id: S1.p4.1
+    quote: In this work we propose the Transformer, a model architecture eschewing recurrence and instead relying entirely on an attention mechanism to draw global dependencies between input and output.
+    type: author_statement
+    stance: supports
   - source: src:arxiv:1706.03762v7
     locator:
       section: 1 Introduction
@@ -2741,6 +3083,7 @@ claims:
     method: quote_match
     by: agent:claude-opus-5-5
     at: '2026-10-15'
+  note: '감사 F-02/F-03(2026-10-15): 술어를 직접 뒷받침하는 인용으로 교체·보강.'
 - id: clm:vit-addresses-convolution-free
   predicate: ADDRESSES
   subject: model:vit
@@ -2774,11 +3117,19 @@ claims:
     quote: These high-performing vision transformers are pre-trained with hundreds of millions of images using a large infrastructure, thereby limiting their adoption.
     type: author_statement
     stance: supports
+  - source: src:arxiv:2012.12877v2
+    locator:
+      section: Abstract
+      html_id: abstract1.2
+    quote: In this work, we produce competitive convolution-free transformers by training on Imagenet only.
+    type: author_statement
+    stance: supports
   review: null
   verification:
     method: quote_match
     by: agent:claude-opus-5-5
     at: '2026-10-15'
+  note: '감사 F-02/F-03(2026-10-15): 술어를 직접 뒷받침하는 인용으로 교체·보강.'
 - id: clm:swin-addresses-quadratic
   predicate: ADDRESSES
   subject: model:swin
@@ -2791,7 +3142,8 @@ claims:
     locator:
       section: 1 Introduction
       paragraph: 3
-    quote: There exist many vision tasks such as semantic segmentation that require dense prediction at the pixel level, and this would be intractable for Transformer on high-resolution images, as the computational complexity of its self-attention is quadratic to image size.
+      html_id: S1.p3.1
+    quote: To overcome these issues, we propose a general-purpose Transformer backbone, called Swin Transformer, which constructs hierarchical feature maps and has linear computational complexity to image size.
     type: author_statement
     stance: supports
   review: null
@@ -2799,6 +3151,7 @@ claims:
     method: quote_match
     by: agent:claude-opus-5-5
     at: '2026-10-15'
+  note: '감사 F-02/F-03(2026-10-15): 술어를 직접 뒷받침하는 인용으로 교체·보강.'
 - id: clm:residual-mitigates-degradation
   predicate: MITIGATES
   subject: method:residual-connection
@@ -2934,6 +3287,14 @@ claims:
   evidence:
   - source: src:arxiv:2010.11929v2
     locator:
+      section: 1 Introduction
+      paragraph: 3
+      html_id: S1.p3.1
+    quote: Inspired by the Transformer scaling successes in NLP, we experiment with applying a standard Transformer directly to images, with the fewest possible modifications.
+    type: author_statement
+    stance: supports
+  - source: src:arxiv:2010.11929v2
+    locator:
       section: 3 Method
       paragraph: 1
     quote: In model design we follow the original Transformer (Vaswani et al., 2017) as closely as possible.
@@ -2944,6 +3305,7 @@ claims:
     method: quote_match
     by: agent:claude-opus-5-5
     at: '2026-10-15'
+  note: '감사 F-02/F-03(2026-10-15): 술어를 직접 뒷받침하는 인용으로 교체·보강.'
 - id: clm:swin-adapts-transformer
   predicate: ADAPTS
   subject: model:swin
@@ -2957,6 +3319,13 @@ claims:
   - source: src:arxiv:2103.14030v2
     locator:
       section: Abstract
+      html_id: abstract1.1
+    quote: This paper presents a new vision Transformer, called Swin Transformer, that capably serves as a general-purpose backbone for computer vision.
+    type: author_statement
+    stance: supports
+  - source: src:arxiv:2103.14030v2
+    locator:
+      section: Abstract
     quote: Challenges in adapting Transformer from language to vision arise from differences between the two domains, such as large variations in the scale of visual entities and the high resolution of pixels in images compared to words in text.
     type: author_statement
     stance: supports
@@ -2965,6 +3334,7 @@ claims:
     method: quote_match
     by: agent:claude-opus-5-5
     at: '2026-10-15'
+  note: '감사 F-02/F-03(2026-10-15): 술어를 직접 뒷받침하는 인용으로 교체·보강.'
 - id: clm:deit-extends-vit
   predicate: EXTENDS
   subject: model:deit
@@ -3293,6 +3663,22 @@ claims:
   - source: src:arxiv:1512.03385v1
     locator:
       table: Table 3
+      row: VGG-16
+      html_id: S4.T3.3.2
+    quote: VGG-16 [41] 28.07 9.33
+    type: experimental_result
+    stance: supports
+  - source: src:arxiv:1512.03385v1
+    locator:
+      table: Table 3
+      row: ResNet-152
+      html_id: S4.T3.3.11
+    quote: ResNet-152 21.43 5.71
+    type: experimental_result
+    stance: supports
+  - source: src:arxiv:1512.03385v1
+    locator:
+      table: Table 3
       part: caption
     quote: Error rates (%, 10-crop testing) on ImageNet validation.
     type: experimental_result
@@ -3303,7 +3689,7 @@ claims:
       part: caption
     quote: VGG-16 is based on our test.
     type: experimental_result
-    stance: supports
+    stance: qualifies
   qualifiers:
     benchmark: benchmark:imagenet-1k-val
     metric: metric:top-5-error
@@ -3317,6 +3703,7 @@ claims:
     by: agent:claude-opus-5-5
     at: '2026-10-15'
   review: null
+  note: '감사 F-02/F-03(2026-10-15): 술어를 직접 뒷받침하는 인용으로 교체·보강.'
 - id: clm:vit-improves-on-bit
   predicate: IMPROVES_ON
   subject: model:vit
@@ -3349,7 +3736,7 @@ claims:
   subject: model:deit
   object: model:vit
   status: verified
-  confidence: high
+  confidence: medium
   evidence:
   - source: src:arxiv:2012.12877v2
     locator:
@@ -3360,16 +3747,17 @@ claims:
   qualifiers:
     benchmark: benchmark:imagenet-1k-val
     metric: metric:top-1-accuracy
-    subject_value: 81.8
+    subject_value: 84.2
     object_value: 77.9
-    subject_variant: DeiT-B (224²)
-    object_variant: ViT-B/16 (384², ImageNet만, ViT 논문 보고값)
-    conditions: 두 모델 모두 외부 데이터 없이 ImageNet-1k로 학습 (Table 5); 해상도가 다름
+    subject_variant: DeiT-B⚗ (증류, 1000 epochs, 224²)
+    object_variant: ViT-B/16 (384², ImageNet-1k만, ViT 논문 보고값)
+    conditions: 두 모델 모두 외부 데이터 없이 ImageNet-1k로 학습(Table 5). 해상도·학습 길이·증류 여부가 다르고, 저자는 이를 "비교 가능한 설정"이라 부른다(+6.3%p = 84.2 − 77.9).
   verification:
     method: quote_match
     by: agent:claude-opus-5-5
     at: '2026-10-15'
   review: null
+  note: '감사 F-02/F-03(2026-10-15): 수치를 인용(+6.3%)과 같은 비교(DeiT-B⚗ 1000 epochs 84.2 vs ViT-B/16 77.9)로 맞춤.'
 - id: clm:swin-improves-on-deit
   predicate: IMPROVES_ON
   subject: model:swin
@@ -3863,9 +4251,9 @@ claims:
   - source: src:arxiv:1706.03762v7
     locator:
       section: 3.2.1 Scaled Dot-Product Attention
-      paragraph: 2
-      html_id: S3.SS2.SSS1.p2
-    quote: 'We compute the matrix of outputs as:'
+      paragraph: 4
+      html_id: S3.SS2.SSS1.p4.1
+    quote: dot-product attention is much faster and more space-efficient in practice, since it can be implemented using highly optimized matrix multiplication code
     type: definitional_dependency
     stance: supports
   qualifiers:
@@ -3876,11 +4264,12 @@ claims:
     by: agent:claude-opus-5-5
     at: '2026-10-15'
   review: null
+  note: '감사 F-02/F-03(2026-10-15): 술어를 직접 뒷받침하는 인용으로 교체·보강.'
 - id: clm:prereq-softmax-temperature-scaled-dot-product-attention-derive
   predicate: PREREQUISITE_OF
   subject: concept:softmax-temperature
   object: method:scaled-dot-product-attention
-  status: verified
+  status: proposed
   confidence: medium
   evidence:
   - source: src:arxiv:1706.03762v7
@@ -3902,11 +4291,7 @@ claims:
   qualifiers:
     required_dimension: explain
     for_dimension: derive
-  note: logit 스케일을 나누는 것은 temperature와 같은 효과다.
-  verification:
-    method: quote_match
-    by: agent:claude-opus-5-5
-    at: '2026-10-15'
+  note: 'logit 스케일을 나누는 것은 temperature와 같은 효과다. / 감사 F-02/F-03(2026-10-15): Transformer 논문에는 temperature라는 말이 없다. √d_k 유도에 필요한 것은 합의 분산이고 temperature는 재해석이다. 내림(verified → proposed).'
   review: null
 - id: clm:prereq-variance-of-sum-scaled-dot-product-attention-derive
   predicate: PREREQUISITE_OF
@@ -3920,15 +4305,7 @@ claims:
       footnote: 4
       html_id: footnote1
       rendered_mark_in_html: 1
-    quote: To illustrate why the dot products get large, assume that the components of
-    type: definitional_dependency
-    stance: supports
-  - source: src:arxiv:1706.03762v7
-    locator:
-      footnote: 4
-      html_id: footnote1
-      rendered_mark_in_html: 1
-    quote: are independent random variables with mean
+    quote: To illustrate why the dot products get large, assume that the components of q and k are independent random variables with mean 0 and variance 1
     type: definitional_dependency
     stance: supports
   qualifiers:
@@ -3939,6 +4316,7 @@ claims:
     by: agent:claude-opus-5-5
     at: '2026-10-15'
   review: null
+  note: '감사 F-02/F-03(2026-10-15): 술어를 직접 뒷받침하는 인용으로 교체·보강.'
 - id: clm:prereq-scaled-dot-product-attention-multi-head-attention
   predicate: PREREQUISITE_OF
   subject: method:scaled-dot-product-attention
@@ -3948,9 +4326,10 @@ claims:
   evidence:
   - source: src:arxiv:1706.03762v7
     locator:
-      section: 3.2.2 Multi-Head Attention
-      paragraph: 1
-    quote: On each of these projected versions of queries, keys and values we then perform the attention function in parallel, yielding
+      figure: 2
+      part: caption
+      html_id: S3.F2
+    quote: (left) Scaled Dot-Product Attention. (right) Multi-Head Attention consists of several attention layers running in parallel.
     type: definitional_dependency
     stance: supports
   qualifiers:
@@ -3961,11 +4340,12 @@ claims:
     by: agent:claude-opus-5-5
     at: '2026-10-15'
   review: null
+  note: '감사 F-02/F-03(2026-10-15): 술어를 직접 뒷받침하는 인용으로 교체·보강.'
 - id: clm:prereq-matrix-multiplication-multi-head-attention
   predicate: PREREQUISITE_OF
   subject: concept:matrix-multiplication
   object: method:multi-head-attention
-  status: verified
+  status: proposed
   confidence: high
   evidence:
   - source: src:arxiv:1706.03762v7
@@ -3979,11 +4359,8 @@ claims:
   qualifiers:
     required_dimension: explain
     for_dimension: explain
-  verification:
-    method: quote_match
-    by: agent:claude-opus-5-5
-    at: '2026-10-15'
   review: null
+  note: '감사 F-02/F-03(2026-10-15): 논문은 선형 투영을 말하지만 행렬 곱셈을 직접 언급하지 않는다. 필수성은 사람 검토로 판단한다. 내림(verified → proposed).'
 - id: clm:prereq-softmax-softmax-temperature
   predicate: PREREQUISITE_OF
   subject: concept:softmax
@@ -3995,7 +4372,8 @@ claims:
     locator:
       section: 2 Distillation
       paragraph: 1
-    quote: Using a higher value for T produces a softer probability distribution over classes.
+      html_id: S2.p1.1
+    quote: Neural networks typically produce class probabilities by using a “softmax” output layer that converts the logit
     type: definitional_dependency
     stance: supports
   qualifiers:
@@ -4006,6 +4384,7 @@ claims:
     by: agent:claude-opus-5-5
     at: '2026-10-15'
   review: null
+  note: '감사 F-02/F-03(2026-10-15): 술어를 직접 뒷받침하는 인용으로 교체·보강.'
 - id: clm:prereq-multi-head-attention-transformer-encoder-layer
   predicate: PREREQUISITE_OF
   subject: method:multi-head-attention
@@ -4192,7 +4571,7 @@ claims:
   predicate: PREREQUISITE_OF
   subject: concept:matrix-multiplication
   object: method:patch-embedding
-  status: verified
+  status: proposed
   confidence: high
   evidence:
   - source: src:arxiv:2010.11929v2
@@ -4203,11 +4582,8 @@ claims:
   qualifiers:
     required_dimension: explain
     for_dimension: explain
-  verification:
-    method: quote_match
-    by: agent:claude-opus-5-5
-    at: '2026-10-15'
   review: null
+  note: '감사 F-02/F-03(2026-10-15): 논문은 학습 가능한 선형 투영을 말하지만 행렬 곱셈을 직접 언급하지 않는다. 필수성은 사람 검토로 판단한다. 내림(verified → proposed).'
 - id: clm:prereq-token-embedding-positional-encoding
   predicate: PREREQUISITE_OF
   subject: concept:token-embedding
@@ -4235,7 +4611,7 @@ claims:
   predicate: PREREQUISITE_OF
   subject: method:scaled-dot-product-attention
   object: method:positional-encoding
-  status: verified
+  status: proposed
   confidence: medium
   evidence:
   - source: src:arxiv:1706.03762v7
@@ -4249,11 +4625,7 @@ claims:
   qualifiers:
     required_dimension: explain
     for_dimension: explain
-  note: attention 자체는 순서를 모른다.
-  verification:
-    method: quote_match
-    by: agent:claude-opus-5-5
-    at: '2026-10-15'
+  note: 'attention 자체는 순서를 모른다. / 감사 F-02/F-03(2026-10-15): 인용은 순환·합성곱이 없어서 위치 정보가 필요하다고 말할 뿐 attention을 언급하지 않는다. 내림(verified → proposed).'
   review: null
 - id: clm:prereq-token-embedding-class-token
   predicate: PREREQUISITE_OF
@@ -4301,7 +4673,7 @@ claims:
   predicate: PREREQUISITE_OF
   subject: method:convolutional-layer
   object: concept:inductive-bias
-  status: verified
+  status: proposed
   confidence: high
   evidence:
   - source: src:arxiv:2010.11929v2
@@ -4314,11 +4686,8 @@ claims:
   qualifiers:
     required_dimension: explain
     for_dimension: explain
-  verification:
-    method: quote_match
-    by: agent:claude-opus-5-5
-    at: '2026-10-15'
   review: null
+  note: '감사 F-02/F-03(2026-10-15): 인용은 CNN과 ViT의 지역성 차이를 서술할 뿐 합성곱 층이 귀납적 편향을 설명하는 데 필수라는 근거가 아니다(예시 관계). 내림(verified → proposed).'
 - id: clm:prereq-softmax-temperature-knowledge-distillation
   predicate: PREREQUISITE_OF
   subject: concept:softmax-temperature
@@ -4329,8 +4698,9 @@ claims:
   - source: src:arxiv:1503.02531v1
     locator:
       section: 2 Distillation
-      paragraph: 1
-    quote: Using a higher value for T produces a softer probability distribution over classes.
+      paragraph: 2
+      html_id: S2.p2.1
+    quote: using a soft target distribution for each case in the transfer set that is produced by using the cumbersome model with a high temperature in its softmax
     type: definitional_dependency
     stance: supports
   qualifiers:
@@ -4341,6 +4711,7 @@ claims:
     by: agent:claude-opus-5-5
     at: '2026-10-15'
   review: null
+  note: '감사 F-02/F-03(2026-10-15): 술어를 직접 뒷받침하는 인용으로 교체·보강.'
 - id: clm:prereq-class-token-distillation-token
   predicate: PREREQUISITE_OF
   subject: method:class-token
@@ -4394,7 +4765,16 @@ claims:
     locator:
       section: 5.1 Transformer models
       paragraph: 1
-    quote: As mentioned earlier, our architecture design is identical to the one proposed by Dosovitskiy et al. [15] with no convolutions. Our only differences are the training strategies, and the distillation token.
+      html_id: S5.SS1.p1.1
+    quote: As mentioned earlier, our architecture design is identical to the one proposed by Dosovitskiy et al. [15] with no convolutions.
+    type: definitional_dependency
+    stance: supports
+  - source: src:arxiv:2012.12877v2
+    locator:
+      section: 5.1 Transformer models
+      paragraph: 1
+      html_id: S5.SS1.p1.1
+    quote: we refer to the results obtained in the prior work by ViT, and prefix ours by DeiT
     type: definitional_dependency
     stance: supports
   qualifiers:
@@ -4405,6 +4785,7 @@ claims:
     by: agent:claude-opus-5-5
     at: '2026-10-15'
   review: null
+  note: '감사 F-02/F-03(2026-10-15): 술어를 직접 뒷받침하는 인용으로 교체·보강.'
 - id: clm:prereq-distillation-token-deit
   predicate: PREREQUISITE_OF
   subject: method:distillation-token

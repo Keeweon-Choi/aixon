@@ -33,10 +33,11 @@ def mini(tmp_path, mutate=None, name="mini"):
 
 
 def cs(g): return {x.code for x in validate(g)}
+def gs(g): return {x.code for x in validate(g) if x.code.startswith("G")}  # exact G set: catches false positives (02 §9 "해당 코드만")
 
 
 def claim(ident, predicate, subject, obj, status="verified", **q):
-    evidence = [{"source": "src:test:notes", "type": "definitional_dependency", "stance": "supports", "quote": "Definition evidence."}]
+    evidence = [{"source": "src:test:notes", "type": "definitional_dependency", "stance": "supports", "quote": f"Definition evidence for {subject.split(':')[-1]}."}]
     if status == "disputed": evidence.append({"source": "src:test:notes", "type": "definitional_dependency", "stance": "contradicts", "quote": "Contrary evidence."})
     out = {"id": ident, "predicate": predicate, "subject": subject, "object": obj, "qualifiers": q, "status": status, "confidence": "high", "evidence": evidence}
     if status == "verified": out["verification"] = {"method": "review", "by": "t", "at": "2026-01-01"}
@@ -71,28 +72,30 @@ def mastered(u, d="explain"): return [att(iid(u, d, 1)), att(iid(u, d, 2), at="2
 
 
 # 02_DOMAIN_ONTOLOGY.md §9.1
+# exact set: dangling object -> also no type (G004) and no declared dimension (G010)
 def test_t1(tmp_path):
-    _, r = mini(tmp_path); r["claims"].append(claim("clm:t1", "PREREQUISITE_OF", "concept:algebra", "method:nope", for_dimension="explain", required_dimension="explain")); assert "G003" in cs(load(tmp_path, r, "t1"))
+    _, r = mini(tmp_path); r["claims"].append(claim("clm:t1", "PREREQUISITE_OF", "concept:algebra", "method:nope", for_dimension="explain", required_dimension="explain")); assert gs(load(tmp_path, r, "t1")) == {"G003", "G004", "G010"}
 
 
+# exact set: a verified INTRODUCES from a concept also fails the INTRODUCES evidence policy (G007)
 def test_t2(tmp_path):
-    _, r = mini(tmp_path); r["claims"].append(claim("clm:t2", "INTRODUCES", "concept:softmax", "method:attention")); assert "G004" in cs(load(tmp_path, r, "t2"))
+    _, r = mini(tmp_path); r["claims"].append(claim("clm:t2", "INTRODUCES", "concept:softmax", "method:attention")); assert gs(load(tmp_path, r, "t2")) == {"G004", "G007"}
 
 
 def test_t3(tmp_path):
-    _, r = mini(tmp_path); r["papers"] = [{"id": f"paper:{x}", "title": x, "authors": [x], "earliest_public_date": "2020-01-01", "identifiers": {"arxiv": "same"}} for x in "ab"]; assert "G005" in cs(load(tmp_path, r, "t3"))
+    _, r = mini(tmp_path); r["papers"] = [{"id": f"paper:{x}", "title": x, "authors": [x], "earliest_public_date": "2020-01-01", "identifiers": {"arxiv": "same"}} for x in "ab"]; assert gs(load(tmp_path, r, "t3")) == {"G005"}
 
 
 def test_t4(tmp_path):
-    _, r = mini(tmp_path); r["methods"].append({"id": "method:other", "name": "o", "summary": "o", "dimensions": ["recognize", "explain"]}); x = claim("clm:t4", "EXTENDS", "method:attention", "method:other"); x["evidence"] = []; r["claims"].append(x); assert "G007" in cs(load(tmp_path, r, "t4"))
+    _, r = mini(tmp_path); r["methods"].append({"id": "method:other", "name": "o", "summary": "o", "dimensions": ["recognize", "explain"]}); x = claim("clm:t4", "EXTENDS", "method:attention", "method:other"); x["evidence"] = []; r["claims"].append(x); assert gs(load(tmp_path, r, "t4")) == {"G007"}
 
 
 def test_t5(tmp_path):
-    _, r = mini(tmp_path); r["claims"].append(claim("clm:t5", "PREREQUISITE_OF", "concept:softmax", "concept:algebra", for_dimension="explain", required_dimension="explain")); assert "G008" in cs(load(tmp_path, r, "t5"))
+    _, r = mini(tmp_path); r["claims"].append(claim("clm:t5", "PREREQUISITE_OF", "concept:softmax", "concept:algebra", for_dimension="explain", required_dimension="explain")); assert gs(load(tmp_path, r, "t5")) == {"G008"}
 
 
 def test_t6(tmp_path):
-    g, _ = pg(tmp_path, {"a": ["recognize", "explain", "derive"], "b": ["recognize", "explain"]}, [("b", "a", "derive", "explain", None, "verified", "PREREQUISITE_OF"), ("a", "b", "explain", "derive", None, "verified", "PREREQUISITE_OF")], name="t6"); assert "G008" in cs(g)
+    g, _ = pg(tmp_path, {"a": ["recognize", "explain", "derive"], "b": ["recognize", "explain"]}, [("b", "a", "derive", "explain", None, "verified", "PREREQUISITE_OF"), ("a", "b", "explain", "derive", None, "verified", "PREREQUISITE_OF")], name="t6"); assert gs(g) == {"G008"}
 
 
 def test_t7(tmp_path):
@@ -100,39 +103,55 @@ def test_t7(tmp_path):
 
 
 def test_t8(tmp_path):
-    _, r = mini(tmp_path); r["claims"].append(claim("clm:t8", "PREREQUISITE_OF", "concept:algebra", "method:attention", for_dimension="explain", required_dimension="explain", group="only")); assert "G009" in cs(load(tmp_path, r, "t8"))
+    _, r = mini(tmp_path); r["claims"].append(claim("clm:t8", "PREREQUISITE_OF", "concept:algebra", "method:attention", for_dimension="explain", required_dimension="explain", group="only")); assert gs(load(tmp_path, r, "t8")) == {"G009"}
 
 
 def test_t9(tmp_path):
-    _, r = mini(tmp_path); r["methods"].append({"id": "method:class-token", "name": "ct", "summary": "ct", "dimensions": ["recognize", "explain"]}); r["assessment_items"].append({"id": "ai:ct", "name": "ct", "assesses": {"unit": "method:class-token", "dimension": "derive"}, "kind": "numeric", "prompt": "x", "answer": 1, "tolerance": 0, "rationale": "x"}); assert "G010" in cs(load(tmp_path, r, "t9"))
+    _, r = mini(tmp_path); r["methods"].append({"id": "method:class-token", "name": "ct", "summary": "ct", "dimensions": ["recognize", "explain"]}); r["assessment_items"].append({"id": "ai:ct", "name": "ct", "assesses": {"unit": "method:class-token", "dimension": "derive"}, "kind": "numeric", "prompt": "x", "answer": 1, "tolerance": 0, "rationale": "x"}); assert gs(load(tmp_path, r, "t9")) == {"G010"}
 
 
+# exact set: benchmark:no is dangling on purpose (G003); COMPARED_WITH needs experimental evidence (G007)
 def test_t10(tmp_path):
-    _, r = mini(tmp_path); r["methods"].append({"id": "method:other", "name": "o", "summary": "o", "dimensions": ["recognize", "explain"]}); r["claims"] += [claim("clm:ab", "COMPARED_WITH", "method:attention", "method:other", benchmark="benchmark:no"), claim("clm:ba", "COMPARED_WITH", "method:other", "method:attention", benchmark="benchmark:no")]; assert "G012" in cs(load(tmp_path, r, "t10"))
+    _, r = mini(tmp_path); r["methods"].append({"id": "method:other", "name": "o", "summary": "o", "dimensions": ["recognize", "explain"]}); r["claims"] += [claim("clm:ab", "COMPARED_WITH", "method:attention", "method:other", benchmark="benchmark:no"), claim("clm:ba", "COMPARED_WITH", "method:other", "method:attention", benchmark="benchmark:no")]; assert gs(load(tmp_path, r, "t10")) == {"G003", "G007", "G012"}
 
 
+# exact set: field:x is dangling on purpose (G003); ADAPTS needs an author statement (G007)
 def test_t11(tmp_path):
-    _, r = mini(tmp_path); r["methods"].append({"id": "method:other", "name": "o", "summary": "o", "dimensions": ["recognize", "explain"]}); r["claims"].append(claim("clm:t11", "ADAPTS", "method:attention", "method:other", from_field="field:x", to_field="field:x")); assert "G013" in cs(load(tmp_path, r, "t11"))
+    _, r = mini(tmp_path); r["methods"].append({"id": "method:other", "name": "o", "summary": "o", "dimensions": ["recognize", "explain"]}); r["claims"].append(claim("clm:t11", "ADAPTS", "method:attention", "method:other", from_field="field:x", to_field="field:x")); assert gs(load(tmp_path, r, "t11")) == {"G003", "G007", "G013"}
 
 
+# exact set: minimal papers have no identifiers (G020); EXTENDS needs an author statement (G007)
 def test_t12(tmp_path):
-    _, r = mini(tmp_path); r["methods"].append({"id": "method:other", "name": "o", "summary": "o", "dimensions": ["recognize", "explain"]}); r["papers"] = [{"id": "paper:old", "title": "o", "authors": ["o"], "earliest_public_date": "2017-01-01"}, {"id": "paper:new", "title": "n", "authors": ["n"], "earliest_public_date": "2020-01-01"}]; r["claims"] += [claim("clm:io", "INTRODUCES", "paper:old", "method:attention"), claim("clm:in", "INTRODUCES", "paper:new", "method:other"), claim("clm:t12", "EXTENDS", "method:attention", "method:other")]; assert "G014" in cs(load(tmp_path, r, "t12"))
+    _, r = mini(tmp_path); r["methods"].append({"id": "method:other", "name": "o", "summary": "o", "dimensions": ["recognize", "explain"]}); r["papers"] = [{"id": "paper:old", "title": "o", "authors": ["o"], "earliest_public_date": "2017-01-01"}, {"id": "paper:new", "title": "n", "authors": ["n"], "earliest_public_date": "2020-01-01"}]; r["claims"] += [claim("clm:io", "INTRODUCES", "paper:old", "method:attention"), claim("clm:in", "INTRODUCES", "paper:new", "method:other"), claim("clm:t12", "EXTENDS", "method:attention", "method:other")]; assert gs(load(tmp_path, r, "t12")) == {"G007", "G014", "G020"}
 
 
 def test_t13(tmp_path):
-    _, r = mini(tmp_path); r["methods"].append({"id": "method:other", "name": "o", "summary": "o", "dimensions": ["recognize", "explain"]}); r["datasets"] = [{"id": "dataset:x", "name": "x", "summary": "x"}]; r["metrics"] = [{"id": "metric:x", "name": "x", "summary": "x", "direction": "lower_is_better"}]; r["benchmarks"] = [{"id": "benchmark:x", "name": "x", "summary": "x", "dataset": "dataset:x", "metrics": ["metric:x"]}]; x = claim("clm:t13", "IMPROVES_ON", "method:attention", "method:other", benchmark="benchmark:x", metric="metric:x", subject_value=4, object_value=2); x["evidence"] = [{"source": "src:mini:notes", "type": "experimental_result", "stance": "supports", "quote": "Table.", "locator": {"table": "1"}}]; r["claims"].append(x); assert "G015" in cs(load(tmp_path, r, "t13"))
+    _, r = mini(tmp_path); r["methods"].append({"id": "method:other", "name": "o", "summary": "o", "dimensions": ["recognize", "explain"]}); r["datasets"] = [{"id": "dataset:dx", "name": "dx", "summary": "x"}]; r["metrics"] = [{"id": "metric:mx", "name": "mx", "summary": "x", "direction": "lower_is_better"}]; r["benchmarks"] = [{"id": "benchmark:bx", "name": "bx", "summary": "x", "dataset": "dataset:dx", "metrics": ["metric:mx"], "split": "test"}]; x = claim("clm:t13", "IMPROVES_ON", "method:attention", "method:other", benchmark="benchmark:bx", metric="metric:mx", subject_value=4, object_value=2); x["evidence"] = [{"source": "src:mini:notes", "type": "experimental_result", "stance": "supports", "quote": "Table.", "locator": {"table": "1"}}]; r["claims"].append(x); assert gs(load(tmp_path, r, "t13")) == {"G015"}
 
 
+# exact set: the re-proposed copy also duplicates the original active claim key (G006)
 def test_t14(tmp_path):
-    _, r = mini(tmp_path); rejected, active = copy.deepcopy(r["claims"][0]), copy.deepcopy(r["claims"][0]); rejected.update({"id": "clm:rejected", "status": "rejected", "rejected_reason": "no"}); active.update({"id": "clm:active", "status": "proposed"}); r["claims"] += [rejected, active]; assert "G016" in cs(load(tmp_path, r, "t14"))
+    _, r = mini(tmp_path); rejected, active = copy.deepcopy(r["claims"][0]), copy.deepcopy(r["claims"][0]); rejected.update({"id": "clm:rejected", "status": "rejected", "rejected_reason": "no"}); active.update({"id": "clm:active", "status": "proposed"}); r["claims"] += [rejected, active]; assert gs(load(tmp_path, r, "t14")) == {"G006", "G016"}
 
 
 def test_t15(tmp_path):
-    _, r = mini(tmp_path); r["assessment_items"][0].pop("tolerance"); assert "G018" in cs(load(tmp_path, r, "t15"))
+    _, r = mini(tmp_path); r["assessment_items"][0].pop("tolerance"); assert gs(load(tmp_path, r, "t15")) == {"G018"}
 
 
 def test_t16(tmp_path):
-    _, r = mini(tmp_path); r["papers"] = [{"id": f"paper:{x}", "title": x, "authors": [x], "earliest_public_date": "2020-01-01"} for x in "ab"]; x = claim("clm:cites", "CITES", "paper:a", "paper:b"); x["evidence"] = [{"source": "src:mini:notes", "type": "bibliographic_metadata", "stance": "supports", "quote": "Reference."}]; r["claims"].append(x); g = load(tmp_path, r, "t16"); plan(g, {}, [{"unit": "method:attention", "dimension": "derive"}]); assert not [x for x in g["claims"].values() if x["predicate"] == "EXTENDS"]
+    """CITES is bibliography, not influence: a citation between the papers that introduce two units must not
+    make one a prerequisite of the other or create a research relation (02 O2, V-CITES-NOT-INFLUENCE)."""
+    g, raw = pg(tmp_path, {"a": ["recognize", "explain"], "b": ["recognize", "explain"]}, name="t16")
+    raw["papers"] = [{"id": f"paper:p{x}", "title": x, "authors": [x], "earliest_public_date": "2020-01-01", "identifiers": {"arxiv": f"2001.0000{i}"}} for i, x in enumerate("ab")]
+    cites = claim("clm:cites", "CITES", "paper:pa", "paper:pb")
+    cites["evidence"] = [{"source": "src:test:notes", "type": "bibliographic_metadata", "stance": "supports", "quote": "Reference list."}]
+    raw["claims"].append(cites)
+    for x in "ab":  # each paper introduces one unit, so "a's paper cites b's paper" is the tempting (wrong) inference
+        raw["claims"].append(claim(f"clm:intro-{x}", "INTRODUCES", f"paper:p{x}", f"concept:{x}"))
+    g = load(tmp_path, raw, "t16b")
+    out = plan(g, {}, [{"unit": "concept:a", "dimension": "explain"}])
+    assert [s["unit"] for s in out["steps"]] == ["concept:a"]
+    assert {c["predicate"] for c in g["claims"].values()} == {"CITES", "INTRODUCES"}
 
 
 def test_t17(tmp_path):
@@ -305,11 +324,11 @@ def test_quote_source_changed_and_quote_result(tmp_path): assert [x["status"] fo
 def test_t18_p15_seed_if_present():
     root = HERE.parent; seed, learner, expected = root / "data/seed/seed_graph.yaml", root / "data/seed/learner_e2e.yaml", root / "data/seed/expected_plan_e2e.json"
     if not seed.exists(): pytest.skip("seed graph not present")
-    g = load_graph(seed); assert not [x for x in validate(g) if x.code.startswith("G")]
+    g = load_graph([seed, root / "data/graph/atlas.yaml"]); assert not [x for x in validate(g) if x.code.startswith("G")]
     if not (learner.exists() and expected.exists()): pytest.skip("e2e fixtures not present")
     # graph_version/inputs_hash are content hashes of the graph file: any edit (e.g. a summary) changes them
     # without changing the plan, so the golden comparison covers everything else.
-    volatile = {"graph_version", "inputs_hash"}
+    volatile = {"graph_version", "inputs_hash", "objective"}  # objective: added by the CLI, not by plan()
     actual = plan(g, yaml.safe_load(learner.read_text()), g["entities"]["lo:vit-attention-math"]["targets"])
     golden = json.loads(expected.read_text())
     assert {k: v for k, v in actual.items() if k not in volatile} == {k: v for k, v in golden.items() if k not in volatile}
@@ -357,14 +376,17 @@ def test_p15b_seed_replanning_sequence():
     root = HERE.parent
     seed, learner_path = root / "data/seed/seed_graph.yaml", root / "data/seed/learner_e2e.yaml"
     if not (seed.exists() and learner_path.exists()): pytest.skip("seed fixtures not present")
-    graph = load_graph(seed); learner = yaml.safe_load(learner_path.read_text()); targets = graph["entities"]["lo:vit-attention-math"]["targets"]
+    graph = load_graph([seed, root / "data/graph/atlas.yaml"]); learner = yaml.safe_load(learner_path.read_text()); targets = graph["entities"]["lo:vit-attention-math"]["targets"]
     def skel(lr): return [(s["action"], s["unit"].split(":")[1], tuple(s["covers"])) for s in plan(graph, lr, targets)["steps"]]
     def att(item, ok, minute): return {"item": item, "correct": ok, "hinted": False, "at": f"2026-10-15T10:{minute:02d}:00Z"}
     E = ("recognize", "explain")
     assert skel(learner)[0] == ("diagnose", "softmax", ("explain",))
     # 6: the diagnostic reveals a gap (numeric item wrong) -> softmax is learned, no diagnose step remains
     learner["attempts"] += [att("ai:softmax-01", False, 1), att("ai:softmax-02", True, 2)]
-    assert skel(learner) == [("learn", "softmax", E), ("learn", "softmax-temperature", E), ("learn", "variance-of-sum", E),
+    # softmax-temperature is no longer a prerequisite of sdpa@derive (proposed after audit F-03), so it is not planned.
+    # sdpa@derive is visited first (implication-last, P16): its derive prerequisite variance-of-sum comes before
+    # softmax, the prerequisite of the implied sdpa@explain.
+    assert skel(learner) == [("learn", "variance-of-sum", E), ("learn", "softmax", E),
                              ("learn", "scaled-dot-product-attention", ("recognize", "explain", "derive")), ("learn", "multi-head-attention", E)]
     # 7–8: softmax and temperature (incl. the lab prediction items) are demonstrated -> they drop out
     learner["attempts"] += [att("ai:softmax-01", True, 3), att("ai:softmax-temperature-01", True, 4), att("ai:lab-softmax-temp-01", True, 5), att("ai:lab-softmax-temp-02", True, 6)]
@@ -385,3 +407,54 @@ def test_g020_required_fields_and_g021_identifier_types(tmp_path):
     issues = validate(mini(tmp_path, change)[0])
     assert any(x.code == "G021" and x.ref == "paper:float2016-id" for x in issues)
     assert any(x.code == "G020" and x.ref == "problem:no-question" and "question" in x.message for x in issues)
+
+
+def test_g022_approval_must_be_human_and_fresh(tmp_path):
+    """ADR-021: an approval counts only if signed by human:* and bound to the current content hash (audit F-01, F-06)."""
+    from seedtool import approval_state, review_hash
+    _, r = mini(tmp_path)
+    c = r["claims"][0]
+    c["review"] = {"by": "agent:codex", "at": "2026-10-15", "decision": "approve", "reviewed_hash": review_hash(c)}
+    assert approval_state(c) == "invalid"
+    assert "G022" in gs(load(tmp_path, r, "g22a"))
+    c["review"] = {"by": "human:keeweon", "at": "2026-10-15", "decision": "approve", "reviewed_hash": "000000000000"}
+    assert approval_state(c) == "stale"
+    c["review"]["reviewed_hash"] = review_hash(c)
+    assert approval_state(c) == "approved"
+    assert "G022" not in gs(load(tmp_path, r, "g22b"))
+    c["evidence"][0]["quote"] = "Changed after approval."
+    assert approval_state(c) == "stale"
+
+
+def test_g023_definitional_quote_must_mention_subject(tmp_path):
+    """ADR-022: definitional_dependency evidence of a verified claim must name the subject (word-prefix match)."""
+    from seedtool import mentions, surface_forms
+    assert not mentions("proposed by Dosovitskiy et al.", surface_forms({"name": "Vision Transformer", "aliases": ["ViT"]}))
+    assert mentions("as the patch embeddings.", surface_forms({"name": "패치 임베딩", "aliases": ["patch embedding"]}))
+    _, r = mini(tmp_path)
+    c = claim("clm:g23", "PREREQUISITE_OF", "concept:softmax", "method:attention", for_dimension="explain", required_dimension="explain")
+    c["evidence"][0]["quote"] = "The model computes weights."
+    r["claims"].append(c)
+    assert "G023" in gs(load(tmp_path, r, "g23a"))
+    c["status"] = "proposed"
+    assert "G023" not in gs(load(tmp_path, r, "g23b"))
+
+
+def test_g024_g025_and_quality_warnings(tmp_path):
+    _, r = mini(tmp_path)
+    r.setdefault("datasets", []).append({"id": "dataset:softmax", "name": "softmax data", "summary": "Shared summary."})
+    r["datasets"].append({"id": "dataset:other", "name": "vit data hunger", "summary": "Shared summary."})
+    r["sources"][0]["url"] = "javascript:alert(1)"
+    codes = cs(load(tmp_path, r, "g24"))
+    assert {"G024", "G025", "W109", "W110"} <= codes
+
+
+def test_t18_warning_snapshot():
+    """T18: the warning profile of the real graph is pinned; a change must be deliberate (update the snapshot)."""
+    root = HERE.parent
+    g = load_graph([root / "data/seed/seed_graph.yaml", root / "data/graph/atlas.yaml"])
+    counts = {}
+    for x in validate(g):
+        counts[x.code] = counts.get(x.code, 0) + 1
+    snapshot = json.loads((root / "data/seed/validate_snapshot.json").read_text())
+    assert counts == snapshot, f"warning profile changed: {counts} != {snapshot} (update data/seed/validate_snapshot.json if intended)"

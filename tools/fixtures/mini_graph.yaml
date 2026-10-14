@@ -28,6 +28,7 @@ resources:
     name: Algebra notes
     url: https://example.invalid/algebra
     format: text
+    verified_at: 2026-01-01
     explains:
       - unit: concept:algebra
         dimensions: [recognize, explain]
@@ -35,6 +36,7 @@ resources:
     name: Softmax notes
     url: https://example.invalid/softmax
     format: text
+    verified_at: 2026-01-01
     explains:
       - unit: concept:softmax
         dimensions: [recognize, explain]
@@ -42,6 +44,7 @@ resources:
     name: Attention notes
     url: https://example.invalid/attention
     format: text
+    verified_at: 2026-01-01
     explains:
       - unit: method:attention
         dimensions: [recognize, explain, derive]
@@ -97,6 +100,11 @@ assessment_items:
 sources:
   - id: src:mini:notes
     name: Mini notes
+    kind: web_page
+    url: https://example.invalid/notes
+    retrieved_at: 2026-10-15
+  - id: src:test:notes
+    name: Test notes
     kind: web_page
     url: https://example.invalid/notes
     retrieved_at: 2026-10-15
