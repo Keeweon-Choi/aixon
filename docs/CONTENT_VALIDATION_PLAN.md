@@ -68,7 +68,9 @@
 | E2E-8 | SEO·접근성 기본 | title·description·lang·h1, 그래프 노드 aria-label, MathML |
 | E2E-9 | public 빌드 관문 | `dist-public`에 draft Wiki·미승인 Claim이 없고, 승인된 문서는 있다. robots.txt 허용 |
 
-E2E 테스트는 **결정적인 fixture 그래프·Wiki**(`tests/fixtures/`)로 돈다. 실제 시드에 대해서는 같은 E2E-1·2·6·7을 시드 경로 환경 변수로 한 번 더 돌린다(`make e2e-seed`, 07 문서 Sprint 3 완료 조건).
+| **E2E-10** | **Understanding Vision Transformer**(지침 Phase G 여정의 v0.1 판, 실제 시드로만 실행): ① Explore — Atlas에서 Computer Vision 분야 → `model:vit` 노드 → 패널의 분야·논문 ② Trace — `/trace/`에서 ViT와 Transformer 사이 `ADAPTS` 간선 → Claim 페이지(Evidence Inspector) ③ Learn — ViT·SDPA 페이지의 선수 개념 목록(REQUIRES Claim)을 따라 SDPA Wiki로 이동 ④ Lab — temperature 변경 → 확률 변화 → 예측 문제 제출 | ① 분야에 Computer Vision, 논문에 Dosovitskiy 2020 ② 관계 유형 `ADAPTS`, 인용 원문·위치·arXiv 링크, 연도 순서 Transformer(2017) < ViT(2020), CITES만 있는 쌍은 영향 관계로 그려지지 않음 ③ 화면의 선수 목록 = 시드의 verified REQUIRES 간선(로더 결과와 교차 확인) ④ 화면 수치 = fixture, 채점 결과 표시. **⑤ Remember·⑥ Resume(숙련도 저장·재계산)은 P2(ADR-019) → NOT APPLICABLE.** 학습 경로 계산 자체는 `test_seedtool.py` P15·P15b(golden 계획)가 검증한다 |
+
+E2E 테스트는 **결정적인 fixture 그래프·Wiki**(`tests/fixtures/`)로 돈다. 실제 시드에 대해서는 같은 E2E-1·2·6·7과 E2E-10을 시드 경로 환경 변수로 한 번 더 돌린다(`make e2e-seed`, 07 문서 Sprint 4 완료 조건).
 
 ## 3. 하지 않는 것 (MVP 범위 밖)
 
