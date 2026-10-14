@@ -816,27 +816,1296 @@ objectives:
     dimension: explain
   context: paper:vaswani2017-transformer
 resources:
-- id: res:vaswani-attention
-  name: Attention Is All You Need
-  url: https://arxiv.org/abs/1706.03762
+- id: res:3blue1brown-com-lessons-dot-products
+  name: U01 학습 자료
+  format: video
+  url: https://www.3blue1brown.com/lessons/dot-products
+  author: Grant Sanderson
+  license: 오픈 라이선스 아님 (3b1b FAQ)
+  verified_at: '2026-10-15'
+  explains:
+  - unit: concept:dot-product
+    dimensions:
+    - recognize
+    - explain
+    locator: Numerical Method / Geometric Interpretation / Duality
+- id: res:d2l-ai-chapter-preliminaries-linear-algebra-html-dot-products
+  name: U01 학습 자료
+  format: text
+  url: https://d2l.ai/chapter_preliminaries/linear-algebra.html#dot-products
+  author: Aston Zhang, Zachary C. Lipton, Mu Li, Alexander J. Smola
+  license: CC BY-SA 4.0 / 코드 수정 MIT
+  verified_at: '2026-10-15'
+  explains:
+  - unit: concept:dot-product
+    dimensions:
+    - recognize
+    - explain
+    - implement
+    locator: 2.3.8. Dot Products
+- id: res:3blue1brown-com-lessons-gpt-dot-product
+  name: U01 학습 자료
+  format: video
+  url: https://www.3blue1brown.com/lessons/gpt#dot-product
+  author: Grant Sanderson
+  license: 오픈 라이선스 아님
+  verified_at: '2026-10-15'
+  explains:
+  - unit: concept:dot-product
+    dimensions:
+    - explain
+    locator: '"Dot Product" 소절'
+- id: res:3blue1brown-com-lessons-matrix-multiplication
+  name: U02 학습 자료
+  format: video
+  url: https://www.3blue1brown.com/lessons/matrix-multiplication
+  author: Grant Sanderson
+  license: 오픈 라이선스 아님
+  verified_at: '2026-10-15'
+  explains:
+  - unit: concept:matrix-multiplication
+    dimensions:
+    - explain
+    locator: Composition is Multiplication / Noncommutativity / Associativity
+- id: res:d2l-ai-chapter-preliminaries-linear-algebra-html-matrixmatrix-multiplication
+  name: U02 학습 자료
+  format: text
+  url: https://d2l.ai/chapter_preliminaries/linear-algebra.html#matrixmatrix-multiplication
+  author: Aston Zhang, Zachary C. Lipton, Mu Li, Alexander J. Smola
+  license: CC BY-SA 4.0 / 코드 수정 MIT
+  verified_at: '2026-10-15'
+  explains:
+  - unit: concept:matrix-multiplication
+    dimensions:
+    - recognize
+    - implement
+    locator: 2.3.9. Matrix–Vector Products, 2.3.10. Matrix–Matrix Multiplication
+- id: res:deeplearningbook-org-contents-linear-algebra-html
+  name: U02 학습 자료
+  format: text
+  url: https://www.deeplearningbook.org/contents/linear_algebra.html
+  author: Ian Goodfellow, Yoshua Bengio, Aaron Courville
+  license: 오픈 라이선스 아님 (무료 HTML)
+  verified_at: '2026-10-15'
+  explains:
+  - unit: concept:matrix-multiplication
+    dimensions:
+    - recognize
+    locator: 2.2 Multiplying Matrices and Vectors (pp.32–34)
+- id: res:d2l-ai-chapter-linear-classification-softmax-regression-html-the-softmax
+  name: U03 학습 자료
+  format: text
+  url: https://d2l.ai/chapter_linear-classification/softmax-regression.html#the-softmax
+  author: Aston Zhang, Zachary C. Lipton, Mu Li, Alexander J. Smola
+  license: CC BY-SA 4.0 / 코드 수정 MIT
+  verified_at: '2026-10-15'
+  explains:
+  - unit: concept:softmax
+    dimensions:
+    - recognize
+    - explain
+    - derive
+    locator: 4.1.1.2. The Softmax, 4.1.2.2. Softmax and Cross-Entropy Loss
+  - unit: concept:softmax-temperature
+    dimensions:
+    - recognize
+    locator: 4.1.1.2 (Boltzmann exp(−E/kT)), 4.1.5. Exercises (온도 문항)
+- id: res:cs231n-github-io-linear-classify-softmax
+  name: U03 학습 자료
+  format: text
+  url: https://cs231n.github.io/linear-classify/#softmax
+  author: Stanford CS231n
+  license: 페이지 표기 없음, 저장소 MIT
+  verified_at: '2026-10-15'
+  explains:
+  - unit: concept:softmax
+    dimensions:
+    - explain
+    - implement
+    locator: 'Softmax classifier, Practical issues: Numeric stability (#softmax-stability), SVM vs. Softmax'
+- id: res:deeplearningbook-org-contents-mlp-html
+  name: U03 학습 자료
+  format: text
+  url: https://www.deeplearningbook.org/contents/mlp.html
+  author: Ian Goodfellow, Yoshua Bengio, Aaron Courville
+  license: 오픈 라이선스 아님
+  verified_at: '2026-10-15'
+  explains:
+  - unit: concept:softmax
+    dimensions:
+    - derive
+    locator: 6.2.2.3 Softmax Units for Multinoulli Output Distributions (+ 4.1 Overflow and Underflow, numerical.html)
+- id: res:arxiv-org-abs-1503-02531
+  name: U04 학습 자료
   format: paper_section
-  author: Ashish Vaswani 외
+  url: https://arxiv.org/abs/1503.02531
+  author: 논문 저자
   license: arXiv 비독점 배포 라이선스
+  verified_at: '2026-10-15'
+  explains:
+  - unit: concept:softmax-temperature
+    dimensions:
+    - recognize
+    - derive
+    locator: §2 Distillation (식 1), §2.1, §3
+  - unit: method:knowledge-distillation
+    dimensions:
+    - recognize
+    - explain
+    locator: §2 Distillation, §2.1 Matching logits is a special case of distillation, §3 Preliminary experiments on MNIST
+- id: res:ar5iv-labs-arxiv-org-html-1503-02531-s2
+  name: U04 학습 자료
+  format: paper_section
+  url: https://ar5iv.labs.arxiv.org/html/1503.02531#S2
+  author: 논문 저자
+  license: arXiv 비독점 배포 라이선스
+  verified_at: '2026-10-15'
+  explains:
+  - unit: concept:softmax-temperature
+    dimensions:
+    - recognize
+    - derive
+    locator: §2 Distillation (식 1), §2.1, §3
+  - unit: method:knowledge-distillation
+    dimensions:
+    - recognize
+    - explain
+    locator: §2 Distillation, §2.1 Matching logits is a special case of distillation, §3 Preliminary experiments on MNIST
+- id: res:3blue1brown-com-lessons-gpt-softmax
+  name: U04 학습 자료
+  format: video
+  url: https://www.3blue1brown.com/lessons/gpt#softmax
+  author: Grant Sanderson
+  license: 오픈 라이선스 아님
+  verified_at: '2026-10-15'
+  explains:
+  - unit: concept:softmax-temperature
+    dimensions:
+    - explain
+    locator: '"Softmax" 절'
+- id: res:math-dartmouth-edu-prob-prob-prob-pdf
+  name: U05 학습 자료
+  format: text
+  url: https://math.dartmouth.edu/~prob/prob/prob.pdf
+  author: 원문 저자/발행처
+  license: GNU FDL
+  verified_at: '2026-10-15'
+  explains:
+  - unit: concept:variance-of-sum
+    dimensions:
+    - recognize
+    - derive
+    locator: §6.2 Variance of Discrete Random Variables, Theorem 6.8·6.9 (PDF 267–268쪽)
+- id: res:d2l-ai-chapter-appendix-mathematics-for-deep-learning-random-variables-html-vari
+  name: U05 학습 자료
+  format: text
+  url: https://d2l.ai/chapter_appendix-mathematics-for-deep-learning/random-variables.html#variances
+  author: Aston Zhang, Zachary C. Lipton, Mu Li, Alexander J. Smola
+  license: CC BY-SA 4.0
+  verified_at: '2026-10-15'
+  explains:
+  - unit: concept:variance-of-sum
+    dimensions:
+    - recognize
+    - explain
+    locator: 22.6.1.5. Variances, 22.6.1.10. Covariance (식 22.6.43–22.6.44)
+- id: res:cs231n-github-io-neural-networks-2-init
+  name: U05 학습 자료
+  format: text
+  url: https://cs231n.github.io/neural-networks-2/#init
+  author: Stanford CS231n
+  license: 저장소 MIT
+  verified_at: '2026-10-15'
+  explains:
+  - unit: concept:variance-of-sum
+    dimensions:
+    - derive
+    locator: 'Weight Initialization: "Calibrating the variances with 1/sqrt(n)"'
+- id: res:3blue1brown-com-lessons-gpt-embedding
+  name: U06 학습 자료
+  format: video
+  url: https://www.3blue1brown.com/lessons/gpt#embedding
+  author: Grant Sanderson
+  license: 오픈 라이선스 아님
+  verified_at: '2026-10-15'
+  explains:
+  - unit: concept:token-embedding
+    dimensions:
+    - recognize
+    - explain
+    locator: Tokens, Embedding (Embedding Matrix / Direction / Dot Product / Beyond words)
+- id: res:jalammar-github-io-illustrated-word2vec
+  name: U06 학습 자료
+  format: text
+  url: https://jalammar.github.io/illustrated-word2vec/
+  author: 원문 저자/발행처
+  license: CC BY-NC-SA 4.0
+  verified_at: '2026-10-15'
+  explains:
+  - unit: concept:token-embedding
+    dimensions:
+    - explain
+    locator: 전체 (Word Embeddings, Analogies, Skipgram, Negative Sampling, Window Size and Number of Negative Samples)
+- id: res:d2l-ai-chapter-recurrent-modern-seq2seq-html-encoder
+  name: U06 학습 자료
+  format: text
+  url: https://d2l.ai/chapter_recurrent-modern/seq2seq.html#encoder
+  author: Aston Zhang, Zachary C. Lipton, Mu Li, Alexander J. Smola
+  license: CC BY-SA 4.0
+  verified_at: '2026-10-15'
+  explains:
+  - unit: concept:token-embedding
+    dimensions:
+    - explain
+    locator: 10.7.2. Encoder (embedding layer)
+- id: res:d2l-ai-chapter-attention-mechanisms-and-transformers-queries-keys-values-html
+  name: U07 학습 자료
+  format: text
+  url: https://d2l.ai/chapter_attention-mechanisms-and-transformers/queries-keys-values.html
+  author: Aston Zhang, Zachary C. Lipton, Mu Li, Alexander J. Smola
+  license: CC BY-SA 4.0
+  verified_at: '2026-10-15'
+  explains:
+  - unit: concept:attention-mechanism
+    dimensions:
+    - recognize
+    - explain
+    locator: 11.1 본문 (식 11.1.1–11.1.3), 11.1.1. Visualization
+- id: res:distill-pub-2016-augmented-rnns
+  name: U07 학습 자료
+  format: text
+  url: https://distill.pub/2016/augmented-rnns/
+  author: 원문 저자/발행처
+  license: CC BY 2.0
+  verified_at: '2026-10-15'
+  explains:
+  - unit: concept:attention-mechanism
+    dimensions:
+    - explain
+    locator: Attentional Interfaces
+- id: res:jalammar-github-io-visualizing-neural-machine-translation-mechanics-of-seq2seq-m
+  name: U07 학습 자료
+  format: text
+  url: https://jalammar.github.io/visualizing-neural-machine-translation-mechanics-of-seq2seq-models-with-attention/#lets-pay-attention-now
+  author: 원문 저자/발행처
+  license: CC BY-NC-SA 4.0
+  verified_at: '2026-10-15'
+  explains:
+  - unit: concept:attention-mechanism
+    dimensions:
+    - explain
+    locator: '"Let''s Pay Attention Now"'
+- id: res:arxiv-org-abs-1409-0473
+  name: U08 학습 자료
+  format: paper_section
+  url: https://arxiv.org/abs/1409.0473
+  author: 논문 저자
+  license: arXiv 비독점 배포 라이선스
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:additive-attention
+    dimensions:
+    - recognize
+    - derive
+    locator: '§3.1 Decoder: General Description (식 4–6), App. A.1.2 Alignment Model'
+- id: res:ar5iv-labs-arxiv-org-html-1409-0473-s3-ss1
+  name: U08 학습 자료
+  format: paper_section
+  url: https://ar5iv.labs.arxiv.org/html/1409.0473#S3.SS1
+  author: 논문 저자
+  license: arXiv 비독점 배포 라이선스
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:additive-attention
+    dimensions:
+    - recognize
+    - derive
+    locator: '§3.1 Decoder: General Description (식 4–6), App. A.1.2 Alignment Model'
+- id: res:d2l-ai-chapter-attention-mechanisms-and-transformers-attention-scoring-functions
+  name: U08 학습 자료
+  format: text
+  url: https://d2l.ai/chapter_attention-mechanisms-and-transformers/attention-scoring-functions.html#additive-attention
+  author: Aston Zhang, Zachary C. Lipton, Mu Li, Alexander J. Smola
+  license: CC BY-SA 4.0
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:additive-attention
+    dimensions:
+    - explain
+    locator: 11.3.4. Additive Attention (+ 11.4. The Bahdanau Attention Mechanism)
+- id: res:arxiv-org-abs-1706-03762
+  name: U09 학습 자료
+  format: paper_section
+  url: https://arxiv.org/abs/1706.03762
+  author: 논문 저자
+  license: arXiv 비독점 배포 라이선스 (+ Google 표·그림 허가 문구)
   verified_at: '2026-10-15'
   explains:
   - unit: method:scaled-dot-product-attention
     dimensions:
     - recognize
-    - explain
     - derive
-    locator: §3.2.1 Scaled Dot-Product Attention
+    locator: §3.2.1 Scaled Dot-Product Attention + 각주 4 (PDF v7 p.4)
   - unit: method:multi-head-attention
     dimensions:
     - recognize
+    locator: §3.2.2 Multi-Head Attention (+ §3.2.3)
+- id: res:ar5iv-labs-arxiv-org-html-1706-03762-s3-ss2-sss1
+  name: U09 학습 자료
+  format: paper_section
+  url: https://ar5iv.labs.arxiv.org/html/1706.03762#S3.SS2.SSS1
+  author: 논문 저자
+  license: arXiv 비독점 배포 라이선스 (+ Google 표·그림 허가 문구)
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:scaled-dot-product-attention
+    dimensions:
+    - recognize
+    - derive
+    locator: §3.2.1 Scaled Dot-Product Attention + 각주 4 (PDF v7 p.4)
+- id: res:d2l-ai-chapter-attention-mechanisms-and-transformers-attention-scoring-functions-2
+  name: U09 학습 자료
+  format: text
+  url: https://d2l.ai/chapter_attention-mechanisms-and-transformers/attention-scoring-functions.html#dot-product-attention
+  author: Aston Zhang, Zachary C. Lipton, Mu Li, Alexander J. Smola
+  license: CC BY-SA 4.0
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:scaled-dot-product-attention
+    dimensions:
     - explain
-    locator: §3.2.2 Multi-Head Attention
-assessment_items: []
-labs: []
+    - derive
+    - implement
+    locator: 11.3.1, 11.3.2 (Masked Softmax, Batch Matrix Multiplication), 11.3.3
+- id: res:3blue1brown-com-lessons-attention-the-attention-pattern
+  name: U09 학습 자료
+  format: video
+  url: https://www.3blue1brown.com/lessons/attention#the-attention-pattern
+  author: Grant Sanderson
+  license: 오픈 라이선스 아님
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:scaled-dot-product-attention
+    dimensions:
+    - explain
+    locator: The Attention Pattern / Queries / Keys
+- id: res:ar5iv-labs-arxiv-org-html-1706-03762-s3-ss2-sss2
+  name: U10 학습 자료
+  format: paper_section
+  url: https://ar5iv.labs.arxiv.org/html/1706.03762#S3.SS2.SSS2
+  author: 논문 저자
+  license: arXiv 비독점 배포 라이선스
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:multi-head-attention
+    dimensions:
+    - recognize
+    locator: §3.2.2 Multi-Head Attention (+ §3.2.3)
+- id: res:d2l-ai-chapter-attention-mechanisms-and-transformers-multihead-attention-html
+  name: U10 학습 자료
+  format: text
+  url: https://d2l.ai/chapter_attention-mechanisms-and-transformers/multihead-attention.html
+  author: Aston Zhang, Zachary C. Lipton, Mu Li, Alexander J. Smola
+  license: CC BY-SA 4.0
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:multi-head-attention
+    dimensions:
+    - explain
+    - implement
+    locator: 11.5.1. Model, 11.5.2. Implementation
+- id: res:jalammar-github-io-illustrated-transformer-the-beast-with-many-heads
+  name: U10 학습 자료
+  format: text
+  url: https://jalammar.github.io/illustrated-transformer/#the-beast-with-many-heads
+  author: 원문 저자/발행처
+  license: CC BY-NC-SA 4.0
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:multi-head-attention
+    dimensions:
+    - explain
+    locator: '"The Beast With Many Heads"'
+- id: res:ar5iv-labs-arxiv-org-html-1706-03762-s3-ss5
+  name: U11 학습 자료
+  format: paper_section
+  url: https://ar5iv.labs.arxiv.org/html/1706.03762#S3.SS5
+  author: 논문 저자
+  license: arXiv 비독점 배포 라이선스
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:positional-encoding
+    dimensions:
+    - recognize
+    - explain
+    locator: §3.5 Positional Encoding (+ Table 3 row (E))
+- id: res:d2l-ai-chapter-attention-mechanisms-and-transformers-self-attention-and-position
+  name: U11 학습 자료
+  format: text
+  url: https://d2l.ai/chapter_attention-mechanisms-and-transformers/self-attention-and-positional-encoding.html#positional-encoding
+  author: Aston Zhang, Zachary C. Lipton, Mu Li, Alexander J. Smola
+  license: CC BY-SA 4.0
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:positional-encoding
+    dimensions:
+    - explain
+    - derive
+    locator: 11.6.3 (11.6.3.1 Absolute / 11.6.3.2 Relative Positional Information)
+- id: res:jalammar-github-io-illustrated-transformer-representing-the-order-of-the-sequenc
+  name: U11 학습 자료
+  format: text
+  url: https://jalammar.github.io/illustrated-transformer/#representing-the-order-of-the-sequence-using-positional-encoding
+  author: 원문 저자/발행처
+  license: CC BY-NC-SA 4.0
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:positional-encoding
+    dimensions:
+    - explain
+    locator: '"Representing The Order of The Sequence Using Positional Encoding"'
+- id: res:ar5iv-labs-arxiv-org-html-1706-03762-s3-ss1
+  name: U12 학습 자료
+  format: paper_section
+  url: https://ar5iv.labs.arxiv.org/html/1706.03762#S3.SS1
+  author: 논문 저자
+  license: arXiv 비독점 배포 라이선스
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:transformer-encoder-layer
+    dimensions:
+    - recognize
+    - explain
+    locator: §3.1 Encoder and Decoder Stacks ("Encoder:"), §3.3 Position-wise Feed-Forward Networks
+- id: res:d2l-ai-chapter-attention-mechanisms-and-transformers-transformer-html-encoder
+  name: U12 학습 자료
+  format: text
+  url: https://d2l.ai/chapter_attention-mechanisms-and-transformers/transformer.html#encoder
+  author: Aston Zhang, Zachary C. Lipton, Mu Li, Alexander J. Smola
+  license: CC BY-SA 4.0
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:transformer-encoder-layer
+    dimensions:
+    - explain
+    - implement
+    locator: 11.7.1–11.7.4
+- id: res:nlp-seas-harvard-edu-annotated-transformer-encoder
+  name: U12 학습 자료
+  format: text
+  url: https://nlp.seas.harvard.edu/annotated-transformer/#encoder
+  author: 원문 저자/발행처
+  license: 페이지 표기 없음, 저장소 MIT
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:transformer-encoder-layer
+    dimensions:
+    - implement
+    locator: Part 1 → Encoder and Decoder Stacks → Encoder
+- id: res:arxiv-org-abs-2010-11929
+  name: U13 학습 자료
+  format: paper_section
+  url: https://arxiv.org/abs/2010.11929
+  author: 논문 저자
+  license: arXiv 비독점 배포 라이선스
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:patch-embedding
+    dimensions:
+    - recognize
+    - explain
+    locator: §3.1 Vision Transformer (ViT), 식 (1)–(4)
+  - unit: model:vit
+    dimensions:
+    - recognize
+    - explain
+    locator: §3.1 Vision Transformer (ViT), 식 (1)–(4)
+  - unit: method:class-token
+    dimensions:
+    - explain
+    locator: §3.1의 [class] 토큰 서술 + App. D.3 Head Type and Class Token (Figure 9)
+  - unit: concept:inductive-bias
+    dimensions:
+    - analyze
+    locator: §3.1 "Inductive bias." 단락
+- id: res:ar5iv-labs-arxiv-org-html-2010-11929-s3-ss1
+  name: U13 학습 자료
+  format: paper_section
+  url: https://ar5iv.labs.arxiv.org/html/2010.11929#S3.SS1
+  author: 논문 저자
+  license: arXiv 비독점 배포 라이선스
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:patch-embedding
+    dimensions:
+    - recognize
+    - explain
+    locator: §3.1 Vision Transformer (ViT), 식 (1)–(4)
+  - unit: model:vit
+    dimensions:
+    - recognize
+    - explain
+    locator: §3.1 Vision Transformer (ViT), 식 (1)–(4)
+- id: res:d2l-ai-chapter-attention-mechanisms-and-transformers-vision-transformer-html-pat
+  name: U13 학습 자료
+  format: text
+  url: https://d2l.ai/chapter_attention-mechanisms-and-transformers/vision-transformer.html#patch-embedding
+  author: Aston Zhang, Zachary C. Lipton, Mu Li, Alexander J. Smola
+  license: CC BY-SA 4.0
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:patch-embedding
+    dimensions:
+    - explain
+    - implement
+    locator: '11.8.1–11.8.6 (핵심: 11.8.2. Patch Embedding)'
+  - unit: model:vit
+    dimensions:
+    - explain
+    locator: '11.8.1–11.8.6 (핵심: 11.8.2. Patch Embedding)'
+- id: res:arxiv-org-abs-1810-04805
+  name: U14 학습 자료
+  format: paper_section
+  url: https://arxiv.org/abs/1810.04805
+  author: 논문 저자
+  license: arXiv 비독점 배포 라이선스
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:class-token
+    dimensions:
+    - recognize
+    - explain
+    locator: §3 BERT → "Input/Output Representations" 단락
+  - unit: method:transfer-learning
+    dimensions:
+    - recognize
+    - explain
+    locator: §3 BERT (pre-training / fine-tuning 2단계), §3.1, §3.2
+- id: res:ar5iv-labs-arxiv-org-html-1810-04805-s3
+  name: U14 학습 자료
+  format: paper_section
+  url: https://ar5iv.labs.arxiv.org/html/1810.04805#S3
+  author: 논문 저자
+  license: arXiv 비독점 배포 라이선스
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:class-token
+    dimensions:
+    - recognize
+    - explain
+    locator: §3 BERT → "Input/Output Representations" 단락
+  - unit: method:transfer-learning
+    dimensions:
+    - recognize
+    - explain
+    locator: §3 BERT (pre-training / fine-tuning 2단계), §3.1, §3.2
+- id: res:ar5iv-labs-arxiv-org-html-2010-11929-a4-ss3
+  name: U14 학습 자료
+  format: paper_section
+  url: https://ar5iv.labs.arxiv.org/html/2010.11929#A4.SS3
+  author: 논문 저자
+  license: arXiv 비독점 배포 라이선스
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:class-token
+    dimensions:
+    - explain
+    locator: §3.1의 [class] 토큰 서술 + App. D.3 Head Type and Class Token (Figure 9)
+- id: res:arxiv-org-abs-1607-06450
+  name: U15 학습 자료
+  format: paper_section
+  url: https://arxiv.org/abs/1607.06450
+  author: 논문 저자
+  license: arXiv 비독점 배포 라이선스
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:layer-normalization
+    dimensions:
+    - recognize
+    - derive
+    locator: §3 Layer normalization (식 3), §5.1 Invariance under weights and data transformations (Table 1)
+- id: res:ar5iv-labs-arxiv-org-html-1607-06450-s3
+  name: U15 학습 자료
+  format: paper_section
+  url: https://ar5iv.labs.arxiv.org/html/1607.06450#S3
+  author: 논문 저자
+  license: arXiv 비독점 배포 라이선스
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:layer-normalization
+    dimensions:
+    - recognize
+    - derive
+    locator: §3 Layer normalization (식 3), §5.1 Invariance under weights and data transformations (Table 1)
+- id: res:d2l-ai-chapter-convolutional-modern-batch-norm-html-layer-normalization
+  name: U15 학습 자료
+  format: text
+  url: https://d2l.ai/chapter_convolutional-modern/batch-norm.html#layer-normalization
+  author: Aston Zhang, Zachary C. Lipton, Mu Li, Alexander J. Smola
+  license: CC BY-SA 4.0
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:layer-normalization
+    dimensions:
+    - recognize
+    - explain
+    locator: 8.5.2.3. Layer Normalization (식 8.5.4–8.5.5)
+- id: res:arxiv-org-abs-1502-03167
+  name: U16 학습 자료
+  format: paper_section
+  url: https://arxiv.org/abs/1502.03167
+  author: 논문 저자
+  license: arXiv 비독점 배포 라이선스
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:batch-normalization
+    dimensions:
+    - recognize
+    - derive
+    - analyze
+    locator: §3 (Algorithm 1, 역전파 식), §3.1, §3.2
+- id: res:ar5iv-labs-arxiv-org-html-1502-03167-s3
+  name: U16 학습 자료
+  format: paper_section
+  url: https://ar5iv.labs.arxiv.org/html/1502.03167#S3
+  author: 논문 저자
+  license: arXiv 비독점 배포 라이선스
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:batch-normalization
+    dimensions:
+    - recognize
+    - derive
+    - analyze
+    locator: §3 (Algorithm 1, 역전파 식), §3.1, §3.2
+- id: res:d2l-ai-chapter-convolutional-modern-batch-norm-html-batch-normalization-layers
+  name: U16 학습 자료
+  format: text
+  url: https://d2l.ai/chapter_convolutional-modern/batch-norm.html#batch-normalization-layers
+  author: Aston Zhang, Zachary C. Lipton, Mu Li, Alexander J. Smola
+  license: CC BY-SA 4.0
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:batch-normalization
+    dimensions:
+    - explain
+    - analyze
+    locator: 8.5.1–8.5.6 (특히 8.5.3. Implementation from Scratch, 8.5.6. Discussion)
+- id: res:deeplearningbook-org-contents-optimization-html
+  name: U16 학습 자료
+  format: text
+  url: https://www.deeplearningbook.org/contents/optimization.html
+  author: Ian Goodfellow, Yoshua Bengio, Aaron Courville
+  license: 오픈 라이선스 아님
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:batch-normalization
+    dimensions:
+    - explain
+    - analyze
+    locator: 8.7.1 Batch Normalization
+- id: res:arxiv-org-abs-1512-03385
+  name: U17 학습 자료
+  format: paper_section
+  url: https://arxiv.org/abs/1512.03385
+  author: 논문 저자
+  license: arXiv 비독점 배포 라이선스
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:residual-connection
+    dimensions:
+    - recognize
+    - explain
+    - analyze
+    locator: §3.1 Residual Learning, §3.2 Identity Mapping by Shortcuts (식 1–2), §3.3, §4.1
+  - unit: model:resnet
+    dimensions:
+    - recognize
+    - explain
+    - analyze
+    locator: §3.1 Residual Learning, §3.2 Identity Mapping by Shortcuts (식 1–2), §3.3, §4.1
+- id: res:ar5iv-labs-arxiv-org-html-1512-03385-s3-ss1
+  name: U17 학습 자료
+  format: paper_section
+  url: https://ar5iv.labs.arxiv.org/html/1512.03385#S3.SS1
+  author: 논문 저자
+  license: arXiv 비독점 배포 라이선스
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:residual-connection
+    dimensions:
+    - recognize
+    - explain
+    - analyze
+    locator: §3.1 Residual Learning, §3.2 Identity Mapping by Shortcuts (식 1–2), §3.3, §4.1
+  - unit: model:resnet
+    dimensions:
+    - recognize
+    - explain
+    - analyze
+    locator: §3.1 Residual Learning, §3.2 Identity Mapping by Shortcuts (식 1–2), §3.3, §4.1
+- id: res:d2l-ai-chapter-convolutional-modern-resnet-html-residual-blocks
+  name: U17 학습 자료
+  format: text
+  url: https://d2l.ai/chapter_convolutional-modern/resnet.html#residual-blocks
+  author: Aston Zhang, Zachary C. Lipton, Mu Li, Alexander J. Smola
+  license: CC BY-SA 4.0
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:residual-connection
+    dimensions:
+    - explain
+    locator: 8.6.1. Function Classes, 8.6.2. Residual Blocks, 8.6.3. ResNet Model
+  - unit: model:resnet
+    dimensions:
+    - explain
+    locator: 8.6.1. Function Classes, 8.6.2. Residual Blocks, 8.6.3. ResNet Model
+- id: res:cs231n-github-io-convolutional-networks-conv
+  name: U18 학습 자료
+  format: text
+  url: https://cs231n.github.io/convolutional-networks/#conv
+  author: Stanford CS231n
+  license: 저장소 MIT
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:convolutional-layer
+    dimensions:
+    - explain
+    - derive
+    locator: Convolutional Layer (Convolution Demo, Implementation as Matrix Multiplication 포함)
+- id: res:d2l-ai-chapter-convolutional-neural-networks-conv-layer-html
+  name: U18 학습 자료
+  format: text
+  url: https://d2l.ai/chapter_convolutional-neural-networks/conv-layer.html
+  author: Aston Zhang, Zachary C. Lipton, Mu Li, Alexander J. Smola
+  license: CC BY-SA 4.0
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:convolutional-layer
+    dimensions:
+    - explain
+    - implement
+    locator: 7.2.1–7.2.5
+- id: res:deeplearningbook-org-contents-convnets-html
+  name: U18 학습 자료
+  format: text
+  url: https://www.deeplearningbook.org/contents/convnets.html
+  author: Ian Goodfellow, Yoshua Bengio, Aaron Courville
+  license: 오픈 라이선스 아님
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:convolutional-layer
+    dimensions:
+    - recognize
+    - explain
+    - derive
+    locator: 9.1 The Convolution Operation, 9.2 Motivation (pp.327–335)
+  - unit: concept:inductive-bias
+    dimensions:
+    - recognize
+    - explain
+    - analyze
+    locator: 9.2 Motivation (equivariance), 9.4 Convolution and Pooling as an Infinitely Strong Prior (pp.339–342)
+- id: res:distill-pub-2019-computing-receptive-fields
+  name: U19 학습 자료
+  format: text
+  url: https://distill.pub/2019/computing-receptive-fields/
+  author: 원문 저자/발행처
+  license: CC BY 4.0
+  verified_at: '2026-10-15'
+  explains:
+  - unit: concept:receptive-field
+    dimensions:
+    - derive
+    locator: 'Single-path networks, Arbitrary computation graphs, Discussion: receptive fields of modern networks'
+- id: res:d2l-ai-chapter-convolutional-neural-networks-conv-layer-html-feature-map-and-rec
+  name: U19 학습 자료
+  format: text
+  url: https://d2l.ai/chapter_convolutional-neural-networks/conv-layer.html#feature-map-and-receptive-field
+  author: Aston Zhang, Zachary C. Lipton, Mu Li, Alexander J. Smola
+  license: CC BY-SA 4.0
+  verified_at: '2026-10-15'
+  explains:
+  - unit: concept:receptive-field
+    dimensions:
+    - recognize
+    - explain
+    locator: 7.2.6. Feature Map and Receptive Field
+- id: res:d2l-ai-chapter-convolutional-neural-networks-why-conv-html-constraining-the-mlp
+  name: U20 학습 자료
+  format: text
+  url: https://d2l.ai/chapter_convolutional-neural-networks/why-conv.html#constraining-the-mlp
+  author: Aston Zhang, Zachary C. Lipton, Mu Li, Alexander J. Smola
+  license: CC BY-SA 4.0
+  verified_at: '2026-10-15'
+  explains:
+  - unit: concept:inductive-bias
+    dimensions:
+    - explain
+    locator: 7.1.1. Invariance, 7.1.2 (Translation Invariance, Locality)
+- id: res:ar5iv-labs-arxiv-org-html-2010-11929-s3-ss1-sss0-px1
+  name: U20 학습 자료
+  format: paper_section
+  url: https://ar5iv.labs.arxiv.org/html/2010.11929#S3.SS1.SSS0.Px1
+  author: 논문 저자
+  license: arXiv 비독점 배포 라이선스
+  verified_at: '2026-10-15'
+  explains:
+  - unit: concept:inductive-bias
+    dimensions:
+    - analyze
+    locator: §3.1 "Inductive bias." 단락
+- id: res:d2l-ai-chapter-multilayer-perceptrons-dropout-html
+  name: U21 학습 자료
+  format: text
+  url: https://d2l.ai/chapter_multilayer-perceptrons/dropout.html
+  author: Aston Zhang, Zachary C. Lipton, Mu Li, Alexander J. Smola
+  license: CC BY-SA 4.0
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:dropout
+    dimensions:
+    - explain
+    locator: 5.6 도입부 (식 5.6.1), 5.6.1–5.6.3
+- id: res:cs231n-github-io-neural-networks-2-reg
+  name: U21 학습 자료
+  format: text
+  url: https://cs231n.github.io/neural-networks-2/#reg
+  author: Stanford CS231n
+  license: 저장소 MIT
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:dropout
+    dimensions:
+    - explain
+    locator: Regularization → Dropout, Inverted Dropout
+- id: res:jmlr-org-papers-v15-srivastava14a-html
+  name: U21 학습 자료
+  format: paper_section
+  url: https://jmlr.org/papers/v15/srivastava14a.html
+  author: 논문 저자
+  license: © JMLR 2014 (오픈 라이선스 표기 없음)
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:dropout
+    dimensions:
+    - recognize
+    locator: §4 Model Description, §7 Salient Features, §9 Marginalizing Dropout
+- id: res:d2l-ai-chapter-multilayer-perceptrons-mlp-html-relu-function
+  name: U22 학습 자료
+  format: text
+  url: https://d2l.ai/chapter_multilayer-perceptrons/mlp.html#relu-function
+  author: Aston Zhang, Zachary C. Lipton, Mu Li, Alexander J. Smola
+  license: CC BY-SA 4.0
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:relu
+    dimensions:
+    - recognize
+    - explain
+    locator: 5.1.2.1. ReLU Function (식 5.1.4–5.1.5)
+- id: res:cs231n-github-io-neural-networks-1-actfun
+  name: U22 학습 자료
+  format: text
+  url: https://cs231n.github.io/neural-networks-1/#actfun
+  author: Stanford CS231n
+  license: 저장소 MIT
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:relu
+    dimensions:
+    - explain
+    locator: Commonly used activation functions
+- id: res:papers-nips-cc-paper-files-paper-2012-hash-c399862d3b9d6b76c8436e924a68c45b-abst
+  name: U23 학습 자료
+  format: paper_section
+  url: https://papers.nips.cc/paper_files/paper/2012/hash/c399862d3b9d6b76c8436e924a68c45b-Abstract.html
+  author: 논문 저자
+  license: 명시 없음 (무료 공개)
+  verified_at: '2026-10-15'
+  explains:
+  - unit: model:alexnet
+    dimensions:
+    - recognize
+    - explain
+    - analyze
+    locator: §3 The Architecture (3.1–3.5), §4 Reducing Overfitting (4.1–4.2), §6 Results
+- id: res:d2l-ai-chapter-convolutional-modern-alexnet-html-alexnet
+  name: U23 학습 자료
+  format: text
+  url: https://d2l.ai/chapter_convolutional-modern/alexnet.html#alexnet
+  author: Aston Zhang, Zachary C. Lipton, Mu Li, Alexander J. Smola
+  license: CC BY-SA 4.0
+  verified_at: '2026-10-15'
+  explains:
+  - unit: model:alexnet
+    dimensions:
+    - explain
+    locator: 8.1.1–8.1.3
+- id: res:cs231n-github-io-convolutional-networks-case
+  name: U23 학습 자료
+  format: text
+  url: https://cs231n.github.io/convolutional-networks/#case
+  author: Stanford CS231n
+  license: 저장소 MIT
+  verified_at: '2026-10-15'
+  explains:
+  - unit: model:alexnet
+    dimensions:
+    - recognize
+    locator: Case studies (LeNet / AlexNet / ZF Net / GoogLeNet / VGGNet / ResNet)
+  - unit: model:vgg
+    dimensions:
+    - analyze
+    locator: '"VGGNet in detail"'
+- id: res:arxiv-org-abs-1409-1556
+  name: U24 학습 자료
+  format: paper_section
+  url: https://arxiv.org/abs/1409.1556
+  author: 논문 저자
+  license: arXiv 비독점 배포 라이선스
+  verified_at: '2026-10-15'
+  explains:
+  - unit: model:vgg
+    dimensions:
+    - recognize
+    - analyze
+    locator: §2.1 Architecture, §2.2 Configurations (Table 1–2), §2.3 Discussion
+- id: res:ar5iv-labs-arxiv-org-html-1409-1556-s2
+  name: U24 학습 자료
+  format: paper_section
+  url: https://ar5iv.labs.arxiv.org/html/1409.1556#S2
+  author: 논문 저자
+  license: arXiv 비독점 배포 라이선스
+  verified_at: '2026-10-15'
+  explains:
+  - unit: model:vgg
+    dimensions:
+    - recognize
+    - analyze
+    locator: §2.1 Architecture, §2.2 Configurations (Table 1–2), §2.3 Discussion
+- id: res:d2l-ai-chapter-convolutional-modern-vgg-html
+  name: U24 학습 자료
+  format: text
+  url: https://d2l.ai/chapter_convolutional-modern/vgg.html
+  author: Aston Zhang, Zachary C. Lipton, Mu Li, Alexander J. Smola
+  license: CC BY-SA 4.0
+  verified_at: '2026-10-15'
+  explains:
+  - unit: model:vgg
+    dimensions:
+    - explain
+    locator: 8.2.1–8.2.3
+- id: res:cs231n-github-io-transfer-learning
+  name: U26 학습 자료
+  format: text
+  url: https://cs231n.github.io/transfer-learning/
+  author: Stanford CS231n
+  license: 저장소 MIT
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:transfer-learning
+    dimensions:
+    - explain
+    - analyze
+    locator: Transfer Learning (3가지 시나리오, When and how to fine-tune?, Practical advice)
+- id: res:d2l-ai-chapter-computer-vision-fine-tuning-html-steps
+  name: U26 학습 자료
+  format: text
+  url: https://d2l.ai/chapter_computer-vision/fine-tuning.html#steps
+  author: Aston Zhang, Zachary C. Lipton, Mu Li, Alexander J. Smola
+  license: CC BY-SA 4.0
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:transfer-learning
+    dimensions:
+    - explain
+    - analyze
+    locator: 14.2.1. Steps, 14.2.2. Hot Dog Recognition
+assessment_items:
+- id: ai:dot-product-01
+  assesses:
+    unit: concept:dot-product
+    dimension: explain
+  kind: numeric
+  prompt: q = (1, 2, 0), k = (3, −1, 2)일 때 q·k는?
+  answer: 1
+  tolerance: 0
+  rationale: 1·3 + 2·(−1) + 0·2 = 1
+  verified_by: computation
+- id: ai:dot-product-02
+  assesses:
+    unit: concept:dot-product
+    dimension: explain
+  kind: mcq
+  prompt: 크기가 같은 두 벡터의 dot product가 가장 큰 경우는?
+  choices:
+  - 방향이 같을 때
+  - 서로 수직일 때
+  - 방향이 반대일 때
+  - 방향과 상관없이 같다
+  answer: 0
+  rationale: a·b = ‖a‖‖b‖cos θ는 θ = 0일 때 가장 크다
+- id: ai:matmul-01
+  assesses:
+    unit: concept:matrix-multiplication
+    dimension: explain
+  kind: numeric
+  prompt: Q ∈ ℝ^{4×64}, K ∈ ℝ^{6×64}일 때 QKᵀ의 원소는 몇 개인가?
+  answer: 24
+  tolerance: 0
+  rationale: QKᵀ ∈ ℝ^{4×6}
+  verified_by: computation
+- id: ai:matmul-02
+  assesses:
+    unit: concept:matrix-multiplication
+    dimension: explain
+  kind: mcq
+  prompt: QKᵀ의 (i, j) 원소는 무엇인가?
+  choices:
+  - i번째 query와 j번째 key의 dot product
+  - i번째 query와 j번째 value의 곱
+  - Q와 K 원소별 곱의 전체 합
+  - K의 i행 j열 원소
+  answer: 0
+  rationale: 행렬 곱의 (i, j) 원소는 Q의 i행과 Kᵀ의 j열(=K의 j행)의 내적
+- id: ai:softmax-01
+  assesses:
+    unit: concept:softmax
+    dimension: explain
+  kind: numeric
+  prompt: softmax([2, 1, 0])의 첫 번째 값은? (소수 셋째 자리)
+  answer: 0.665
+  tolerance: 0.002
+  rationale: e²/(e²+e+1) ≈ 0.665 (lab fixture)
+  verified_by: computation
+- id: ai:softmax-02
+  assesses:
+    unit: concept:softmax
+    dimension: explain
+  kind: mcq
+  prompt: 모든 logit에 같은 상수 c를 더한 softmax(z + c)는 softmax(z)와 어떤 관계인가?
+  choices:
+  - 같다
+  - c배가 된다
+  - e^c배가 된다
+  - 합이 c가 된다
+  answer: 0
+  rationale: 분자·분모에 e^c가 함께 곱해져 약분된다
+- id: ai:softmax-temperature-01
+  assesses:
+    unit: concept:softmax-temperature
+    dimension: explain
+  kind: numeric
+  prompt: logit [2, 0], T = 0.5일 때 첫 번째 확률은? (소수 셋째 자리)
+  answer: 0.982
+  tolerance: 0.002
+  rationale: z/T = [4, 0] → e⁴/(e⁴+1) ≈ 0.982 (lab fixture)
+  verified_by: computation
+- id: ai:lab-softmax-temp-01
+  assesses:
+    unit: concept:softmax-temperature
+    dimension: explain
+  kind: lab_prediction
+  prompt: z = [2, 1, 0]에서 T를 1에서 0.1로 낮추면 가장 큰 확률은?
+  choices:
+  - 커진다
+  - 작아진다
+  - 그대로다
+  answer: 0
+  rationale: '0.665 → 0.99995: 온도를 낮추면 분포가 argmax로 몰린다'
+  lab: lab:softmax-temperature
+  scenario:
+    logits:
+    - 2
+    - 1
+    - 0
+    T_from: 1
+    T_to: 0.1
+- id: ai:lab-softmax-temp-02
+  assesses:
+    unit: concept:softmax-temperature
+    dimension: explain
+  kind: lab_prediction
+  prompt: z = [2, 0], T = 2일 때 첫 번째 확률은?
+  answer: 0.731
+  tolerance: 0.005
+  rationale: e¹/(e¹+1) ≈ 0.731
+  lab: lab:softmax-temperature
+  scenario:
+    logits:
+    - 2
+    - 0
+    T: 2
+  verified_by: computation
+- id: ai:variance-of-sum-01
+  assesses:
+    unit: concept:variance-of-sum
+    dimension: explain
+  kind: numeric
+  prompt: q, k의 성분이 서로 독립이고 평균 0, 분산 1이다. d_k = 64이면 Var(q·k)는?
+  answer: 64
+  tolerance: 0
+  rationale: 독립 항 64개의 분산(각 1)의 합 (Transformer 각주 4)
+  verified_by: computation
+- id: ai:variance-of-sum-02
+  assesses:
+    unit: concept:variance-of-sum
+    dimension: explain
+  kind: mcq
+  prompt: 같은 조건에서 q·k의 표준편차는 d_k에 따라 어떻게 변하나?
+  choices:
+  - √d_k에 비례
+  - d_k에 비례
+  - 일정하다
+  - 1/d_k에 비례
+  answer: 0
+  rationale: 분산이 d_k이므로 표준편차는 √d_k
+- id: ai:lab-sdpa-02
+  assesses:
+    unit: concept:variance-of-sum
+    dimension: explain
+  kind: lab_prediction
+  prompt: d_k = 64일 때 q·k의 표준편차는?
+  answer: 8
+  tolerance: 0.5
+  rationale: √64 = 8 (seed 42, 표본 10,000에서 Var 64.65)
+  lab: lab:softmax-temperature
+  scenario:
+    d_k: 64
+  verified_by: computation
+- id: ai:sdpa-01
+  assesses:
+    unit: method:scaled-dot-product-attention
+    dimension: explain
+  kind: numeric
+  prompt: query 하나와 key 두 개의 점수(스케일 후)가 [1, 1]이면 첫 번째 key의 attention 가중치는?
+  answer: 0.5
+  tolerance: 0.001
+  rationale: 같은 점수 → softmax가 같은 가중치
+  verified_by: computation
+- id: ai:sdpa-02
+  assesses:
+    unit: method:scaled-dot-product-attention
+    dimension: explain
+  kind: mcq
+  prompt: Attention(Q, K, V)의 출력은 무엇인가?
+  choices:
+  - value들의 가중합 (가중치는 query–key 호환도의 softmax)
+  - key들의 가중합
+  - query들의 평균
+  - 점수가 가장 큰 value 하나
+  answer: 0
+  rationale: 'Transformer §3.2: output is a weighted sum of the values'
+- id: ai:sdpa-derive-01
+  assesses:
+    unit: method:scaled-dot-product-attention
+    dimension: derive
+  kind: mcq
+  prompt: QKᵀ를 √d_k로 나누는 이유로 Transformer 논문이 든 것은?
+  choices:
+  - d_k가 크면 dot product가 커져 softmax가 기울기가 매우 작은 영역으로 밀려나기 때문
+  - 계산을 빠르게 하려고
+  - 확률의 합을 1로 만들려고
+  - value의 크기를 맞추려고
+  answer: 0
+  rationale: §3.2.1 "We suspect…"
+- id: ai:sdpa-derive-02
+  assesses:
+    unit: method:scaled-dot-product-attention
+    dimension: derive
+  kind: numeric
+  prompt: d_k = 16에서 q·k의 표준편차가 4일 때, √d_k로 나눈 뒤의 표준편차는?
+  answer: 1
+  tolerance: 0.001
+  rationale: 4 / √16 = 1
+  verified_by: computation
+- id: ai:lab-sdpa-01
+  assesses:
+    unit: method:scaled-dot-product-attention
+    dimension: derive
+  kind: lab_prediction
+  prompt: scaling 없이 d_k를 4에서 512로 키우면 평균 최대 attention 가중치는?
+  choices:
+  - 1에 가까워진다(포화)
+  - 0에 가까워진다
+  - 변하지 않는다
+  answer: 0
+  rationale: 0.525 → 0.955 (seed 42, 표본 1,000)
+  lab: lab:softmax-temperature
+  scenario:
+    scaled: false
+    d_k_from: 4
+    d_k_to: 512
+    n_keys: 8
+- id: ai:mha-01
+  assesses:
+    unit: method:multi-head-attention
+    dimension: explain
+  kind: numeric
+  prompt: hidden 크기 D = 768, head 12개일 때 head 하나의 차원 D_h = D/k는?
+  answer: 64
+  tolerance: 0
+  rationale: 768/12 = 64 (ViT Appendix A, Table 1)
+  verified_by: computation
+- id: ai:mha-02
+  assesses:
+    unit: method:multi-head-attention
+    dimension: explain
+  kind: mcq
+  prompt: multi-head attention을 쓰는 이유로 Transformer 논문이 든 것은?
+  choices:
+  - 서로 다른 표현 부분공간의 정보를 여러 위치에서 함께 볼 수 있다
+  - 파라미터 수를 줄인다
+  - softmax가 필요 없어진다
+  - 순서 정보를 넣는다
+  answer: 0
+  rationale: §3.2.2
+labs:
+- id: lab:softmax-temperature
+  name: Softmax Temperature & Scaled Dot-Product Lab
+  component: softmax-temperature
+  version: 1
+  parameters:
+  - name: T
+    min: 0.05
+    max: 5
+    step: 0.05
+    default: 1
+  - name: d_k
+    min: 1
+    max: 1024
+    step: 1
+    default: 64
+  - name: n_keys
+    min: 2
+    max: 16
+    step: 1
+    default: 8
+  - name: seed
+    min: 0
+    max: 4294967295
+    step: 1
+    default: 42
+  demonstrates:
+  - unit: concept:softmax
+    dimensions:
+    - explain
+  - unit: concept:softmax-temperature
+    dimensions:
+    - explain
+  - unit: concept:variance-of-sum
+    dimensions:
+    - explain
+  - unit: method:scaled-dot-product-attention
+    dimensions:
+    - derive
+  items:
+  - ai:lab-softmax-temp-01
+  - ai:lab-softmax-temp-02
+  - ai:lab-sdpa-01
+  - ai:lab-sdpa-02
+  reference_impl: tools/gen_lab_fixtures.py
 sources:
 - id: src:pdf:deng2009-imagenet
   name: ImageNet PDF
@@ -1543,6 +2812,25 @@ claims:
     quote: First, the situation is reversed with residual learning – the 34-layer ResNet is better than the 18-layer ResNet (by 2.8%).
     type: experimental_result
     stance: supports
+  - source: src:arxiv:1512.03385v1
+    locator:
+      section: 4.1 ImageNet Classification
+      paragraph: 6
+    quote: This indicates that the degradation problem is well addressed in this setting and we manage to obtain accuracy gains from increased depth.
+    type: experimental_result
+    stance: supports
+  - source: src:arxiv:1512.03385v1
+    locator:
+      table: Table 2
+      part: caption
+    quote: Here the ResNets have no extra parameter compared to their plain counterparts.
+    type: experimental_result
+    stance: supports
+    values:
+      plain-18: 27.94
+      plain-34: 28.54
+      resnet-18: 27.88
+      resnet-34: 25.03
   review: null
   verification:
     method: quote_match
@@ -1600,11 +2888,13 @@ claims:
   evidence:
   - source: src:arxiv:2012.12877v2
     locator:
-      section: '5.3 Efficiency vs accuracy: a comparative study with convnets'
-      paragraph: 3
+      table: Table 5
     quote: These results are a major improvement (+6.3% top-1 in a comparable setting) over previous ViT models trained on Imagenet1k only [15].
     type: experimental_result
     stance: supports
+    values:
+      DeiT-B: 81.8
+      ViT-B/16: 77.9
   review: null
   verification:
     method: quote_match
@@ -1831,3 +3121,1382 @@ claims:
     method: quote_match
     by: agent:claude-opus-5-5
     at: '2026-10-15'
+- id: clm:intro-knowledge-distillation
+  predicate: INTRODUCES
+  subject: paper:hinton2015-distillation
+  object: method:knowledge-distillation
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1503.02531v1
+    locator:
+      section: 1 Introduction
+      paragraph: 2
+    quote: which we call “distillation” to transfer the knowledge from the cumbersome model to a small model that is more suitable for deployment
+    type: author_statement
+    stance: supports
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:batchnorm-mitigates-ics
+  predicate: MITIGATES
+  subject: method:batch-normalization
+  object: problem:internal-covariate-shift
+  status: disputed
+  confidence: medium
+  evidence:
+  - source: src:arxiv:1502.03167v3
+    locator:
+      figure: Figure 1
+      part: caption
+    quote: Batch Normalization makes the distribution more stable and reduces the internal covariate shift.
+    type: experimental_result
+    stance: supports
+  - source: src:arxiv:1502.03167v3
+    locator:
+      section: 4.1 Activations over time
+      paragraph: 2
+    quote: In contrast, the distributions in the batch-normalized network are much more stable as training progresses, which aids the training.
+    type: experimental_result
+    stance: supports
+  - source: src:arxiv:1805.11604v5
+    locator:
+      section: 2.2 Is BatchNorm reducing internal covariate shift?
+      paragraph: 6
+    quote: Surprisingly, we observe that networks with BatchNorm often exhibit an increase in ICS (cf. Figure 3).
+    type: experimental_result
+    stance: contradicts
+  - source: src:arxiv:1805.11604v5
+    locator:
+      figure: Figure 3
+      part: caption
+    quote: Models with BatchNorm have similar, or even worse, internal covariate shift, despite performing better in terms of accuracy and loss.
+    type: experimental_result
+    stance: contradicts
+  - source: src:arxiv:1805.11604v5
+    locator:
+      section: Abstract
+    quote: In this work, we demonstrate that such distributional stability of layer inputs has little to do with the success of BatchNorm.
+    type: author_statement
+    stance: qualifies
+  note: ICS를 BN이 안정화한다는 원래 논문의 정의와, Santurkar et al.이 검증한 입력 분포 안정성의 정의가 다르므로 완화 효과는 유보적으로 해석한다.
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:resnet-extends-vgg
+  predicate: EXTENDS
+  subject: model:resnet
+  object: model:vgg
+  status: proposed
+  confidence: medium
+  evidence:
+  - source: src:arxiv:1512.03385v1
+    locator:
+      section: 3.3 Network Architectures
+      paragraph: 2
+    quote: Our plain baselines (Fig. 3, middle) are mainly inspired by the philosophy of VGG nets [41] (Fig. 3, left).
+    type: author_statement
+    stance: supports
+  note: VGG에서 영감을 받은 plain baseline에 shortcut을 더한 구조로, EXTENDS 분류는 사람 검토가 필요하다.
+  review: null
+- id: clm:bert-extends-transformer
+  predicate: EXTENDS
+  subject: model:bert
+  object: model:transformer
+  status: proposed
+  confidence: medium
+  evidence:
+  - source: src:arxiv:1810.04805v2
+    locator:
+      section: 3 BERT — Model Architecture
+      paragraph: 1
+      html_id: S3.SS0.SSS0.Px1.p1
+    quote: Because the use of Transformers has become common and our implementation is almost identical to the original, we will omit an exhaustive background description of the model architecture
+    type: author_statement
+    stance: supports
+  note: 구현이 원본과 거의 같으므로 PART_OF가 더 정확할 수 있으며 사람 검토가 필요하다.
+  review: null
+- id: clm:vgg-extends-alexnet
+  predicate: EXTENDS
+  subject: model:vgg
+  object: model:alexnet
+  status: rejected
+  confidence: medium
+  evidence:
+  - source: src:arxiv:1409.1556v6
+    locator:
+      section: 2.3 Discussion
+      paragraph: 1
+    quote: Our ConvNet configurations are quite different from the ones used in the top-performing entries of the ILSVRC-2012 (Krizhevsky et al., 2012) and ILSVRC-2013 competitions (Zeiler & Fergus, 2013; Sermanet et al., 2014).
+    type: author_statement
+    stance: contradicts
+  - source: src:arxiv:1409.1556v6
+    locator:
+      section: 2 ConvNet Configurations
+      paragraph: 1
+    quote: all our ConvNet layer configurations are designed using the same principles, inspired by Ciresan et al. (2011); Krizhevsky et al. (2012).
+    type: author_statement
+    stance: supports
+  rejected_reason: VGG 논문은 설계 원칙을 Krizhevsky et al.(2012)에서 'inspired by'했다고만 하고, 자신의 구성이 'quite different'하다고 명시한다. AlexNet 설계를 출발점으로 삼았다는 진술이 없다.
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:vgg-improves-on-alexnet
+  predicate: IMPROVES_ON
+  subject: model:vgg
+  object: model:alexnet
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1409.1556v6
+    locator:
+      section: 4.5 Comparison with the State of the Art
+      paragraph: 2
+    quote: As can be seen from Table 7, our very deep ConvNets significantly outperform the previous generation of models, which achieved the best results in the ILSVRC-2012 and ILSVRC-2013 competitions.
+    type: experimental_result
+    stance: supports
+  - source: src:arxiv:1409.1556v6
+    locator:
+      table: Table 7
+      part: caption
+    quote: Only the results obtained without outside training data are reported.
+    type: experimental_result
+    stance: supports
+  qualifiers:
+    benchmark: benchmark:ilsvrc-cls-test
+    metric: metric:top-5-error
+    subject_value: 6.8
+    object_value: 16.4
+    subject_variant: VGG (2 nets, multi-crop & dense eval.)
+    object_variant: Krizhevsky et al. (5 nets)
+    conditions: 외부 학습 데이터 없이 얻은 결과만 (Table 7 caption)
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:resnet-improves-on-vgg
+  predicate: IMPROVES_ON
+  subject: model:resnet
+  object: model:vgg
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1512.03385v1
+    locator:
+      table: Table 3
+      part: caption
+    quote: Error rates (%, 10-crop testing) on ImageNet validation.
+    type: experimental_result
+    stance: supports
+  - source: src:arxiv:1512.03385v1
+    locator:
+      table: Table 3
+      part: caption
+    quote: VGG-16 is based on our test.
+    type: experimental_result
+    stance: supports
+  qualifiers:
+    benchmark: benchmark:imagenet-1k-val
+    metric: metric:top-5-error
+    subject_value: 5.71
+    object_value: 9.33
+    subject_variant: ResNet-152
+    object_variant: VGG-16 (저자 재측정)
+    conditions: 10-crop testing, 단일 모델, ImageNet val
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:vit-improves-on-bit
+  predicate: IMPROVES_ON
+  subject: model:vit
+  object: model:bit
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:2010.11929v2
+    locator:
+      table: Table 2
+      part: caption
+    quote: Vision Transformer models pre-trained on the JFT-300M dataset outperform ResNet-based baselines on all datasets
+    type: experimental_result
+    stance: supports
+  qualifiers:
+    benchmark: benchmark:imagenet-1k-val
+    metric: metric:top-1-accuracy
+    subject_value: 88.55
+    object_value: 87.54
+    subject_variant: ViT-H/14 (JFT-300M 사전학습)
+    object_variant: BiT-L (ResNet152x4)
+    conditions: JFT-300M 사전학습 후 fine-tuning, 3회 fine-tuning 평균; ImageNet-21k 사전학습 ViT-L/16(85.30)은 BiT-L보다 낮음
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:deit-improves-on-vit
+  predicate: IMPROVES_ON
+  subject: model:deit
+  object: model:vit
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:2012.12877v2
+    locator:
+      table: Table 5
+    quote: These results are a major improvement (+6.3% top-1 in a comparable setting) over previous ViT models trained on Imagenet1k only [15].
+    type: experimental_result
+    stance: supports
+  qualifiers:
+    benchmark: benchmark:imagenet-1k-val
+    metric: metric:top-1-accuracy
+    subject_value: 81.8
+    object_value: 77.9
+    subject_variant: DeiT-B (224²)
+    object_variant: ViT-B/16 (384², ImageNet만, ViT 논문 보고값)
+    conditions: 두 모델 모두 외부 데이터 없이 ImageNet-1k로 학습 (Table 5); 해상도가 다름
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:swin-improves-on-deit
+  predicate: IMPROVES_ON
+  subject: model:swin
+  object: model:deit
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:2103.14030v2
+    locator:
+      table: Table 1
+    quote: +1.5% for Swin-T (81.3%) over DeiT-S (79.8%) using
+    type: experimental_result
+    stance: supports
+  - source: src:arxiv:2103.14030v2
+    locator:
+      table: Table 1
+    quote: 'Compared to the previous state-of-the-art Transformer-based architecture, i.e. DeiT [63], Swin Transformers noticeably surpass the counterpart DeiT architectures with similar complexities:'
+    type: experimental_result
+    stance: supports
+  qualifiers:
+    benchmark: benchmark:imagenet-1k-val
+    metric: metric:top-1-accuracy
+    subject_value: 81.3
+    object_value: 79.8
+    subject_variant: Swin-T (224²)
+    object_variant: DeiT-S (224², 증류 없음)
+    conditions: ImageNet-1K 학습, 비슷한 파라미터·FLOPs; 처리량은 Swin-T가 낮음(755.2 vs 940.4 im/s)
+  note: v2 본문과 표의 83.3/83.5 표기에 불일치가 있다.
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:vit-compared-with-bit
+  predicate: COMPARED_WITH
+  subject: model:vit
+  object: model:bit
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:2010.11929v2
+    locator:
+      table: Table 2
+      part: caption
+    quote: Vision Transformer models pre-trained on the JFT-300M dataset outperform ResNet-based baselines on all datasets
+    type: experimental_result
+    stance: supports
+  - source: src:arxiv:2010.11929v2
+    locator:
+      section: 1 Introduction
+      paragraph: 4
+    quote: When trained on mid-sized datasets such as ImageNet without strong regularization, these models yield modest accuracies of a few percentage points below ResNets of comparable size.
+    type: author_statement
+    stance: qualifies
+  qualifiers:
+    benchmark: benchmark:imagenet-1k-val
+    summary: JFT-300M 사전학습 ViT-H/14·ViT-L/16(88.55·87.76)은 BiT-L(87.54)보다 높고, ImageNet-21k 사전학습 ViT-L/16(85.30)은 낮다
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:relu-part-of-alexnet
+  predicate: PART_OF
+  subject: method:relu
+  object: model:alexnet
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:pdf:krizhevsky2012-alexnet
+    locator:
+      section: 3.1 ReLU Nonlinearity
+      paragraph: 1
+    quote: Following Nair and Hinton [20], we refer to neurons with this nonlinearity as Rectified Linear Units (ReLUs).
+    type: author_statement
+    stance: supports
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:dropout-part-of-alexnet
+  predicate: PART_OF
+  subject: method:dropout
+  object: model:alexnet
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:pdf:krizhevsky2012-alexnet
+    locator:
+      section: 4.2 Dropout
+      paragraph: 2
+    quote: We use dropout in the first two fully-connected layers of Figure 2.
+    type: author_statement
+    stance: supports
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:residual-connection-part-of-resnet
+  predicate: PART_OF
+  subject: method:residual-connection
+  object: model:resnet
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1512.03385v1
+    locator:
+      section: 1 Introduction
+      paragraph: 6
+    quote: In our case, the shortcut connections simply perform identity mapping, and their outputs are added to the outputs of the stacked layers (Fig. 2).
+    type: author_statement
+    stance: supports
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:multi-head-attention-part-of-transformer-encoder-layer
+  predicate: PART_OF
+  subject: method:multi-head-attention
+  object: method:transformer-encoder-layer
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1706.03762v7
+    locator: &id006
+      section: '3.1 Encoder and Decoder Stacks — Encoder:'
+      paragraph: 1
+      html_id: S3.SS1.SSS0.Px1.p1
+    quote: Each layer has two sub-layers. The first is a multi-head self-attention mechanism, and the second is a simple, position-wise fully connected feed-forward network.
+    type: author_statement
+    stance: supports
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:feed-forward-network-part-of-transformer-encoder-layer
+  predicate: PART_OF
+  subject: method:feed-forward-network
+  object: method:transformer-encoder-layer
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1706.03762v7
+    locator: *id006
+    quote: Each layer has two sub-layers. The first is a multi-head self-attention mechanism, and the second is a simple, position-wise fully connected feed-forward network.
+    type: author_statement
+    stance: supports
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:residual-connection-part-of-transformer-encoder-layer
+  predicate: PART_OF
+  subject: method:residual-connection
+  object: method:transformer-encoder-layer
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1706.03762v7
+    locator: &id007
+      section: '3.1 Encoder and Decoder Stacks — Encoder:'
+      paragraph: 1
+      html_id: S3.SS1.SSS0.Px1.p1
+    quote: We employ a residual connection [11] around each of the two sub-layers, followed by layer normalization [1].
+    type: author_statement
+    stance: supports
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:layer-normalization-part-of-transformer-encoder-layer
+  predicate: PART_OF
+  subject: method:layer-normalization
+  object: method:transformer-encoder-layer
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1706.03762v7
+    locator: *id007
+    quote: We employ a residual connection [11] around each of the two sub-layers, followed by layer normalization [1].
+    type: author_statement
+    stance: supports
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:scaled-dot-product-attention-part-of-multi-head-attention
+  predicate: PART_OF
+  subject: method:scaled-dot-product-attention
+  object: method:multi-head-attention
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1706.03762v7
+    locator:
+      section: 3.2.2 Multi-Head Attention
+      paragraph: 1
+    quote: On each of these projected versions of queries, keys and values we then perform the attention function in parallel, yielding
+    type: author_statement
+    stance: supports
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:transformer-encoder-layer-part-of-transformer
+  predicate: PART_OF
+  subject: method:transformer-encoder-layer
+  object: model:transformer
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1706.03762v7
+    locator: *id006
+    quote: Each layer has two sub-layers. The first is a multi-head self-attention mechanism, and the second is a simple, position-wise fully connected feed-forward network.
+    type: author_statement
+    stance: supports
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:transformer-encoder-layer-part-of-bert
+  predicate: PART_OF
+  subject: method:transformer-encoder-layer
+  object: model:bert
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1810.04805v2
+    locator:
+      section: 3 BERT — Model Architecture
+      paragraph: 1
+      html_id: S3.SS0.SSS0.Px1.p1
+    quote: BERT’s model architecture is a multi-layer bidirectional Transformer encoder based on the original implementation described in Vaswani et al. (2017) and released in the tensor2tensor library.
+    type: author_statement
+    stance: supports
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:transformer-encoder-layer-part-of-vit
+  predicate: PART_OF
+  subject: method:transformer-encoder-layer
+  object: model:vit
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:2010.11929v2
+    locator: &id008
+      section: 3.1 Vision Transformer (ViT)
+      paragraph: 4
+    quote: The Transformer encoder (Vaswani et al., 2017) consists of alternating layers of multiheaded self-attention (MSA, see Appendix A) and MLP blocks (Eq. 2, 3).
+    type: author_statement
+    stance: supports
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:patch-embedding-part-of-vit
+  predicate: PART_OF
+  subject: method:patch-embedding
+  object: model:vit
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:2010.11929v2
+    locator: &id009
+      section: 3.1 Vision Transformer (ViT)
+      paragraph: 1
+    quote: dimensions with a trainable linear projection (Eq. 1). We refer to the output of this projection as the patch embeddings.
+    type: author_statement
+    stance: supports
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:class-token-part-of-vit
+  predicate: PART_OF
+  subject: method:class-token
+  object: model:vit
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:2010.11929v2
+    locator: &id010
+      section: 3.1 Vision Transformer (ViT)
+      paragraph: 2
+    quote: Similar to BERT’s [class] token, we prepend a learnable embedding to the sequence of embedded patches
+    type: author_statement
+    stance: supports
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:positional-encoding-part-of-vit
+  predicate: PART_OF
+  subject: method:positional-encoding
+  object: model:vit
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:2010.11929v2
+    locator: &id011
+      section: 3.1 Vision Transformer (ViT)
+      paragraph: 3
+    quote: Position embeddings are added to the patch embeddings to retain positional information. We use standard learnable 1D position embeddings, since we have not observed significant performance gains from using more advanced 2D-aware position embeddings (Appendix D.4).
+    type: author_statement
+    stance: supports
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:sdpa-is-a-attention
+  predicate: IS_A
+  subject: method:scaled-dot-product-attention
+  object: concept:attention-mechanism
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1706.03762v7
+    locator: &id013
+      section: 3.2 Attention
+      paragraph: 1
+      html_id: S3.SS2.p1
+    quote: An attention function can be described as mapping a query and a set of key-value pairs to an output, where the query, keys, values, and output are all vectors.
+    type: author_statement
+    stance: supports
+  - source: src:arxiv:1706.03762v7
+    locator:
+      section: 3.2.1 Scaled Dot-Product Attention
+      paragraph: 1
+      html_id: S3.SS2.SSS1.p1
+    quote: We call our particular attention "Scaled Dot-Product Attention" (Figure 2).
+    type: author_statement
+    stance: supports
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:additive-is-a-attention
+  predicate: IS_A
+  subject: method:additive-attention
+  object: concept:attention-mechanism
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1706.03762v7
+    locator:
+      section: 3.2.1 Scaled Dot-Product Attention
+      paragraph: 4
+      html_id: S3.SS2.SSS1.p4
+    quote: The two most commonly used attention functions are additive attention [2], and dot-product (multiplicative) attention.
+    type: third_party_statement
+    stance: supports
+  - source: src:arxiv:1409.0473v7
+    locator:
+      section: '3.1 Decoder: General Description'
+      paragraph: 6
+      html_id: S3.SS1.p6
+    quote: Intuitively, this implements a mechanism of attention in the decoder. The decoder decides parts of the source sentence to pay attention to.
+    type: author_statement
+    stance: supports
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:cites-transformer-resnet
+  predicate: CITES
+  subject: paper:vaswani2017-transformer
+  object: paper:he2015-resnet
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1706.03762v7
+    locator:
+      section: References
+      item: '[11]'
+      html_id: bib.bib11
+    quote: Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun.
+    type: bibliographic_metadata
+    stance: supports
+  - source: src:arxiv:1706.03762v7
+    locator:
+      section: References
+      item: '[11]'
+      html_id: bib.bib11
+    quote: Deep residual learning for image recognition.
+    type: bibliographic_metadata
+    stance: supports
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:cites-transformer-bahdanau
+  predicate: CITES
+  subject: paper:vaswani2017-transformer
+  object: paper:bahdanau2014-attention
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1706.03762v7
+    locator:
+      section: References
+      item: '[2]'
+      html_id: bib.bib2
+    quote: Dzmitry Bahdanau, Kyunghyun Cho, and Yoshua Bengio.
+    type: bibliographic_metadata
+    stance: supports
+  - source: src:arxiv:1706.03762v7
+    locator:
+      section: References
+      item: '[2]'
+      html_id: bib.bib2
+    quote: Neural machine translation by jointly learning to align and translate.
+    type: bibliographic_metadata
+    stance: supports
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:prereq-dot-product-scaled-dot-product-attention
+  predicate: PREREQUISITE_OF
+  subject: concept:dot-product
+  object: method:scaled-dot-product-attention
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1706.03762v7
+    locator:
+      section: 3.2.1 Scaled Dot-Product Attention
+      paragraph: 1
+      html_id: S3.SS2.SSS1.p1
+    quote: We compute the dot products of the query with all keys, divide each by
+    type: definitional_dependency
+    stance: supports
+  qualifiers:
+    required_dimension: explain
+    for_dimension: explain
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:prereq-softmax-scaled-dot-product-attention
+  predicate: PREREQUISITE_OF
+  subject: concept:softmax
+  object: method:scaled-dot-product-attention
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1706.03762v7
+    locator:
+      section: 3.2.1 Scaled Dot-Product Attention
+      paragraph: 1
+      html_id: S3.SS2.SSS1.p1
+    quote: and apply a softmax function to obtain the weights on the values.
+    type: definitional_dependency
+    stance: supports
+  qualifiers:
+    required_dimension: explain
+    for_dimension: explain
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:prereq-matrix-multiplication-scaled-dot-product-attention
+  predicate: PREREQUISITE_OF
+  subject: concept:matrix-multiplication
+  object: method:scaled-dot-product-attention
+  status: verified
+  confidence: medium
+  evidence:
+  - source: src:arxiv:1706.03762v7
+    locator:
+      section: 3.2.1 Scaled Dot-Product Attention
+      paragraph: 2
+      html_id: S3.SS2.SSS1.p2
+    quote: 'We compute the matrix of outputs as:'
+    type: definitional_dependency
+    stance: supports
+  qualifiers:
+    required_dimension: explain
+    for_dimension: explain
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:prereq-softmax-temperature-scaled-dot-product-attention-derive
+  predicate: PREREQUISITE_OF
+  subject: concept:softmax-temperature
+  object: method:scaled-dot-product-attention
+  status: verified
+  confidence: medium
+  evidence:
+  - source: src:arxiv:1706.03762v7
+    locator: &id014
+      section: 3.2.1 Scaled Dot-Product Attention
+      paragraph: 5
+      html_id: S3.SS2.SSS1.p5
+    quote: the dot products grow large in magnitude, pushing the softmax function into regions where it has extremely small gradients
+    type: definitional_dependency
+    stance: supports
+  - source: src:arxiv:1706.03762v7
+    locator:
+      section: 3.2.1 Scaled Dot-Product Attention
+      paragraph: 5
+      html_id: S3.SS2.SSS1.p5
+    quote: To counteract this effect, we scale the dot products by
+    type: definitional_dependency
+    stance: supports
+  qualifiers:
+    required_dimension: explain
+    for_dimension: derive
+  note: logit 스케일을 나누는 것은 temperature와 같은 효과다.
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:prereq-variance-of-sum-scaled-dot-product-attention-derive
+  predicate: PREREQUISITE_OF
+  subject: concept:variance-of-sum
+  object: method:scaled-dot-product-attention
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1706.03762v7
+    locator:
+      footnote: 4
+      html_id: footnote1
+      rendered_mark_in_html: 1
+    quote: To illustrate why the dot products get large, assume that the components of
+    type: definitional_dependency
+    stance: supports
+  - source: src:arxiv:1706.03762v7
+    locator:
+      footnote: 4
+      html_id: footnote1
+      rendered_mark_in_html: 1
+    quote: are independent random variables with mean
+    type: definitional_dependency
+    stance: supports
+  qualifiers:
+    required_dimension: explain
+    for_dimension: derive
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:prereq-scaled-dot-product-attention-multi-head-attention
+  predicate: PREREQUISITE_OF
+  subject: method:scaled-dot-product-attention
+  object: method:multi-head-attention
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1706.03762v7
+    locator:
+      section: 3.2.2 Multi-Head Attention
+      paragraph: 1
+    quote: On each of these projected versions of queries, keys and values we then perform the attention function in parallel, yielding
+    type: definitional_dependency
+    stance: supports
+  qualifiers:
+    required_dimension: explain
+    for_dimension: explain
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:prereq-matrix-multiplication-multi-head-attention
+  predicate: PREREQUISITE_OF
+  subject: concept:matrix-multiplication
+  object: method:multi-head-attention
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1706.03762v7
+    locator:
+      section: 3.2.2 Multi-Head Attention
+      paragraph: 1
+      html_id: S3.SS2.SSS2.p1
+    quote: we found it beneficial to linearly project the queries, keys and values
+    type: definitional_dependency
+    stance: supports
+  qualifiers:
+    required_dimension: explain
+    for_dimension: explain
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:prereq-softmax-softmax-temperature
+  predicate: PREREQUISITE_OF
+  subject: concept:softmax
+  object: concept:softmax-temperature
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1503.02531v1
+    locator:
+      section: 2 Distillation
+      paragraph: 1
+    quote: Using a higher value for T produces a softer probability distribution over classes.
+    type: definitional_dependency
+    stance: supports
+  qualifiers:
+    required_dimension: explain
+    for_dimension: explain
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:prereq-multi-head-attention-transformer-encoder-layer
+  predicate: PREREQUISITE_OF
+  subject: method:multi-head-attention
+  object: method:transformer-encoder-layer
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1706.03762v7
+    locator: *id006
+    quote: Each layer has two sub-layers. The first is a multi-head self-attention mechanism, and the second is a simple, position-wise fully connected feed-forward network.
+    type: definitional_dependency
+    stance: supports
+  qualifiers:
+    required_dimension: explain
+    for_dimension: explain
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:prereq-feed-forward-network-transformer-encoder-layer
+  predicate: PREREQUISITE_OF
+  subject: method:feed-forward-network
+  object: method:transformer-encoder-layer
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1706.03762v7
+    locator: *id006
+    quote: Each layer has two sub-layers. The first is a multi-head self-attention mechanism, and the second is a simple, position-wise fully connected feed-forward network.
+    type: definitional_dependency
+    stance: supports
+  qualifiers:
+    required_dimension: explain
+    for_dimension: explain
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:prereq-residual-connection-transformer-encoder-layer
+  predicate: PREREQUISITE_OF
+  subject: method:residual-connection
+  object: method:transformer-encoder-layer
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1706.03762v7
+    locator: *id007
+    quote: We employ a residual connection [11] around each of the two sub-layers, followed by layer normalization [1].
+    type: definitional_dependency
+    stance: supports
+  qualifiers:
+    required_dimension: explain
+    for_dimension: explain
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:prereq-layer-normalization-transformer-encoder-layer
+  predicate: PREREQUISITE_OF
+  subject: method:layer-normalization
+  object: method:transformer-encoder-layer
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1706.03762v7
+    locator: *id007
+    quote: We employ a residual connection [11] around each of the two sub-layers, followed by layer normalization [1].
+    type: definitional_dependency
+    stance: supports
+  qualifiers:
+    required_dimension: recognize
+    for_dimension: explain
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:prereq-transformer-encoder-layer-vit
+  predicate: PREREQUISITE_OF
+  subject: method:transformer-encoder-layer
+  object: model:vit
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:2010.11929v2
+    locator: *id008
+    quote: The Transformer encoder (Vaswani et al., 2017) consists of alternating layers of multiheaded self-attention (MSA, see Appendix A) and MLP blocks (Eq. 2, 3).
+    type: definitional_dependency
+    stance: supports
+  qualifiers:
+    required_dimension: explain
+    for_dimension: explain
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:prereq-patch-embedding-vit
+  predicate: PREREQUISITE_OF
+  subject: method:patch-embedding
+  object: model:vit
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:2010.11929v2
+    locator: *id009
+    quote: dimensions with a trainable linear projection (Eq. 1). We refer to the output of this projection as the patch embeddings.
+    type: definitional_dependency
+    stance: supports
+  qualifiers:
+    required_dimension: explain
+    for_dimension: explain
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:prereq-class-token-vit
+  predicate: PREREQUISITE_OF
+  subject: method:class-token
+  object: model:vit
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:2010.11929v2
+    locator: *id010
+    quote: Similar to BERT’s [class] token, we prepend a learnable embedding to the sequence of embedded patches
+    type: definitional_dependency
+    stance: supports
+  qualifiers:
+    required_dimension: explain
+    for_dimension: explain
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:prereq-positional-encoding-vit
+  predicate: PREREQUISITE_OF
+  subject: method:positional-encoding
+  object: model:vit
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:2010.11929v2
+    locator: *id011
+    quote: Position embeddings are added to the patch embeddings to retain positional information. We use standard learnable 1D position embeddings, since we have not observed significant performance gains from using more advanced 2D-aware position embeddings (Appendix D.4).
+    type: definitional_dependency
+    stance: supports
+  qualifiers:
+    required_dimension: explain
+    for_dimension: explain
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:prereq-token-embedding-patch-embedding
+  predicate: PREREQUISITE_OF
+  subject: concept:token-embedding
+  object: method:patch-embedding
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:2010.11929v2
+    locator:
+      section: 3.1 Vision Transformer (ViT)
+      paragraph: 1
+    quote: The standard Transformer receives as input a 1D sequence of token embeddings.
+    type: definitional_dependency
+    stance: supports
+  qualifiers:
+    required_dimension: explain
+    for_dimension: explain
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:prereq-matrix-multiplication-patch-embedding
+  predicate: PREREQUISITE_OF
+  subject: concept:matrix-multiplication
+  object: method:patch-embedding
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:2010.11929v2
+    locator: *id009
+    quote: dimensions with a trainable linear projection (Eq. 1). We refer to the output of this projection as the patch embeddings.
+    type: definitional_dependency
+    stance: supports
+  qualifiers:
+    required_dimension: explain
+    for_dimension: explain
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:prereq-token-embedding-positional-encoding
+  predicate: PREREQUISITE_OF
+  subject: concept:token-embedding
+  object: method:positional-encoding
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1706.03762v7
+    locator:
+      section: 3.5 Positional Encoding
+      paragraph: 1
+      html_id: S3.SS5.p1
+    quote: To this end, we add "positional encodings" to the input embeddings at the bottoms of the encoder and decoder stacks.
+    type: definitional_dependency
+    stance: supports
+  qualifiers:
+    required_dimension: explain
+    for_dimension: explain
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:prereq-scaled-dot-product-attention-positional-encoding
+  predicate: PREREQUISITE_OF
+  subject: method:scaled-dot-product-attention
+  object: method:positional-encoding
+  status: verified
+  confidence: medium
+  evidence:
+  - source: src:arxiv:1706.03762v7
+    locator:
+      section: 3.5 Positional Encoding
+      paragraph: 1
+      html_id: S3.SS5.p1
+    quote: Since our model contains no recurrence and no convolution, in order for the model to make use of the order of the sequence, we must inject some information about the relative or absolute position of the tokens in the sequence.
+    type: definitional_dependency
+    stance: supports
+  qualifiers:
+    required_dimension: explain
+    for_dimension: explain
+  note: attention 자체는 순서를 모른다.
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:prereq-token-embedding-class-token
+  predicate: PREREQUISITE_OF
+  subject: concept:token-embedding
+  object: method:class-token
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:2010.11929v2
+    locator: *id010
+    quote: Similar to BERT’s [class] token, we prepend a learnable embedding to the sequence of embedded patches
+    type: definitional_dependency
+    stance: supports
+  qualifiers:
+    required_dimension: explain
+    for_dimension: explain
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:prereq-inductive-bias-vit-analyze
+  predicate: PREREQUISITE_OF
+  subject: concept:inductive-bias
+  object: model:vit
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:2010.11929v2
+    locator:
+      section: 1 Introduction
+      paragraph: 4
+    quote: Transformers lack some of the inductive biases inherent to CNNs, such as translation equivariance and locality, and therefore do not generalize well when trained on insufficient amounts of data.
+    type: definitional_dependency
+    stance: supports
+  qualifiers:
+    required_dimension: explain
+    for_dimension: analyze
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:prereq-convolutional-layer-inductive-bias
+  predicate: PREREQUISITE_OF
+  subject: method:convolutional-layer
+  object: concept:inductive-bias
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:2010.11929v2
+    locator:
+      section: 3.1 Vision Transformer (ViT)
+      paragraph: 5
+    quote: In CNNs, locality, two-dimensional neighborhood structure, and translation equivariance are baked into each layer throughout the whole model. In ViT, only MLP layers are local and translationally equivariant, while the self-attention layers are global.
+    type: definitional_dependency
+    stance: supports
+  qualifiers:
+    required_dimension: explain
+    for_dimension: explain
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:prereq-softmax-temperature-knowledge-distillation
+  predicate: PREREQUISITE_OF
+  subject: concept:softmax-temperature
+  object: method:knowledge-distillation
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1503.02531v1
+    locator:
+      section: 2 Distillation
+      paragraph: 1
+    quote: Using a higher value for T produces a softer probability distribution over classes.
+    type: definitional_dependency
+    stance: supports
+  qualifiers:
+    required_dimension: explain
+    for_dimension: explain
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:prereq-class-token-distillation-token
+  predicate: PREREQUISITE_OF
+  subject: method:class-token
+  object: method:distillation-token
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:2012.12877v2
+    locator: &id012
+      section: 1 Introduction
+      paragraph: 5
+    quote: We introduce a new distillation procedure based on a distillation token, which plays the same role as the class token, except that it aims at reproducing the label estimated by the teacher.
+    type: definitional_dependency
+    stance: supports
+  qualifiers:
+    required_dimension: explain
+    for_dimension: explain
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:prereq-knowledge-distillation-distillation-token
+  predicate: PREREQUISITE_OF
+  subject: method:knowledge-distillation
+  object: method:distillation-token
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:2012.12877v2
+    locator: *id012
+    quote: We introduce a new distillation procedure based on a distillation token, which plays the same role as the class token, except that it aims at reproducing the label estimated by the teacher.
+    type: definitional_dependency
+    stance: supports
+  qualifiers:
+    required_dimension: explain
+    for_dimension: explain
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:prereq-vit-deit
+  predicate: PREREQUISITE_OF
+  subject: model:vit
+  object: model:deit
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:2012.12877v2
+    locator:
+      section: 5.1 Transformer models
+      paragraph: 1
+    quote: As mentioned earlier, our architecture design is identical to the one proposed by Dosovitskiy et al. [15] with no convolutions. Our only differences are the training strategies, and the distillation token.
+    type: definitional_dependency
+    stance: supports
+  qualifiers:
+    required_dimension: explain
+    for_dimension: explain
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:prereq-distillation-token-deit
+  predicate: PREREQUISITE_OF
+  subject: method:distillation-token
+  object: model:deit
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:2012.12877v2
+    locator:
+      section: 4 Distillation through attention
+      paragraph: 7
+    quote: We add a new token, the distillation token, to the initial embeddings (patches and class token).
+    type: definitional_dependency
+    stance: supports
+  qualifiers:
+    required_dimension: explain
+    for_dimension: explain
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:rec-attention-mechanism-scaled-dot-product-attention
+  predicate: RECOMMENDED_BEFORE
+  subject: concept:attention-mechanism
+  object: method:scaled-dot-product-attention
+  status: verified
+  confidence: medium
+  evidence:
+  - source: src:arxiv:1706.03762v7
+    locator: *id013
+    quote: An attention function can be described as mapping a query and a set of key-value pairs to an output, where the query, keys, values, and output are all vectors.
+    type: definitional_dependency
+    stance: supports
+  qualifiers:
+    required_dimension: recognize
+    for_dimension: explain
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:rec-softmax-scaled-dot-product-attention-derive
+  predicate: RECOMMENDED_BEFORE
+  subject: concept:softmax
+  object: method:scaled-dot-product-attention
+  status: verified
+  confidence: medium
+  evidence:
+  - source: src:arxiv:1706.03762v7
+    locator: *id014
+    quote: the dot products grow large in magnitude, pushing the softmax function into regions where it has extremely small gradients
+    type: definitional_dependency
+    stance: supports
+  qualifiers:
+    required_dimension: derive
+    for_dimension: derive
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:rec-batch-normalization-layer-normalization
+  predicate: RECOMMENDED_BEFORE
+  subject: method:batch-normalization
+  object: method:layer-normalization
+  status: verified
+  confidence: medium
+  evidence:
+  - source: src:arxiv:1607.06450v1
+    locator:
+      section: Abstract
+    quote: In this paper, we transpose batch normalization into layer normalization by computing the mean and variance used for normalization from all of the summed inputs to the neurons in a layer on a single training case.
+    type: definitional_dependency
+    stance: supports
+  qualifiers:
+    required_dimension: explain
+    for_dimension: explain
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+  review: null
+- id: clm:prereq-transfer-learning-vit-analyze
+  predicate: PREREQUISITE_OF
+  subject: method:transfer-learning
+  object: model:vit
+  status: proposed
+  confidence: medium
+  evidence:
+  - type: curator_rationale
+    stance: supports
+    rationale: ViT의 핵심 결론(대규모 사전학습 후 전이)이 사전학습·미세조정 개념을 전제한다 — 사람 검토 필요.
+  qualifiers:
+    required_dimension: explain
+    for_dimension: analyze
+  review: null
