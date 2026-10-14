@@ -14,3 +14,6 @@ test-results/
 playwright-report/
 .env
 *.local
+dist-e2e/
+dist-seed/
+dist-public-e2e/

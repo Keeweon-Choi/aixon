@@ -1,0 +1,656 @@
+# TEST FIXTURE — not real research data
+# Deterministic graph for the AIXON site E2E and Python tests. Every title, quote and date below is
+# made up; entity ids mirror the real seed only so that tests can share selectors.
+# Validate with: .venv/bin/python tools/seedtool.py validate tests/fixtures/graph/site_graph.yaml
+#
+# Review coverage (the public-build gate depends on it):
+#   clm:intro-transformer  human approval by human:fixture-editor  -> published in public builds
+#   clm:intro-vit          "approval" by agent:fixture-bot          -> must NOT be published (trap)
+#   every other claim      no review                                -> must NOT be published
+schema_version: 1
+graph:
+  id: fixture-site
+  name: AIXON site test fixture
+  description: "(fixture) 사이트 E2E 테스트를 위한 작은 가짜 그래프. 연구 사실이 아니다."
+  assumed_background:
+    - "(fixture) 고등학교 대수"
+  updated_at: '2026-10-15'
+
+fields:
+  - id: field:machine-learning
+    name: 기계학습
+    summary: "(fixture) 데이터에서 규칙을 학습하는 방법을 다루는 분야다."
+    summary_by: agent:fixture-bot
+    parents: []
+  - id: field:deep-learning
+    name: 딥러닝
+    summary: "(fixture) 여러 층의 신경망으로 표현을 학습하는 분야다."
+    summary_by: agent:fixture-bot
+    parents:
+      - field:machine-learning
+  - id: field:computer-vision
+    name: 컴퓨터 비전
+    summary: "(fixture) 이미지와 영상을 이해하는 방법을 다루는 분야다."
+    summary_by: agent:fixture-bot
+    parents: []
+  - id: field:vision-transformers
+    name: 비전 트랜스포머
+    summary: "(fixture) 이미지를 토큰열로 다루는 Transformer 계열을 다루는 분야다."
+    summary_by: agent:fixture-bot
+    parents:
+      - field:computer-vision
+      - field:deep-learning
+  - id: field:natural-language-processing
+    name: 자연어 처리
+    summary: "(fixture) 사람의 언어를 계산으로 다루는 분야다."
+    summary_by: agent:fixture-bot
+    parents: []
+  - id: field:machine-translation
+    name: 기계 번역
+    summary: "(fixture) 한 언어의 문장을 다른 언어로 옮기는 과제를 다루는 분야다."
+    summary_by: agent:fixture-bot
+    parents:
+      - field:natural-language-processing
+
+problems:
+  - id: problem:sequential-computation
+    name: 순차 계산의 병목
+    summary: "(fixture) 시퀀스를 한 단계씩 순서대로 계산해야 해서 병렬화가 어려운 문제다."
+    summary_by: agent:fixture-bot
+    question: "(fixture) 시퀀스 처리의 순차 의존성을 어떻게 줄일 수 있는가?"
+    fields:
+      - field:natural-language-processing
+
+concepts:
+  - id: concept:dot-product
+    name: 내적
+    aliases:
+      - dot product
+    summary: "(fixture) 두 벡터의 대응 성분을 곱해 더한 값이다."
+    summary_by: agent:fixture-bot
+    dimensions:
+      - recognize
+      - explain
+      - implement
+    fields:
+      - field:deep-learning
+    formula: a\cdot b=\sum_i a_i b_i
+    estimated_minutes:
+      explain: 15
+  - id: concept:softmax
+    name: Softmax
+    aliases:
+      - 소프트맥스
+    summary: "(fixture) 실수 벡터를 합이 1인 확률분포로 바꾸는 함수다."
+    summary_by: agent:fixture-bot
+    dimensions:
+      - recognize
+      - explain
+      - derive
+      - implement
+    fields:
+      - field:deep-learning
+    formula: \mathrm{softmax}(z)_i=\frac{e^{z_i}}{\sum_j e^{z_j}}
+    estimated_minutes:
+      explain: 20
+      derive: 25
+  - id: concept:softmax-temperature
+    name: Softmax 온도
+    aliases:
+      - softmax temperature
+    summary: "(fixture) softmax 입력을 T로 나누어 분포의 뾰족한 정도를 조절하는 매개변수다."
+    summary_by: agent:fixture-bot
+    dimensions:
+      - recognize
+      - explain
+      - derive
+    fields:
+      - field:deep-learning
+    formula: p_i=\frac{e^{z_i/T}}{\sum_j e^{z_j/T}}
+    estimated_minutes:
+      explain: 20
+  - id: concept:variance-of-sum
+    name: 합의 분산
+    aliases:
+      - variance of sum
+    summary: "(fixture) 독립 확률변수의 합의 분산은 각 분산의 합이라는 성질이다."
+    summary_by: agent:fixture-bot
+    dimensions:
+      - recognize
+      - explain
+      - derive
+    fields:
+      - field:machine-learning
+    estimated_minutes:
+      explain: 20
+
+methods:
+  - id: method:scaled-dot-product-attention
+    name: Scaled Dot-Product Attention
+    aliases:
+      - 스케일드 닷 프로덕트 어텐션
+      - SDPA
+    summary: "(fixture) query와 key의 내적으로 가중치를 만들어 value를 섞는 어텐션 연산이다."
+    summary_by: agent:fixture-bot
+    dimensions:
+      - recognize
+      - explain
+      - derive
+      - implement
+    fields:
+      - field:machine-translation
+    formula: \mathrm{Attention}(Q,K,V)=\mathrm{softmax}\left(\frac{QK^{\top}}{\sqrt{d_k}}\right)V
+    estimated_minutes:
+      explain: 25
+      derive: 30
+  - id: method:multi-head-attention
+    name: Multi-Head Attention
+    aliases:
+      - 멀티 헤드 어텐션
+    summary: "(fixture) 어텐션을 여러 부분공간에서 나란히 계산해 합치는 구성이다."
+    summary_by: agent:fixture-bot
+    dimensions:
+      - recognize
+      - explain
+      - implement
+    fields:
+      - field:machine-translation
+    estimated_minutes:
+      explain: 25
+
+models:
+  - id: model:transformer
+    name: Transformer
+    summary: "(fixture) 어텐션만으로 시퀀스를 변환하는 모델 계열이다."
+    summary_by: agent:fixture-bot
+    # The only entity whose AI summary a human approved: public builds may show it.
+    summary_review:
+      by: human:fixture-editor
+      at: '2026-10-15'
+      decision: approve
+    dimensions:
+      - recognize
+      - explain
+      - analyze
+    fields:
+      - field:machine-translation
+    variants:
+      - base
+  - id: model:vit
+    name: Vision Transformer
+    aliases:
+      - ViT
+    summary: "(fixture) 이미지를 패치 토큰열로 바꿔 Transformer에 넣는 모델 계열이다."
+    summary_by: agent:fixture-bot
+    dimensions:
+      - recognize
+      - explain
+      - analyze
+    fields:
+      - field:vision-transformers
+    variants:
+      - base
+  - id: model:convnet
+    name: ConvNet (fixture)
+    summary: "(fixture) 합성곱 층을 쌓아 이미지 특징을 추출하는 모델 계열이다."
+    summary_by: agent:fixture-bot
+    dimensions:
+      - recognize
+      - explain
+    fields:
+      - field:computer-vision
+
+papers:
+  - id: paper:fixture-attention-2017
+    title: "Attention-Based Sequence Transduction (fixture)"
+    authors:
+      - Fixture Author A
+      - Fixture Author B
+    earliest_public_date: 2017-06-12
+    venue: Fixture Conference 2017
+    identifiers:
+      arxiv: "0000.00001"
+  - id: paper:fixture-patches-2020
+    title: "Image Patches as Tokens (fixture)"
+    authors:
+      - Fixture Author C
+      - Fixture Author D
+    earliest_public_date: 2020-10-22
+    venue: Fixture Conference 2021
+    identifiers:
+      arxiv: "0000.00002"
+  - id: paper:fixture-convnet-2015
+    title: "Convolutional Feature Hierarchies (fixture)"
+    authors:
+      - Fixture Author E
+    earliest_public_date: 2015-12-10
+    venue: Fixture Conference 2016
+    identifiers:
+      arxiv: "0000.00003"
+
+sources:
+  - id: src:fixture:attention-2017-v1
+    name: Fixture source attention-2017 v1
+    kind: paper_version
+    paper: paper:fixture-attention-2017
+    url: https://example.org/fixture/attention-2017/v1
+    fulltext_url: https://example.org/fixture/attention-2017/v1/full
+    version: v1
+    retrieved_at: '2026-10-15'
+  - id: src:fixture:patches-2020-v1
+    name: Fixture source patches-2020 v1
+    kind: paper_version
+    paper: paper:fixture-patches-2020
+    url: https://example.org/fixture/patches-2020/v1
+    fulltext_url: https://example.org/fixture/patches-2020/v1/full
+    version: v1
+    retrieved_at: '2026-10-15'
+  - id: src:fixture:convnet-2015-v1
+    name: Fixture source convnet-2015 v1
+    kind: paper_version
+    paper: paper:fixture-convnet-2015
+    url: https://example.org/fixture/convnet-2015/v1
+    fulltext_url: https://example.org/fixture/convnet-2015/v1/full
+    version: v1
+    retrieved_at: '2026-10-15'
+
+claims:
+  # --- INTRODUCES (verified) ---
+  - id: clm:intro-sdpa
+    predicate: INTRODUCES
+    subject: paper:fixture-attention-2017
+    object: method:scaled-dot-product-attention
+    qualifiers: {}
+    status: verified
+    confidence: high
+    evidence:
+      - source: src:fixture:attention-2017-v1
+        locator: {section: "3.2.1 Scaled Dot-Product Attention (fixture)", paragraph: 1}
+        quote: We call this attention function Scaled Dot-Product Attention, computed from queries keys and values. (fixture)
+        type: author_statement
+        stance: supports
+    verification: {method: fixture_manual, by: 'agent:fixture-bot', at: '2026-10-15'}
+    review: null
+  - id: clm:intro-multi-head-attention
+    predicate: INTRODUCES
+    subject: paper:fixture-attention-2017
+    object: method:multi-head-attention
+    qualifiers: {}
+    status: verified
+    confidence: high
+    evidence:
+      - source: src:fixture:attention-2017-v1
+        locator: {section: "3.2.2 Multi-Head Attention (fixture)", paragraph: 1}
+        quote: Instead of one attention function we run several in parallel and concatenate the results. (fixture)
+        type: author_statement
+        stance: supports
+    verification: {method: fixture_manual, by: 'agent:fixture-bot', at: '2026-10-15'}
+    review: null
+  - id: clm:intro-transformer
+    predicate: INTRODUCES
+    subject: paper:fixture-attention-2017
+    object: model:transformer
+    qualifiers: {}
+    status: verified
+    confidence: high
+    evidence:
+      - source: src:fixture:attention-2017-v1
+        locator: {section: "1 Introduction (fixture)", paragraph: 2}
+        quote: We propose a new network architecture, the Transformer, based solely on attention mechanisms. (fixture)
+        type: author_statement
+        stance: supports
+    verification: {method: fixture_manual, by: 'agent:fixture-bot', at: '2026-10-15'}
+    review: {by: 'human:fixture-editor', at: '2026-10-15', decision: approve, note: fixture}
+  - id: clm:intro-vit
+    predicate: INTRODUCES
+    subject: paper:fixture-patches-2020
+    object: model:vit
+    qualifiers: {}
+    status: verified
+    confidence: high
+    evidence:
+      - source: src:fixture:patches-2020-v1
+        locator: {section: "3 Method (fixture)", paragraph: 1}
+        quote: We split an image into fixed-size patches and feed the sequence of patch embeddings to a Transformer. (fixture)
+        type: author_statement
+        stance: supports
+    verification: {method: fixture_manual, by: 'agent:fixture-bot', at: '2026-10-15'}
+    # Trap: an agent "approval" is not a human approval and must never publish this claim.
+    review: {by: 'agent:fixture-bot', at: '2026-10-15', decision: approve, note: agent self-approval must not publish}
+  - id: clm:intro-convnet
+    predicate: INTRODUCES
+    subject: paper:fixture-convnet-2015
+    object: model:convnet
+    qualifiers: {}
+    status: verified
+    confidence: high
+    evidence:
+      - source: src:fixture:convnet-2015-v1
+        locator: {section: "2 Architecture (fixture)", paragraph: 1}
+        quote: We present a stack of convolutional layers that learns a hierarchy of image features. (fixture)
+        type: author_statement
+        stance: supports
+    verification: {method: fixture_manual, by: 'agent:fixture-bot', at: '2026-10-15'}
+    review: null
+
+  # --- ADAPTS (verified): ViT adapts the Transformer from language to vision ---
+  - id: clm:vit-adapts-transformer
+    predicate: ADAPTS
+    subject: model:vit
+    object: model:transformer
+    qualifiers:
+      from_field: field:natural-language-processing
+      to_field: field:computer-vision
+    status: verified
+    confidence: medium
+    evidence:
+      - source: src:fixture:patches-2020-v1
+        locator: {section: "3 Method (fixture)", paragraph: 1}
+        quote: In model design we follow the original Transformer design as closely as possible. (fixture)
+        type: author_statement
+        stance: supports
+    verification: {method: fixture_manual, by: 'agent:fixture-bot', at: '2026-10-15'}
+    review: null
+
+  # --- PART_OF (verified) ---
+  - id: clm:scaled-dot-product-attention-part-of-multi-head-attention
+    predicate: PART_OF
+    subject: method:scaled-dot-product-attention
+    object: method:multi-head-attention
+    qualifiers: {}
+    status: verified
+    confidence: high
+    evidence:
+      - source: src:fixture:attention-2017-v1
+        locator: {section: "3.2.2 Multi-Head Attention (fixture)", paragraph: 1}
+        quote: Each head applies scaled dot-product attention to its own projections of the queries keys and values. (fixture)
+        type: author_statement
+        stance: supports
+    verification: {method: fixture_manual, by: 'agent:fixture-bot', at: '2026-10-15'}
+    review: null
+  - id: clm:multi-head-attention-part-of-transformer
+    predicate: PART_OF
+    subject: method:multi-head-attention
+    object: model:transformer
+    qualifiers: {}
+    status: verified
+    confidence: high
+    evidence:
+      - source: src:fixture:attention-2017-v1
+        locator: {section: "3.2.3 Applications of Attention (fixture)", paragraph: 1}
+        quote: The Transformer uses multi-head attention in encoder self-attention and in encoder-decoder attention. (fixture)
+        type: author_statement
+        stance: supports
+    verification: {method: fixture_manual, by: 'agent:fixture-bot', at: '2026-10-15'}
+    review: null
+
+  # --- PREREQUISITE_OF (verified, definitional dependency) ---
+  - id: clm:prereq-dot-product-scaled-dot-product-attention
+    predicate: PREREQUISITE_OF
+    subject: concept:dot-product
+    object: method:scaled-dot-product-attention
+    qualifiers: {required_dimension: explain, for_dimension: explain}
+    status: verified
+    confidence: high
+    evidence:
+      - source: src:fixture:attention-2017-v1
+        locator: {section: "3.2.1 Scaled Dot-Product Attention (fixture)", paragraph: 1}
+        quote: We compute the dot products of the query with all keys and divide each by the square root of the key dimension. (fixture)
+        type: definitional_dependency
+        stance: supports
+    verification: {method: fixture_manual, by: 'agent:fixture-bot', at: '2026-10-15'}
+    review: null
+  - id: clm:prereq-softmax-scaled-dot-product-attention
+    predicate: PREREQUISITE_OF
+    subject: concept:softmax
+    object: method:scaled-dot-product-attention
+    qualifiers: {required_dimension: explain, for_dimension: explain}
+    status: verified
+    confidence: high
+    evidence:
+      - source: src:fixture:attention-2017-v1
+        locator: {section: "3.2.1 Scaled Dot-Product Attention (fixture)", paragraph: 1}
+        quote: We apply a softmax function to obtain the weights on the values. (fixture)
+        type: definitional_dependency
+        stance: supports
+    verification: {method: fixture_manual, by: 'agent:fixture-bot', at: '2026-10-15'}
+    review: null
+  - id: clm:prereq-variance-of-sum-scaled-dot-product-attention-derive
+    predicate: PREREQUISITE_OF
+    subject: concept:variance-of-sum
+    object: method:scaled-dot-product-attention
+    qualifiers: {required_dimension: explain, for_dimension: derive}
+    status: verified
+    confidence: high
+    evidence:
+      - source: src:fixture:attention-2017-v1
+        locator: {section: "3.2.1 footnote 4 (fixture)", paragraph: 1}
+        quote: If the components of q and k are independent with mean 0 and variance 1 then their dot product has variance d_k. (fixture)
+        type: definitional_dependency
+        stance: supports
+    verification: {method: fixture_manual, by: 'agent:fixture-bot', at: '2026-10-15'}
+    review: null
+  - id: clm:prereq-softmax-temperature-scaled-dot-product-attention-derive
+    predicate: PREREQUISITE_OF
+    subject: concept:softmax-temperature
+    object: method:scaled-dot-product-attention
+    qualifiers: {required_dimension: explain, for_dimension: derive}
+    status: verified
+    confidence: medium
+    evidence:
+      - source: src:fixture:attention-2017-v1
+        locator: {section: "3.2.1 Scaled Dot-Product Attention (fixture)", paragraph: 2}
+        quote: Scaling the scores by one over the square root of the key dimension acts like a softmax temperature. (fixture)
+        type: definitional_dependency
+        stance: supports
+    verification: {method: fixture_manual, by: 'agent:fixture-bot', at: '2026-10-15'}
+    review: null
+  - id: clm:prereq-softmax-softmax-temperature
+    predicate: PREREQUISITE_OF
+    subject: concept:softmax
+    object: concept:softmax-temperature
+    qualifiers: {required_dimension: explain, for_dimension: explain}
+    status: verified
+    confidence: high
+    evidence:
+      - source: src:fixture:attention-2017-v1
+        locator: {section: "3.2.1 Scaled Dot-Product Attention (fixture)", paragraph: 2}
+        quote: The temperature rescales the inputs of the softmax before the exponential is applied. (fixture)
+        type: definitional_dependency
+        stance: supports
+    verification: {method: fixture_manual, by: 'agent:fixture-bot', at: '2026-10-15'}
+    review: null
+  - id: clm:prereq-scaled-dot-product-attention-multi-head-attention
+    predicate: PREREQUISITE_OF
+    subject: method:scaled-dot-product-attention
+    object: method:multi-head-attention
+    qualifiers: {required_dimension: explain, for_dimension: explain}
+    status: verified
+    confidence: high
+    evidence:
+      - source: src:fixture:attention-2017-v1
+        locator: {section: "3.2.2 Multi-Head Attention (fixture)", paragraph: 1}
+        quote: Multi-head attention runs the scaled dot-product attention function several times in parallel. (fixture)
+        type: definitional_dependency
+        stance: supports
+    verification: {method: fixture_manual, by: 'agent:fixture-bot', at: '2026-10-15'}
+    review: null
+  - id: clm:prereq-transformer-vit
+    predicate: PREREQUISITE_OF
+    subject: model:transformer
+    object: model:vit
+    qualifiers: {required_dimension: explain, for_dimension: explain}
+    status: verified
+    confidence: high
+    evidence:
+      - source: src:fixture:patches-2020-v1
+        locator: {section: "3 Method (fixture)", paragraph: 1}
+        quote: The model design follows the original Transformer so its encoder must be understood first. (fixture)
+        type: definitional_dependency
+        stance: supports
+    verification: {method: fixture_manual, by: 'agent:fixture-bot', at: '2026-10-15'}
+    review: null
+
+  # --- proposed: candidate prerequisite without enough evidence (never a verified prerequisite) ---
+  - id: clm:prereq-multi-head-attention-vit
+    predicate: PREREQUISITE_OF
+    subject: method:multi-head-attention
+    object: model:vit
+    qualifiers: {required_dimension: explain, for_dimension: explain}
+    status: proposed
+    confidence: low
+    evidence:
+      - type: curator_rationale
+        stance: supports
+        rationale: "(fixture) 후보 관계: 직접 인용이 아직 없다."
+    note: "(fixture) 근거가 부족한 후보 선수 관계."
+    review: null
+
+  # --- CITES only: the ViT-like paper cites the ConvNet-like paper; no influence claim exists ---
+  - id: clm:cites-vit-convnet
+    predicate: CITES
+    subject: paper:fixture-patches-2020
+    object: paper:fixture-convnet-2015
+    qualifiers: {}
+    status: verified
+    confidence: high
+    evidence:
+      - source: src:fixture:patches-2020-v1
+        locator: {section: References, item: '[7]'}
+        quote: Fixture Author E. Convolutional Feature Hierarchies (fixture).
+        type: bibliographic_metadata
+        stance: supports
+    verification: {method: fixture_manual, by: 'agent:fixture-bot', at: '2026-10-15'}
+    review: null
+
+  # --- disputed: one supporting and one contradicting evidence item ---
+  - id: clm:transformer-mitigates-sequential
+    predicate: MITIGATES
+    subject: model:transformer
+    object: problem:sequential-computation
+    qualifiers: {}
+    status: disputed
+    confidence: medium
+    evidence:
+      - source: src:fixture:attention-2017-v1
+        locator: {section: "4 Why Self-Attention (fixture)", table: Table 1}
+        quote: Self-attention connects all positions with a constant number of sequentially executed operations. (fixture)
+        type: analytical_result
+        stance: supports
+      - source: src:fixture:convnet-2015-v1
+        locator: {section: "5 Discussion (fixture)", paragraph: 3}
+        quote: Attention layers still cost quadratic time in the sequence length, so the bottleneck is moved rather than removed. (fixture)
+        type: third_party_statement
+        stance: contradicts
+    verification: {method: fixture_manual, by: 'agent:fixture-bot', at: '2026-10-15'}
+    review: null
+
+  # --- rejected: citing a paper is not building on it ---
+  - id: clm:vit-extends-convnet
+    predicate: EXTENDS
+    subject: model:vit
+    object: model:convnet
+    qualifiers: {}
+    status: rejected
+    confidence: medium
+    evidence:
+      - source: src:fixture:patches-2020-v1
+        locator: {section: "2 Related Work (fixture)", paragraph: 1}
+        quote: Unlike convolutional models we do not rely on image-specific inductive biases. (fixture)
+        type: author_statement
+        stance: contradicts
+    rejected_reason: "(fixture) ConvNet 논문을 인용했을 뿐 그 설계를 확장했다는 진술이 없다."
+    verification: {method: fixture_manual, by: 'agent:fixture-bot', at: '2026-10-15'}
+    review: null
+
+# Copied from data/seed/seed_graph.yaml (ids unchanged) so the Lab quiz renders the same items.
+assessment_items:
+  - id: ai:lab-softmax-temp-01
+    assesses:
+      unit: concept:softmax-temperature
+      dimension: explain
+    kind: lab_prediction
+    prompt: z = [2, 1, 0]에서 T를 1에서 0.1로 낮추면 가장 큰 확률은?
+    choices:
+      - 커진다
+      - 작아진다
+      - 그대로다
+    answer: 0
+    rationale: '0.665 → 0.99995: 온도를 낮추면 분포가 argmax로 몰린다'
+    lab: lab:softmax-temperature
+    scenario:
+      logits:
+        - 2
+        - 1
+        - 0
+      T_from: 1
+      T_to: 0.1
+  - id: ai:lab-softmax-temp-02
+    assesses:
+      unit: concept:softmax-temperature
+      dimension: explain
+    kind: lab_prediction
+    prompt: z = [2, 0], T = 2일 때 첫 번째 확률은?
+    answer: 0.731
+    tolerance: 0.005
+    rationale: e¹/(e¹+1) ≈ 0.731
+    lab: lab:softmax-temperature
+    scenario:
+      logits:
+        - 2
+        - 0
+      T: 2
+    verified_by: computation
+  - id: ai:lab-sdpa-01
+    assesses:
+      unit: method:scaled-dot-product-attention
+      dimension: derive
+    kind: lab_prediction
+    prompt: scaling 없이 d_k를 4에서 512로 키우면 평균 최대 attention 가중치는?
+    choices:
+      - 1에 가까워진다(포화)
+      - 0에 가까워진다
+      - 변하지 않는다
+    answer: 0
+    rationale: 0.525 → 0.955 (seed 42, 표본 1,000)
+    lab: lab:softmax-temperature
+    scenario:
+      scaled: false
+      d_k_from: 4
+      d_k_to: 512
+      n_keys: 8
+  - id: ai:lab-sdpa-02
+    assesses:
+      unit: concept:variance-of-sum
+      dimension: explain
+    kind: lab_prediction
+    prompt: d_k = 64일 때 q·k의 표준편차는?
+    answer: 8
+    tolerance: 0.5
+    rationale: √64 = 8 (seed 42, 표본 10,000에서 Var 64.65)
+    lab: lab:softmax-temperature
+    scenario:
+      d_k: 64
+    verified_by: computation
+
+labs:
+  - id: lab:softmax-temperature
+    name: Softmax Temperature & Scaled Dot-Product Lab
+    component: softmax-temperature
+    version: 1
+    parameters:
+      - {name: T, min: 0.05, max: 5, step: 0.05, default: 1}
+      - {name: d_k, min: 1, max: 1024, step: 1, default: 64}
+      - {name: n_keys, min: 2, max: 16, step: 1, default: 8}
+      - {name: seed, min: 0, max: 4294967295, step: 1, default: 42}
+    demonstrates:
+      - {unit: 'concept:softmax', dimensions: [explain]}
+      - {unit: 'concept:softmax-temperature', dimensions: [explain]}
+      - {unit: 'concept:variance-of-sum', dimensions: [explain]}
+      - {unit: 'method:scaled-dot-product-attention', dimensions: [derive]}
+    items:
+      - ai:lab-softmax-temp-01
+      - ai:lab-softmax-temp-02
+      - ai:lab-sdpa-01
+      - ai:lab-sdpa-02
+    reference_impl: tools/gen_lab_fixtures.py
