@@ -12,10 +12,15 @@
 | 02:26– | 사이트 MVP Codex(1015-022629 → 이어 하기 1015-023556, 한도 대기) | 검증 대기 |
 | 03:0x | 01_COMPETITIVE_ANALYSIS, development 문서, E2E-10(ViT 여정) 추가 | — |
 | 03:0x– | 독립 설계 감사(서브에이전트) | 대기 |
+| 03:1x | pypdf 누락 발견(I-18) → 프로젝트 venv로 인용 121/121 재확인 | exit 0 |
+| 03:1x–03:2x | Codex 사이트 결과 검토: 그래프 화면 없음, 공개 관문 미구현, 수식 손작성 MathML(I-19), 시드 파일을 지어낸 fixture로 덮어씀 → 작업 중지·보존 커밋, 뼈대만 병합(시드는 base 유지) | 병합 후 G 0, approve 0건 |
+| 03:2x | KaTeX 복원(`@astrojs/markdown-remark` 7.3.1, katex 0.16.47 정렬), 대표 SDPA Wiki 투입, `<Lab id>` 래퍼, prettier | 실제 데이터 638쪽 빌드, katex-error 0, lint·typecheck 0 오류 |
+| 03:40 | 남은 사이트 작업을 A(그래프, Codex)·B(페이지·Lab·공개 관문, Codex)·C(하네스, sonnet 서브에이전트)로 재분배, 공통 규칙·선택자 약속 | 진행 중 |
+| 03:5x | 시드 요약 70개 교체·문제 이름 한국어화(I-21), golden 테스트 해시 무시(I-22) | G 0, 인용 121/121, `pytest tools` 60, 음성 대조 실패 확인 |
 
 ## 마지막 테스트 결과
 
 - `pytest tools`: 60 passed (seedtool 58 + 식별자 검증 2, 오케스트레이터 실행, 03:5x 재확인)
 - `seedtool validate`(seed + atlas): G 오류 0, W 경고 정보성
 - `seedtool quotes`: 121/121
-- 사이트(make 대상): **NOT RUN**(Codex 작업 중)
+- 사이트(main, 03:3x): `make lint` 0 오류, `make typecheck` 0 오류, `make validate` 0 오류, preview 빌드 638쪽 성공, `make test` **FAIL**(vitest 2건 — 대체 시드 기준 테스트, 작업 B가 다시 씀)
