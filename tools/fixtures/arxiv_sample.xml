@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <entry>
+    <id>http://arxiv.org/abs/1706.03762v7</id>
+    <published>2017-06-12T17:57:34Z</published>
+    <title>Attention Is All You Need</title>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/1512.03385v1</id>
+    <published>2015-12-10T00:00:00Z</published>
+    <title>Deep Residual Learning for Image Recognition</title>
+  </entry>
+</feed>
