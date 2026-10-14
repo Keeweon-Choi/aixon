@@ -2,6 +2,7 @@ node_modules/
 dist/
 dist-public/
 .astro/
+.astro-config/
 .venv
 .venv/
 artifacts/
