@@ -1822,6 +1822,48 @@ resources:
     - explain
     - analyze
     locator: 14.2.1. Steps, 14.2.2. Hot Dog Recognition
+  # These five H rows provide only dimensions not declared by their mapped KU;
+  # retain their distinct URLs without fabricating an editorial dimension link.
+- id: res:cs231n-github-io-convolutional-networks-layerpat
+  name: U19 학습 자료
+  format: text
+  url: https://cs231n.github.io/convolutional-networks/#layerpat
+  author: Stanford CS231n
+  license: 저장소 MIT
+  verified_at: '2026-10-15'
+  explains: []
+- id: res:d2l-ai-chapter-attention-mechanisms-and-transformers-transformer-html-residual-connection-and-layer-normalization
+  name: U15 학습 자료
+  format: text
+  url: https://d2l.ai/chapter_attention-mechanisms-and-transformers/transformer.html#residual-connection-and-layer-normalization
+  author: Aston Zhang, Zachary C. Lipton, Mu Li, Alexander J. Smola
+  license: CC BY-SA 4.0
+  verified_at: '2026-10-15'
+  explains: []
+- id: res:d2l-ai-chapter-attention-mechanisms-and-transformers-vision-transformer-html-putting-it-all-together
+  name: U14 학습 자료
+  format: text
+  url: https://d2l.ai/chapter_attention-mechanisms-and-transformers/vision-transformer.html#putting-it-all-together
+  author: Aston Zhang, Zachary C. Lipton, Mu Li, Alexander J. Smola
+  license: CC BY-SA 4.0
+  verified_at: '2026-10-15'
+  explains: []
+- id: res:docs-pytorch-org-tutorials-beginner-knowledge-distillation-tutorial-html
+  name: U25 학습 자료
+  format: text
+  url: https://docs.pytorch.org/tutorials/beginner/knowledge_distillation_tutorial.html
+  author: 원문 저자/발행처
+  license: 저장소 BSD 3-Clause
+  verified_at: '2026-10-15'
+  explains: []
+- id: res:lilianweng-github-io-posts-2018-06-24-attention-summary
+  name: U08 학습 자료
+  format: text
+  url: https://lilianweng.github.io/posts/2018-06-24-attention/#summary
+  author: 원문 저자/발행처
+  license: 명시 없음
+  verified_at: '2026-10-15'
+  explains: []
 assessment_items:
 - id: ai:dot-product-01
   assesses:
