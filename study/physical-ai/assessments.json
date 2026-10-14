@@ -1,0 +1,89 @@
+{
+  "_note": "Quiz items and check rubrics authored by the AIXON orchestrator (Claude) on 2026-10-15. Numeric answers were computed (see reference_calc.py for the lab-based ones). Rubrics paraphrase the roadmap's own concept text. Do not change answers; if one looks wrong, report it instead.",
+  "quizzes": [
+    {"id": "q-b-iou", "stage": "b", "kind": "numeric", "prompt": "박스 A = (0, 0, 4, 4), 박스 B = (2, 2, 6, 6)이다(x1, y1, x2, y2). IoU는? (소수 셋째 자리까지)", "answer": 0.143, "tolerance": 0.002, "explanation": "교집합은 2 × 2 = 4, 합집합은 16 + 16 − 4 = 28, IoU = 4 / 28 ≈ 0.143."},
+    {"id": "q-b-nms", "stage": "b", "kind": "mcq", "prompt": "점수가 0.9와 0.8인 두 박스의 IoU가 0.6이고 NMS 임계값이 0.5일 때 결과는?", "choices": ["두 박스 모두 남는다", "0.8 박스가 제거된다", "0.9 박스가 제거된다", "두 박스가 하나로 합쳐진다"], "answer": 1, "explanation": "점수가 높은 0.9 박스를 먼저 남기고, 그 박스와 IoU가 임계값(0.5)보다 큰 0.8 박스를 제거한다."},
+    {"id": "q-b-map", "stage": "b", "kind": "mcq", "prompt": "COCO의 AP(0.50:0.95)는 무엇을 평균한 값인가?", "choices": ["IoU 기준을 0.50부터 0.95까지 바꿔 가며 구한 AP", "점수 임계값 0.50부터 0.95까지에서 구한 정밀도", "클래스 50개부터 95개까지의 AP", "IoU 0.50과 0.95 두 기준에서의 재현율"], "answer": 0, "explanation": "클래스별 AP(정밀도-재현율 곡선 아래 면적)를 여러 IoU 기준(0.50~0.95)에서 구해 평균한다."},
+    {"id": "q-b-lab-nms", "stage": "b", "kind": "lab_prediction", "lab": "iou-nms", "scenario": {"threshold_from": 0.3, "threshold_to": 0.7}, "prompt": "실습의 박스 6개에 NMS를 적용할 때, 임계값을 0.3에서 0.7로 올리면 남는 박스 수는?", "choices": ["늘어난다", "줄어든다", "같다"], "answer": 0, "explanation": "임계값이 높을수록 많이 겹쳐야 제거되므로 덜 제거된다. 이 예시에서는 2개(b1, b4)에서 6개로 늘어난다."},
+
+    {"id": "q-0-gain", "stage": "s0", "kind": "numeric", "prompt": "1차원 칼만 필터에서 예측 분산 P⁻ = 4, 측정 분산 R = 1일 때 칼만 이득 K = P⁻ / (P⁻ + R)은?", "answer": 0.8, "tolerance": 0.001, "explanation": "K = 4 / (4 + 1) = 0.8. 측정 쪽을 80%, 예측 쪽을 20% 믿어 섞는다."},
+    {"id": "q-0-predict", "stage": "s0", "kind": "mcq", "prompt": "탐지가 끊긴 프레임에서 칼만 필터는 어떻게 하나?", "choices": ["예측 단계만 수행해 위치를 이어 가고, 불확실성(P)은 커진다", "마지막 측정값을 그대로 유지한다", "트랙을 즉시 삭제한다", "속도를 0으로 바꾼다"], "answer": 0, "explanation": "측정이 없으면 보정 없이 예측만으로 이어 간다. 그만큼 추정의 불확실성은 커진다."},
+    {"id": "q-0-cmc", "stage": "s0", "kind": "mcq", "prompt": "머리에 쓴 카메라가 움직일 때 칼만 필터만으로는 고스트가 잘 줄지 않는 이유는?", "choices": ["카메라가 움직이면 화면 속 물체의 움직임이 등속 예측과 어긋나기 때문", "칼만 필터는 사람을 추적할 수 없기 때문", "IoU 계산이 느려지기 때문", "측정 잡음이 0이 되기 때문"], "answer": 0, "explanation": "화면 전체가 카메라와 함께 움직여 등속 가정이 빗나간다. 그래서 프레임 사이 전체 움직임을 먼저 보정(CMC)한다."},
+    {"id": "q-0-lab-kf", "stage": "s0", "kind": "lab_prediction", "lab": "kalman1d", "scenario": {"interval": 4, "sigma_z": 2.0, "sigma_a": 0.05, "seed": 7}, "prompt": "검출 간격 N = 4(4프레임마다 한 번 검출)에서 RMSE가 더 작은 방식은?", "choices": ["마지막 검출 유지(고스트)", "칼만 필터", "거의 같다"], "answer": 1, "explanation": "이 시나리오(seed 7, 60프레임)에서 마지막 검출 유지는 3.07, 칼만 필터는 1.91이다. 칼만은 검출이 없는 프레임에도 속도로 위치를 이어 간다."},
+    {"id": "q-0-lab-hold", "stage": "s0", "kind": "lab_prediction", "lab": "kalman1d", "scenario": {"interval": 1, "sigma_z": 2.0, "sigma_a": 0.05, "seed": 7}, "prompt": "매 프레임 검출(N = 1)일 때, 마지막 검출 유지 방식의 RMSE는 대략 무엇과 비슷한가?", "choices": ["측정 잡음의 크기 σ_z (약 2)", "0", "물체의 속도 (1.2)", "검출 간격 (1)"], "answer": 0, "explanation": "매 프레임 측정값을 그대로 쓰므로 오차는 측정 잡음 수준이다(이 시나리오 2.19). 칼만은 측정을 매끄럽게 섞어 0.72까지 줄인다."},
+
+    {"id": "q-1-patches", "stage": "s1", "kind": "numeric", "prompt": "224 × 224 이미지를 16 × 16 패치로 자르면 패치는 몇 개인가?", "answer": 196, "tolerance": 0, "explanation": "(224 / 16)² = 14² = 196."},
+    {"id": "q-1-tokens", "stage": "s1", "kind": "numeric", "prompt": "ViT에서 위 196개 패치 앞에 class token 하나를 붙이면 인코더에 들어가는 토큰은 몇 개인가?", "answer": 197, "tolerance": 0, "explanation": "196 + 1 = 197."},
+    {"id": "q-1-patchdim", "stage": "s1", "kind": "numeric", "prompt": "RGB 16 × 16 패치 하나를 한 줄로 펼친 벡터의 길이는?", "answer": 768, "tolerance": 0, "explanation": "16 × 16 × 3 = 768. 이 벡터를 선형 투영해 패치 임베딩을 만든다."},
+    {"id": "q-1-attn", "stage": "s1", "kind": "mcq", "prompt": "어텐션이 CNN의 합성곱과 가장 크게 다른 점은?", "choices": ["각 토큰이 처음부터 모든 토큰을 얼마나 참고할지 가중치로 정한다(전역)", "가까운 픽셀만 본다(국소)", "가중치를 학습하지 않는다", "이미지에서만 쓸 수 있다"], "answer": 0, "explanation": "합성곱은 가까운 픽셀부터 보지만, 어텐션은 첫 층부터 모든 토큰 사이의 관계를 계산한다."},
+
+    {"id": "q-2-project", "stage": "s2", "kind": "numeric", "prompt": "fx = fy = 500, cx = 320, cy = 240인 카메라가 있다. 카메라 좌표 (X, Y, Z) = (0.4, −0.2, 2.0) m인 점은 픽셀 u가 얼마인 곳에 찍히나?", "answer": 420, "tolerance": 0.5, "explanation": "u = fx · X / Z + cx = 500 × 0.4 / 2.0 + 320 = 420. (v = 500 × (−0.2) / 2.0 + 240 = 190)"},
+    {"id": "q-2-backproject", "stage": "s2", "kind": "numeric", "prompt": "같은 카메라에서 픽셀 (u, v) = (420, 190), 깊이 Z = 2.0 m일 때 X는 몇 m인가?", "answer": 0.4, "tolerance": 0.001, "explanation": "X = (u − cx) · Z / fx = 100 × 2.0 / 500 = 0.4."},
+    {"id": "q-2-scale", "stage": "s2", "kind": "mcq", "prompt": "카메라 한 대로 찍은 사진만으로는 실제 거리(스케일)를 알 수 없는 이유는?", "choices": ["장면 전체를 k배 키우고 k배 멀리 두어도 같은 이미지가 찍혀 한 장으로는 구분할 수 없기 때문", "모델의 해상도가 낮기 때문", "깊이 값이 항상 음수이기 때문", "외부 파라미터가 항상 0이기 때문"], "answer": 0, "explanation": "크기와 거리가 함께 바뀌면 투영 결과가 같다. 그래서 단안 모델은 대부분 상대 깊이를 내고, 스케일은 다른 정보로 맞춘다."},
+
+    {"id": "q-3-transform", "stage": "s3", "kind": "numeric", "prompt": "카메라 좌표의 점 (1, 0, 0)을 p_robot = R · p_cam + t로 로봇 좌표로 바꾼다. R은 z축 기준 90° 회전, t = (0.5, 0, 0.2)일 때 로봇 좌표의 y는?", "answer": 1.0, "tolerance": 0.001, "explanation": "z축 90° 회전은 (1, 0, 0)을 (0, 1, 0)으로 돌린다. t를 더하면 (0.5, 1, 0.2)."},
+    {"id": "q-3-topic", "stage": "s3", "kind": "mcq", "prompt": "ROS 2에서 카메라 노드가 이미지를 보내고 탐지 노드가 받는 채널을 무엇이라 하나?", "choices": ["토픽", "노드", "rosbag", "tf"], "answer": 0, "explanation": "노드는 일하는 단위, 토픽은 메시지가 오가는 채널, rosbag은 토픽 메시지 녹화 파일, tf는 좌표 변환 관리."},
+
+    {"id": "q-4-chunk", "stage": "s4", "kind": "numeric", "prompt": "제어 주기가 50 Hz이고 action chunk 크기가 100이면, 한 번 예측한 행동은 몇 초 분량인가?", "answer": 2.0, "tolerance": 0.001, "explanation": "100 / 50 Hz = 2초."},
+    {"id": "q-4-bc", "stage": "s4", "kind": "mcq", "prompt": "행동 복제의 누적 오류(compounding error)란?", "choices": ["작은 실수가 쌓여 시연에 없던 상황으로 흘러가 더 큰 실수를 하게 되는 문제", "학습 데이터가 너무 많아서 생기는 문제", "GPU 메모리가 부족해지는 문제", "보상 함수를 잘못 설계해서 생기는 문제"], "answer": 0, "explanation": "정책의 작은 오차가 다음 관측을 시연 분포 밖으로 밀어내고, 그곳에서 더 크게 틀린다."},
+
+    {"id": "q-5-fp16", "stage": "s5", "kind": "numeric", "prompt": "파라미터 70억 개(7B) 모델을 FP16(파라미터당 2바이트)으로 올리면 가중치만 몇 GB(10⁹ 바이트)인가?", "answer": 14, "tolerance": 0.01, "explanation": "7 × 10⁹ × 2바이트 = 14 × 10⁹바이트 = 14 GB. RTX 3070(8 GB)에는 들어가지 않는다."},
+    {"id": "q-5-int4", "stage": "s5", "kind": "numeric", "prompt": "같은 7B 모델을 INT4(파라미터당 0.5바이트)로 양자화하면 가중치는 몇 GB인가?", "answer": 3.5, "tolerance": 0.01, "explanation": "7 × 10⁹ × 0.5바이트 = 3.5 GB."},
+    {"id": "q-5-vla", "stage": "s5", "kind": "mcq", "prompt": "VLM과 VLA의 차이로 맞는 것은?", "choices": ["VLA는 VLM에 로봇 행동 출력을 붙여, 보고 지시를 이해해 움직인다", "VLA는 이미지를 쓰지 않는다", "VLM은 행동을 내고 VLA는 글을 낸다", "둘은 같은 말이다"], "answer": 0, "explanation": "VLM은 이미지와 글을 받아 글로 답하고, VLA는 같은 이해를 바탕으로 행동을 낸다."}
+  ],
+  "check_rubrics": {
+    "b": [
+      ["2단계는 후보 영역을 먼저 고른 뒤 분류한다(정확하지만 느림). 1단계는 한 번에 박스와 클래스를 낸다(빠름).", "anchor는 미리 정한 기준 박스이고, 모델은 그 박스를 얼마나 옮기고 늘릴지 예측한다.", "anchor-free(FCOS, YOLOX)는 기준 박스 없이 바로 예측한다."],
+      ["NMS: 점수순 정렬 → 가장 높은 박스를 남김 → 그 박스와 IoU가 임계값을 넘는 박스 제거 → 남은 박스로 반복.", "AP: 클래스마다 정밀도-재현율 곡선 아래 면적. mAP: 클래스 평균.", "COCO AP(0.50:0.95): 여러 IoU 기준에서 구한 AP의 평균."]
+    ],
+    "s0": [
+      ["고스트 박스는 마지막 탐지 결과를 그대로 유지해서, 물체나 카메라가 움직이면 대상에서 어긋난다.", "칼만 추적은 위치·속도로 다음 위치를 예측하고, 탐지가 오면 믿을 만한 정도에 따라 섞어 보정한다.", "탐지가 없는 프레임에는 예측만으로 이어 간다."],
+      ["IDF1은 같은 물체에 같은 번호를 얼마나 잘 유지했는지 본다.", "ID switch는 한 물체의 번호가 바뀐 횟수다.", "(덧붙여) HOTA는 탐지와 연결을 함께 보는 종합 점수다."],
+      ["카메라가 움직이면 화면 속 모든 물체가 함께 움직여 보여 등속 예측이 빗나간다.", "CMC는 프레임 사이 화면 전체의 움직임(optical flow 등)을 먼저 구해 보정한 뒤 예측한다.", "BoT-SORT가 이 방식을 쓴다."]
+    ],
+    "s1": [
+      ["CNN은 가까운 픽셀(국소 영역)부터 보고 층을 쌓으며 넓혀 간다.", "어텐션은 각 토큰이 다른 모든 토큰을 얼마나 참고할지 가중치로 정해, 첫 층부터 전체를 본다."],
+      ["(B, 3, 224, 224) 이미지를 16 × 16 패치 196개로 자른다.", "패치 하나를 16·16·3 = 768 길이로 펼쳐 선형 투영 → (B, 196, D).", "class token을 붙여 (B, 197, D), 위치 임베딩을 더해 인코더에 넣는다."]
+    ],
+    "s2": [
+      ["X = (u − cx) · Z / fx", "Y = (v − cy) · Z / fy", "Z = 그 픽셀의 깊이"],
+      ["한 장의 사진에서는 장면을 k배 키우고 k배 멀리 두어도 같은 이미지가 된다(크기와 거리를 구분 못 함).", "그래서 단안 모델은 대부분 상대 깊이를 내고, 절대 스케일은 다른 정보(알려진 크기, 카메라 높이, 다른 센서)로 맞춘다."]
+    ],
+    "s3": [
+      ["회전 R과 이동 t를 4 × 4 동차 행렬 하나로 묶는다.", "p_robot = R · p_cam + t (동차 좌표에서는 행렬 곱 한 번).", "ROS 2에서는 tf가 이 변환들을 관리한다."],
+      ["노드는 일하는 단위, 토픽은 메시지가 오가는 채널이다.", "노드가 토픽에 메시지를 내보내고(publish) 다른 노드가 받는다(subscribe).", "rosbag은 토픽에 오간 메시지를 녹화해 그대로 재생한다."]
+    ],
+    "s4": [
+      ["행동 복제는 작은 실수가 쌓여 시연에 없던 상황으로 흘러가는 누적 오류 문제가 있다.", "action chunking은 앞으로의 k개 동작을 묶어 예측해, 결정 횟수를 줄이고 실수가 덜 쌓이게 한다.", "동작도 더 부드러워진다."],
+      ["입력: 카메라 영상(여러 대일 수 있음) + 관절 상태.", "출력: k개 시점의 행동 묶음, 즉 (k, 관절 수) 모양.", "학습 때는 CVAE가 시연 스타일을 따로 담는다."]
+    ],
+    "s5": [
+      ["VLM은 이미지와 글을 받아 글로 답한다.", "VLA는 같은 이해를 바탕으로 로봇 행동을 출력한다."],
+      ["VLA는 수십억 파라미터라 FP16에서 7B 기준 가중치만 약 14 GB다.", "8 GB GPU나 로봇 보드에는 그대로 올라가지 않아 INT4 등 양자화(7B → 약 3.5 GB)와 경량화가 필요하다.", "추론 지연도 커서 비동기 실행 같은 방법을 쓴다."]
+    ]
+  },
+  "labs": {
+    "iou-nms": {
+      "stage": "b",
+      "nms_preset": [
+        {"id": "b1", "box": [10, 10, 40, 50], "score": 0.92},
+        {"id": "b2", "box": [14, 12, 44, 52], "score": 0.85},
+        {"id": "b3", "box": [20, 18, 50, 58], "score": 0.60},
+        {"id": "b4", "box": [60, 30, 90, 70], "score": 0.88},
+        {"id": "b5", "box": [63, 34, 93, 74], "score": 0.70},
+        {"id": "b6", "box": [55, 25, 85, 65], "score": 0.55}
+      ],
+      "expected": {
+        "iou_pairs": {"b1-b2": 0.6997, "b1-b3": 0.3636, "b2-b3": 0.5152, "b4-b5": 0.6807, "b4-b6": 0.5738, "b5-b6": 0.397},
+        "kept": {"0.3": ["b1", "b4"], "0.5": ["b1", "b4", "b3"], "0.7": ["b1", "b4", "b2", "b5", "b3", "b6"]}
+      }
+    },
+    "kalman1d": {
+      "stage": "s0",
+      "defaults": {"frames": 60, "x0": 10.0, "v0": 1.2, "sigma_a": 0.05, "sigma_z": 2.0, "interval": 4, "seed": 7},
+      "spec": "PRNG mulberry32(seed); gauss = sqrt(-2 ln(1-r1)) * cos(2 pi r2). For t = 0..frames-1: a = sigma_a*gauss(); n = sigma_z*gauss() (draw both every frame, in this order); truth[t] = x; meas[t] = (t % interval == 0) ? x + n : null; then x = x + v + 0.5*a; v = v + a. Hold-last: est[t] = most recent non-null meas. Kalman (constant velocity, dt = 1): q = sigma_a^2, Q = [[q/4, q/2],[q/2, q]], R = sigma_z^2; init state [meas[0], 0], P = [[R, 0],[0, 10]], est[0] = meas[0]; for t >= 1 predict (x = F x, P = F P F^T + Q with F = [[1,1],[0,1]]), then update if meas[t] != null (S = P00 + R, K = [P00/S, P10/S], y = z - x0, x += K y, P = (I - K H) P with H = [1, 0]); est[t] = x0. RMSE over all frames.",
+      "expected_rmse": {"1": {"hold": 2.1859, "kalman": 0.7212}, "2": {"hold": 2.4596, "kalman": 1.5200}, "4": {"hold": 3.0720, "kalman": 1.9103}, "8": {"hold": 6.3448, "kalman": 3.4477}},
+      "expected_first": {"truth": [10.0, 11.2035, 12.3855], "meas": [8.2715, null, null, null, 16.3055], "mulberry32_seed7_first3": [0.011704753153026104, 0.06195825757458806, 0.97690763277933]}
+    }
+  }
+}
