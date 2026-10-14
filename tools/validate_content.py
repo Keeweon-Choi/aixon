@@ -267,6 +267,7 @@ def check_frontmatter_fields(document: Document, graph: GraphIndex) -> bool:
         bad("updated_at", "must be a YYYY-MM-DD date")
     check_reference_list("sources", meta["sources"], graph.sources, bad)
     check_reference_list("claims", meta["claims"], graph.claims, bad)
+    check_reference_list("labs", meta["labs"], None, bad)  # existence is V-LABREF-1
     check_figure_shape(meta["figures"], bad)
     return len(document.issues) == problems_before
 
@@ -328,13 +329,13 @@ def check_review_shape(review: Any, bad) -> None:
         bad("review", "decision must be approve")
 
 
-def check_reference_list(key: str, values: Any, known: dict[str, Any], bad) -> None:
-    """V-SCHEMA-1: a list of ids that must all exist in the graph."""
+def check_reference_list(key: str, values: Any, known: dict[str, Any] | None, bad) -> None:
+    """V-SCHEMA-1: a list of ids; when `known` is given, every id must exist in the graph."""
     if not isinstance(values, list) or not all(isinstance(item, str) for item in values):
         bad(key, "must be a list of ids")
         return
     for ident in values:
-        if ident not in known:
+        if known is not None and ident not in known:
             bad(key, f"unknown id {ident}")
 
 
