@@ -1,0 +1,808 @@
+schema_version: 1
+graph:
+  id: aixon-seed-cv-representation
+  name: CV Representation Learning — CNN → Transformer → ViT
+  description: 합성곱 신경망에서 Transformer와 Vision Transformer로 이어지는 표현 학습의 핵심 개념과 연구 계보를 다룬다.
+  assumed_background:
+  - 고등학교 대수와 지수·로그 함수
+  - 미분의 기초(도함수, 연쇄법칙)
+  - 확률의 기초(평균, 분산)
+  - 신경망 학습의 기초(순전파, 손실, 경사하강)
+  updated_at: '2026-10-15'
+fields:
+- id: field:artificial-intelligence
+  name: 인공지능
+  summary: 연구 주제를 분류하는 학술 분야다.
+  summary_by: agent:codex
+  parents: []
+  external_ids:
+    openalex: https://openalex.org/subfields/1702
+- id: field:machine-learning
+  name: 기계학습
+  summary: 연구 주제를 분류하는 학술 분야다.
+  summary_by: agent:codex
+  parents:
+  - field:artificial-intelligence
+- id: field:deep-learning
+  name: 딥러닝
+  summary: 연구 주제를 분류하는 학술 분야다.
+  summary_by: agent:codex
+  parents:
+  - field:machine-learning
+- id: field:representation-learning
+  name: 표현 학습
+  summary: 연구 주제를 분류하는 학술 분야다.
+  summary_by: agent:codex
+  parents:
+  - field:deep-learning
+- id: field:computer-vision
+  name: 컴퓨터 비전
+  summary: 연구 주제를 분류하는 학술 분야다.
+  summary_by: agent:codex
+  parents:
+  - field:artificial-intelligence
+  external_ids:
+    openalex: https://openalex.org/subfields/1707
+- id: field:image-classification
+  name: 이미지 분류
+  summary: 연구 주제를 분류하는 학술 분야다.
+  summary_by: agent:codex
+  parents:
+  - field:computer-vision
+- id: field:vision-transformers
+  name: 비전 트랜스포머
+  summary: 연구 주제를 분류하는 학술 분야다.
+  summary_by: agent:codex
+  parents:
+  - field:computer-vision
+  - field:deep-learning
+- id: field:natural-language-processing
+  name: 자연어 처리
+  summary: 연구 주제를 분류하는 학술 분야다.
+  summary_by: agent:codex
+  parents:
+  - field:artificial-intelligence
+  external_ids:
+    openalex: https://openalex.org/T10181
+- id: field:machine-translation
+  name: 기계 번역
+  summary: 연구 주제를 분류하는 학술 분야다.
+  summary_by: agent:codex
+  parents:
+  - field:natural-language-processing
+problems:
+- id: problem:overfitting-large-networks
+  name: overfitting large networks
+  summary: 모델 학습과 설계에서 다루는 연구 문제다.
+  summary_by: agent:codex
+  question: overfitting large networks을 어떻게 해결할 수 있는가?
+- id: problem:depth-vs-accuracy
+  name: depth vs accuracy
+  summary: 모델 학습과 설계에서 다루는 연구 문제다.
+  summary_by: agent:codex
+  question: depth vs accuracy을 어떻게 해결할 수 있는가?
+- id: problem:internal-covariate-shift
+  name: internal covariate shift
+  summary: 모델 학습과 설계에서 다루는 연구 문제다.
+  summary_by: agent:codex
+  question: internal covariate shift을 어떻게 해결할 수 있는가?
+- id: problem:degradation-in-deep-networks
+  name: degradation in deep networks
+  summary: 모델 학습과 설계에서 다루는 연구 문제다.
+  summary_by: agent:codex
+  question: degradation in deep networks을 어떻게 해결할 수 있는가?
+- id: problem:fixed-length-bottleneck
+  name: fixed length bottleneck
+  summary: 모델 학습과 설계에서 다루는 연구 문제다.
+  summary_by: agent:codex
+  question: fixed length bottleneck을 어떻게 해결할 수 있는가?
+- id: problem:sequential-computation-in-rnns
+  name: sequential computation in rnns
+  summary: 모델 학습과 설계에서 다루는 연구 문제다.
+  summary_by: agent:codex
+  question: sequential computation in rnns을 어떻게 해결할 수 있는가?
+- id: problem:batch-dependence-of-normalization
+  name: batch dependence of normalization
+  summary: 모델 학습과 설계에서 다루는 연구 문제다.
+  summary_by: agent:codex
+  question: batch dependence of normalization을 어떻게 해결할 수 있는가?
+- id: problem:convolution-free-image-recognition
+  name: convolution free image recognition
+  summary: 모델 학습과 설계에서 다루는 연구 문제다.
+  summary_by: agent:codex
+  question: convolution free image recognition을 어떻게 해결할 수 있는가?
+- id: problem:vit-data-hunger
+  name: vit data hunger
+  summary: 모델 학습과 설계에서 다루는 연구 문제다.
+  summary_by: agent:codex
+  question: vit data hunger을 어떻게 해결할 수 있는가?
+- id: problem:quadratic-attention-cost-high-resolution
+  name: quadratic attention cost high resolution
+  summary: 모델 학습과 설계에서 다루는 연구 문제다.
+  summary_by: agent:codex
+  question: quadratic attention cost high resolution을 어떻게 해결할 수 있는가?
+concepts:
+- id: concept:dot-product
+  name: 내적
+  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
+  summary_by: agent:codex
+  dimensions: &id001
+  - recognize
+  - explain
+  - implement
+  formula: a\cdot b=\sum_i a_i b_i
+  estimated_minutes:
+    explain: 15
+- id: concept:matrix-multiplication
+  name: 행렬 곱셈
+  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
+  summary_by: agent:codex
+  dimensions: *id001
+  estimated_minutes:
+    explain: 20
+- id: concept:softmax
+  name: Softmax
+  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
+  summary_by: agent:codex
+  dimensions: &id003
+  - recognize
+  - explain
+  - derive
+  - implement
+  formula: \mathrm{softmax}(z)_i=\frac{e^{z_i}}{\sum_j e^{z_j}}
+  estimated_minutes:
+    explain: 20
+    derive: 25
+- id: concept:softmax-temperature
+  name: Softmax 온도
+  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
+  summary_by: agent:codex
+  dimensions:
+  - recognize
+  - explain
+  - derive
+  formula: p_i=\frac{e^{z_i/T}}{\sum_j e^{z_j/T}}
+  estimated_minutes:
+    explain: 20
+- id: concept:variance-of-sum
+  name: 합의 분산
+  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
+  summary_by: agent:codex
+  dimensions:
+  - recognize
+  - explain
+  - derive
+  estimated_minutes:
+    explain: 20
+- id: concept:token-embedding
+  name: 토큰 임베딩
+  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
+  summary_by: agent:codex
+  dimensions: &id004
+  - recognize
+  - explain
+- id: concept:attention-mechanism
+  name: Attention 메커니즘
+  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
+  summary_by: agent:codex
+  dimensions: &id002
+  - recognize
+  - explain
+  - analyze
+- id: concept:inductive-bias
+  name: 귀납적 편향
+  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
+  summary_by: agent:codex
+  dimensions: *id002
+- id: concept:receptive-field
+  name: 수용 영역
+  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
+  summary_by: agent:codex
+  dimensions:
+  - recognize
+  - explain
+  - derive
+methods:
+- id: method:convolutional-layer
+  name: 합성곱 층
+  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
+  summary_by: agent:codex
+  dimensions: *id003
+- id: method:relu
+  name: ReLU
+  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
+  summary_by: agent:codex
+  dimensions: *id004
+- id: method:dropout
+  name: Dropout
+  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
+  summary_by: agent:codex
+  dimensions: *id004
+- id: method:batch-normalization
+  name: Batch Normalization
+  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
+  summary_by: agent:codex
+  dimensions:
+  - recognize
+  - explain
+  - derive
+  - analyze
+- id: method:layer-normalization
+  name: Layer Normalization
+  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
+  summary_by: agent:codex
+  dimensions:
+  - recognize
+  - explain
+  - derive
+- id: method:residual-connection
+  name: 잔차 연결
+  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
+  summary_by: agent:codex
+  dimensions: *id002
+- id: method:additive-attention
+  name: Additive Attention
+  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
+  summary_by: agent:codex
+  dimensions:
+  - recognize
+  - explain
+  - derive
+  aliases:
+  - Bahdanau attention
+- id: method:scaled-dot-product-attention
+  name: Scaled Dot-Product Attention
+  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
+  summary_by: agent:codex
+  dimensions: *id003
+  formula: \mathrm{Attention}(Q,K,V)=\mathrm{softmax}\left(\frac{QK^{\top}}{\sqrt{d_k}}\right)V
+  estimated_minutes:
+    explain: 25
+    derive: 30
+- id: method:multi-head-attention
+  name: Multi-Head Attention
+  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
+  summary_by: agent:codex
+  dimensions: *id001
+  estimated_minutes:
+    explain: 25
+- id: method:positional-encoding
+  name: 위치 인코딩
+  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
+  summary_by: agent:codex
+  dimensions:
+  - recognize
+  - explain
+  - derive
+- id: method:feed-forward-network
+  name: 피드포워드 네트워크
+  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
+  summary_by: agent:codex
+  dimensions: *id004
+- id: method:transformer-encoder-layer
+  name: Transformer 인코더 층
+  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
+  summary_by: agent:codex
+  dimensions: *id001
+- id: method:patch-embedding
+  name: 패치 임베딩
+  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
+  summary_by: agent:codex
+  dimensions: *id001
+- id: method:class-token
+  name: 클래스 토큰
+  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
+  summary_by: agent:codex
+  dimensions: *id004
+  aliases:
+  - '[CLS] token'
+- id: method:transfer-learning
+  name: 전이학습
+  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
+  summary_by: agent:codex
+  dimensions: *id002
+- id: method:knowledge-distillation
+  name: 지식 증류
+  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
+  summary_by: agent:codex
+  dimensions: *id004
+- id: method:distillation-token
+  name: 증류 토큰
+  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
+  summary_by: agent:codex
+  dimensions: *id004
+- id: method:shifted-window-attention
+  name: Shifted Window Attention
+  summary: 신경망 표현 학습에서 사용하는 핵심 단위다.
+  summary_by: agent:codex
+  dimensions: *id002
+models:
+- id: model:alexnet
+  name: AlexNet
+  summary: 논문에서 제안하거나 평가한 모델 계열이다.
+  summary_by: agent:codex
+  dimensions: *id002
+  variants: []
+  aliases:
+  - AlexNet
+  classification_note: 논문은 'AlexNet'이라는 이름을 쓰지 않는다
+- id: model:vgg
+  name: VGG
+  summary: 논문에서 제안하거나 평가한 모델 계열이다.
+  summary_by: agent:codex
+  dimensions: *id002
+  variants:
+  - VGG-16
+  - VGG-19
+- id: model:resnet
+  name: ResNet
+  summary: 논문에서 제안하거나 평가한 모델 계열이다.
+  summary_by: agent:codex
+  dimensions: *id002
+  variants:
+  - ResNet-18
+  - ResNet-34
+  - ResNet-50
+  - ResNet-101
+  - ResNet-152
+- id: model:transformer
+  name: Transformer
+  summary: 논문에서 제안하거나 평가한 모델 계열이다.
+  summary_by: agent:codex
+  dimensions: *id002
+  variants:
+  - base
+  - big
+- id: model:bert
+  name: BERT
+  summary: 논문에서 제안하거나 평가한 모델 계열이다.
+  summary_by: agent:codex
+  dimensions: *id002
+  variants:
+  - BERT-Base
+  - BERT-Large
+- id: model:bit
+  name: BiT
+  summary: 논문에서 제안하거나 평가한 모델 계열이다.
+  summary_by: agent:codex
+  dimensions: *id002
+  variants:
+  - BiT-S
+  - BiT-M
+  - BiT-L
+  classification_note: -S/M/L은 사전학습 데이터·일정, 기본 아키텍처는 ResNet152x4
+- id: model:vit
+  name: Vision Transformer
+  summary: 논문에서 제안하거나 평가한 모델 계열이다.
+  summary_by: agent:codex
+  dimensions: *id002
+  variants:
+  - ViT-B/16
+  - ViT-L/16
+  - ViT-H/14
+  aliases:
+  - ViT (ICLR 2021)
+- id: model:deit
+  name: DeiT
+  summary: 논문에서 제안하거나 평가한 모델 계열이다.
+  summary_by: agent:codex
+  dimensions: *id002
+  variants:
+  - DeiT-Ti
+  - DeiT-S
+  - DeiT-B
+- id: model:swin
+  name: Swin Transformer
+  summary: 논문에서 제안하거나 평가한 모델 계열이다.
+  summary_by: agent:codex
+  dimensions: *id002
+  variants:
+  - Swin-T
+  - Swin-S
+  - Swin-B
+  - Swin-L
+papers:
+- id: paper:deng2009-imagenet
+  title: 'ImageNet: A Large-Scale Hierarchical Image Database'
+  authors:
+  - Jia Deng
+  - Wei Dong
+  - Richard Socher
+  - Li-Jia Li
+  - Kai Li
+  - Li Fei-Fei
+  earliest_public_date: 2009-06-20
+  venue: CVPR 2009
+  identifiers:
+    doi: 10.1109/CVPR.2009.5206848
+    s2: d2c733e34d48784a37d717fe43d9e93277a8c53e
+    dblp: conf/cvpr/DengDSLL009
+    openalex:
+    - W2108598243
+    - W4239072543
+  metadata_checked:
+    arxiv: '2026-10-15'
+    openalex: '2026-10-15'
+- id: paper:krizhevsky2012-alexnet
+  title: ImageNet Classification with Deep Convolutional Neural Networks
+  authors:
+  - Alex Krizhevsky
+  - Ilya Sutskever
+  - Geoffrey E. Hinton
+  earliest_public_date: 2012-12-03
+  venue: NIPS 2012 (Advances in Neural Information Processing Systems 25; the conference is now NeurIPS)
+  identifiers:
+    s2: abd1c342495432171beb7ca8fd9551ef13cbd0ff
+    dblp: conf/nips/KrizhevskySH12
+    openalex:
+    - W2163605009
+    - W3147600416
+  metadata_checked:
+    arxiv: '2026-10-15'
+    openalex: '2026-10-15'
+- id: paper:simonyan2014-vgg
+  title: Very Deep Convolutional Networks for Large-Scale Image Recognition
+  authors:
+  - Karen Simonyan
+  - Andrew Zisserman
+  earliest_public_date: 2014-09-04
+  venue: ICLR 2015
+  identifiers:
+    arxiv: '1409.1556'
+    arxiv_doi: 10.48550/arXiv.1409.1556
+    s2: eb42cf88027de515750f230b23b1a057dc782108
+    dblp: conf/iclr/SimonyanZ14a
+    openalex:
+    - W1686810756
+    - W3209259379
+  metadata_checked:
+    arxiv: '2026-10-15'
+    openalex: '2026-10-15'
+- id: paper:ioffe2015-batchnorm
+  title: 'Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift'
+  authors:
+  - Sergey Ioffe
+  - Christian Szegedy
+  earliest_public_date: 2015-02-11
+  venue: ICML 2015
+  identifiers:
+    arxiv: '1502.03167'
+    arxiv_doi: 10.48550/arXiv.1502.03167
+    s2: 995c5f5e62614fcb4d2796ad2faab969da51713e
+    dblp: conf/icml/IoffeS15
+    openalex:
+    - W1836465849
+    - W2949117887
+  metadata_checked:
+    arxiv: '2026-10-15'
+    openalex: '2026-10-15'
+- id: paper:santurkar2018-bn-optimization
+  title: How Does Batch Normalization Help Optimization?
+  authors:
+  - Shibani Santurkar
+  - Dimitris Tsipras
+  - Andrew Ilyas
+  - Aleksander Madry
+  earliest_public_date: 2018-05-29
+  venue: NeurIPS 2018
+  identifiers:
+    arxiv: '1805.11604'
+    arxiv_doi: 10.48550/arXiv.1805.11604
+    openalex:
+    - W2898211994
+  metadata_checked:
+    arxiv: '2026-10-15'
+    openalex: '2026-10-15'
+- id: paper:he2015-resnet
+  title: Deep Residual Learning for Image Recognition
+  authors:
+  - Kaiming He
+  - Xiangyu Zhang
+  - Shaoqing Ren
+  - Jian Sun
+  earliest_public_date: 2015-12-10
+  venue: CVPR 2016
+  identifiers:
+    doi: 10.1109/CVPR.2016.90
+    arxiv: '1512.03385'
+    arxiv_doi: 10.48550/arXiv.1512.03385
+    s2: 2c03df8b48bf3fa39054345bafabfeff15bfd11d
+    dblp: conf/cvpr/HeZRS16
+    openalex:
+    - W2194775991
+    - W2949650786
+  metadata_checked:
+    arxiv: '2026-10-15'
+    openalex: '2026-10-15'
+- id: paper:kolesnikov2019-bit
+  title: 'Big Transfer (BiT): General Visual Representation Learning'
+  authors:
+  - Alexander Kolesnikov
+  - Lucas Beyer
+  - Xiaohua Zhai
+  - Joan Puigcerver
+  - Jessica Yung
+  - Sylvain Gelly
+  - Neil Houlsby
+  earliest_public_date: 2019-12-24
+  venue: ECCV 2020
+  identifiers:
+    doi: 10.1007/978-3-030-58558-7_29
+    arxiv: '1912.11370'
+    arxiv_doi: 10.48550/arXiv.1912.11370
+    s2: bc51622358d8eea83248ef29402fe10640d07ba6
+    dblp: conf/eccv/KolesnikovBZPYG20
+    openalex:
+    - W3015146382
+  metadata_checked:
+    arxiv: '2026-10-15'
+    openalex: '2026-10-15'
+- id: paper:dosovitskiy2020-vit
+  title: 'An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale'
+  authors:
+  - Alexey Dosovitskiy
+  - Lucas Beyer
+  - Alexander Kolesnikov
+  - Dirk Weissenborn
+  - Xiaohua Zhai
+  - Thomas Unterthiner
+  - Mostafa Dehghani
+  - Matthias Minderer
+  - Georg Heigold
+  - Sylvain Gelly
+  - Jakob Uszkoreit
+  - Neil Houlsby
+  earliest_public_date: 2020-10-22
+  venue: ICLR 2021 (oral)
+  identifiers:
+    arxiv: '2010.11929'
+    arxiv_doi: 10.48550/arXiv.2010.11929
+    openreview: YicbFdNTTy
+    openalex:
+    - W3094502228
+    - W3119786062
+  metadata_checked:
+    arxiv: '2026-10-15'
+    openalex: '2026-10-15'
+- id: paper:touvron2020-deit
+  title: Training data-efficient image transformers & distillation through attention
+  authors:
+  - Hugo Touvron
+  - Matthieu Cord
+  - Matthijs Douze
+  - Francisco Massa
+  - Alexandre Sablayrolles
+  - Hervé Jégou
+  earliest_public_date: 2020-12-23
+  venue: ICML 2021 (PMLR 139)
+  identifiers:
+    arxiv: '2012.12877'
+    arxiv_doi: 10.48550/arXiv.2012.12877
+    s2: ad7ddcc14984caae308c397f1a589aae75d4ab71
+    dblp: journals/corr/abs-2012-12877
+    openalex:
+    - W4394668313
+    - W3116489684
+    - W4376983091
+  metadata_checked:
+    arxiv: '2026-10-15'
+    openalex: '2026-10-15'
+- id: paper:liu2021-swin
+  title: 'Swin Transformer: Hierarchical Vision Transformer using Shifted Windows'
+  authors:
+  - Ze Liu
+  - Yutong Lin
+  - Yue Cao
+  - Han Hu
+  - Yixuan Wei
+  - Zheng Zhang
+  - Stephen Lin
+  - Baining Guo
+  earliest_public_date: 2021-03-25
+  venue: ICCV 2021
+  identifiers:
+    doi: 10.1109/ICCV48922.2021.00986
+    arxiv: '2103.14030'
+    arxiv_doi: 10.48550/arXiv.2103.14030
+    openalex:
+    - W3138516171
+  metadata_checked:
+    arxiv: '2026-10-15'
+    openalex: '2026-10-15'
+- id: paper:bahdanau2014-attention
+  title: Neural Machine Translation by Jointly Learning to Align and Translate
+  authors:
+  - Dzmitry Bahdanau
+  - Kyunghyun Cho
+  - Yoshua Bengio
+  earliest_public_date: 2014-09-01
+  venue: ICLR 2015 (oral presentation)
+  identifiers:
+    arxiv: '1409.0473'
+    arxiv_doi: 10.48550/arXiv.1409.0473
+    dblp: conf/iclr/BahdanauCB14
+    openalex:
+    - W2133564696
+  metadata_checked:
+    arxiv: '2026-10-15'
+    openalex: '2026-10-15'
+- id: paper:ba2016-layernorm
+  title: Layer Normalization
+  authors:
+  - Jimmy Lei Ba
+  - Jamie Ryan Kiros
+  - Geoffrey E. Hinton
+  earliest_public_date: 2016-07-21
+  venue: arXiv preprint only (CoRR abs/1607.06450); no peer-reviewed or workshop venue found
+  identifiers:
+    arxiv: '1607.06450'
+    arxiv_doi: 10.48550/arXiv.1607.06450
+    s2: 97fb4e3d45bb098e27e0071448b6152217bd35a5
+    dblp: journals/corr/BaKH16
+    openalex:
+    - W3037932933
+  metadata_checked:
+    arxiv: '2026-10-15'
+    openalex: '2026-10-15'
+- id: paper:vaswani2017-transformer
+  title: Attention Is All You Need
+  authors:
+  - Ashish Vaswani
+  - Noam Shazeer
+  - Niki Parmar
+  - Jakob Uszkoreit
+  - Llion Jones
+  - Aidan N. Gomez
+  - Łukasz Kaiser
+  - Illia Polosukhin
+  earliest_public_date: 2017-06-12
+  venue: 'NIPS 2017 (now NeurIPS): Advances in Neural Information Processing Systems 30, pp. 5998–6008'
+  identifiers:
+    arxiv: '1706.03762'
+    arxiv_doi: 10.48550/arXiv.1706.03762
+    dblp: journals/corr/VaswaniSPUJGKP17
+    openalex:
+    - W2626778328
+  metadata_checked:
+    arxiv: '2026-10-15'
+    openalex: '2026-10-15'
+- id: paper:devlin2018-bert
+  title: 'BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding'
+  authors:
+  - Jacob Devlin
+  - Ming-Wei Chang
+  - Kenton Lee
+  - Kristina Toutanova
+  earliest_public_date: 2018-10-11
+  venue: 'NAACL-HLT 2019: Proceedings of the 2019 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies, Volume 1 (Long and Short Papers), pp. 4171–4186'
+  identifiers:
+    doi: 10.18653/v1/N19-1423
+    arxiv: '1810.04805'
+    arxiv_doi: 10.48550/arXiv.1810.04805
+    dblp: journals/corr/abs-1810-04805
+    openalex:
+    - W2963341956
+    - W2896457183
+  metadata_checked:
+    arxiv: '2026-10-15'
+    openalex: '2026-10-15'
+- id: paper:hinton2015-distillation
+  title: Distilling the Knowledge in a Neural Network
+  authors:
+  - Geoffrey Hinton
+  - Oriol Vinyals
+  - Jeff Dean
+  earliest_public_date: '2015-03-09'
+  venue: NIPS 2014 Deep Learning Workshop (arXiv comments)
+  identifiers:
+    arxiv: '1503.02531'
+    arxiv_doi: 10.48550/arXiv.1503.02531
+  metadata_checked:
+    arxiv: '2026-10-15'
+datasets:
+- id: dataset:imagenet
+  name: ImageNet
+  summary: 연구에 쓰이는 데이터셋이다.
+  summary_by: agent:codex
+  size: 12 subtrees, 5247 synsets, 3.2 million images (논문 시점)
+  access: public
+  introduced_by: paper:deng2009-imagenet
+- id: dataset:imagenet-1k
+  name: ImageNet-1K
+  summary: 연구에 쓰이는 데이터셋이다.
+  summary_by: agent:codex
+  size: 1k classes, 1.3M images (ILSVRC-2012)
+  access: public
+- id: dataset:imagenet-21k
+  name: ImageNet-21K
+  summary: 연구에 쓰이는 데이터셋이다.
+  summary_by: agent:codex
+  size: 21k classes, 14M images
+  access: public
+- id: dataset:jft-300m
+  name: JFT-300M
+  summary: 연구에 쓰이는 데이터셋이다.
+  summary_by: agent:codex
+  size: 18k classes, 303M images
+  access: private
+- id: dataset:cifar-10
+  name: CIFAR-10
+  summary: 연구에 쓰이는 데이터셋이다.
+  summary_by: agent:codex
+  access: public
+- id: dataset:wmt14-en-de
+  name: WMT14 EN-DE
+  summary: 연구에 쓰이는 데이터셋이다.
+  summary_by: agent:codex
+  access: public
+- id: dataset:wmt14-en-fr
+  name: WMT14 EN-FR
+  summary: 연구에 쓰이는 데이터셋이다.
+  summary_by: agent:codex
+  access: public
+metrics:
+- id: metric:top-1-accuracy
+  name: Top-1 Accuracy
+  summary: 모델 성능을 수치로 나타내는 지표다.
+  summary_by: agent:codex
+  direction: higher_is_better
+  unit: '%'
+- id: metric:top-1-error
+  name: Top-1 Error
+  summary: 모델 성능을 수치로 나타내는 지표다.
+  summary_by: agent:codex
+  direction: lower_is_better
+  unit: '%'
+- id: metric:top-5-error
+  name: Top-5 Error
+  summary: 모델 성능을 수치로 나타내는 지표다.
+  summary_by: agent:codex
+  direction: lower_is_better
+  unit: '%'
+- id: metric:bleu
+  name: BLEU
+  summary: 모델 성능을 수치로 나타내는 지표다.
+  summary_by: agent:codex
+  direction: higher_is_better
+  unit: ''
+benchmarks:
+- id: benchmark:imagenet-1k-val
+  name: ImageNet-1K validation
+  summary: 이미지 분류 검증 벤치마크다.
+  summary_by: agent:codex
+  dataset: dataset:imagenet-1k
+  metrics:
+  - metric:top-1-accuracy
+  - metric:top-1-error
+  - metric:top-5-error
+  split: val
+- id: benchmark:ilsvrc-cls-test
+  name: ILSVRC classification test
+  summary: 이미지 분류 시험 벤치마크다.
+  summary_by: agent:codex
+  dataset: dataset:imagenet-1k
+  metrics:
+  - metric:top-5-error
+  split: test
+- id: benchmark:wmt14-en-de-newstest2014
+  name: WMT14 EN-DE newstest2014
+  summary: 기계 번역 벤치마크다.
+  summary_by: agent:codex
+  dataset: dataset:wmt14-en-de
+  metrics:
+  - metric:bleu
+  split: newstest2014
+- id: benchmark:wmt14-en-fr-newstest2014
+  name: WMT14 EN-FR newstest2014
+  summary: 기계 번역 벤치마크다.
+  summary_by: agent:codex
+  dataset: dataset:wmt14-en-fr
+  metrics:
+  - metric:bleu
+  split: newstest2014
+objectives: []
+resources: []
+assessment_items: []
+labs: []
+sources: []
+claims: []
