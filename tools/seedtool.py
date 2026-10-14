@@ -19,7 +19,7 @@ import urllib.request
 import urllib.parse
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterable
 
 import yaml
 
@@ -83,10 +83,51 @@ def _dump(value: Any) -> str:
     return json.dumps(_canonical(value), ensure_ascii=False, sort_keys=True, indent=2)
 
 
-def load_graph(path: str | Path) -> dict:
-    """Read YAML and build stable lookup maps; YAML dates become ISO strings."""
-    with open(path, encoding="utf-8") as f:
-        raw = _plain(yaml.safe_load(f) or {})
+def _graph_paths(path_or_paths: str | Path | Iterable[str | Path]) -> list[Path]:
+    """Resolve graph inputs to a stable list of YAML files."""
+    if isinstance(path_or_paths, (str, Path)):
+        candidates = [Path(path_or_paths)]
+    else:
+        candidates = [Path(path) for path in path_or_paths]
+    paths: list[Path] = []
+    for candidate in candidates:
+        if candidate.is_dir():
+            paths.extend(candidate.glob("*.yaml"))
+        else:
+            paths.append(candidate)
+    return sorted(paths, key=lambda path: str(path.resolve()))
+
+
+def load_graph(path_or_paths: str | Path | Iterable[str | Path]) -> dict:
+    """Read one or more YAML graphs and build stable lookup maps.
+
+    Directory inputs include their ``*.yaml`` children.  Inputs are sorted so
+    merging and the resulting graph version do not depend on caller order.
+    """
+    paths = _graph_paths(path_or_paths)
+    raw: dict[str, Any] = {section: [] for section in SECTIONS}
+    graph_header: dict[str, Any] = {}
+    assumed_background: set[str] = set()
+    schema_version = None
+    for path in paths:
+        with open(path, encoding="utf-8") as f:
+            document = _plain(yaml.safe_load(f) or {})
+        if schema_version is None and "schema_version" in document:
+            schema_version = document["schema_version"]
+        header = document.get("graph") or {}
+        for key, value in header.items():
+            if key == "assumed_background":
+                assumed_background.update(str(item) for item in value or [])
+            else:
+                graph_header.setdefault(key, value)
+        for section in SECTIONS:
+            raw[section].extend(document.get(section, []) or [])
+    if schema_version is not None:
+        raw["schema_version"] = schema_version
+    if assumed_background:
+        graph_header["assumed_background"] = sorted(assumed_background)
+    if graph_header:
+        raw["graph"] = graph_header
     entities, types, records = {}, {}, []
     for section, (typ, _prefix) in SECTIONS.items():
         for rec in raw.get(section, []) or []:
@@ -680,10 +721,10 @@ def _read_learner(path):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(prog="seedtool.py"); sub = parser.add_subparsers(dest="command", required=True)
-    p = sub.add_parser("validate"); p.add_argument("graph"); p.add_argument("--json", action="store_true")
-    p = sub.add_parser("quotes"); p.add_argument("graph"); p.add_argument("--cache"); p.add_argument("--offline", action="store_true")
-    p = sub.add_parser("mastery"); p.add_argument("graph"); p.add_argument("--learner", required=True)
-    p = sub.add_parser("plan"); p.add_argument("graph"); p.add_argument("--objective", required=True); p.add_argument("--learner", required=True); p.add_argument("--include-recommended", action="store_true"); p.add_argument("--no-diagnostics-first", action="store_true"); p.add_argument("--prefer", action="append", default=[]); p.add_argument("--time-budget", type=int)
+    p = sub.add_parser("validate"); p.add_argument("graph", nargs="+"); p.add_argument("--json", action="store_true")
+    p = sub.add_parser("quotes"); p.add_argument("graph", nargs="+"); p.add_argument("--cache"); p.add_argument("--offline", action="store_true")
+    p = sub.add_parser("mastery"); p.add_argument("graph", nargs="+"); p.add_argument("--learner", required=True)
+    p = sub.add_parser("plan"); p.add_argument("graph", nargs="+"); p.add_argument("--objective", required=True); p.add_argument("--learner", required=True); p.add_argument("--include-recommended", action="store_true"); p.add_argument("--no-diagnostics-first", action="store_true"); p.add_argument("--prefer", action="append", default=[]); p.add_argument("--time-budget", type=int)
     args = parser.parse_args(argv); graph = load_graph(args.graph)
     if args.command == "validate":
         issues = validate(graph); payload = [x.__dict__ for x in issues]
