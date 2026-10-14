@@ -1,6 +1,6 @@
 # CURRENT_STATE — 작업 재개용 상태 (오케스트레이터가 갱신)
 
-> 컴팩션·세션 교체(hub renew) 뒤에는 **이 파일부터 읽는다.** 마지막 갱신: 2026-10-15 03:10
+> 컴팩션·세션 교체(hub renew) 뒤에는 **이 파일부터 읽는다.** 마지막 갱신: 2026-10-15 03:45
 
 ## 0. 반드시 지킬 운영 조건 (사용자 지시)
 
@@ -16,17 +16,26 @@
 5. **Codex**: 명세가 확실한 구현은 `hub codex ~/wt/aixon-base <spec>`. 샌드박스에 네트워크가 없고 worktree에는 의존성이 없다(I-15) → 새 worktree마다 `cp -al ~/wt/aixon-base/node_modules <wt>/node_modules; ln -s ~/wt/aixon-base/.venv <wt>/.venv`. 결과는 반드시 직접 다시 돌려 검증한다(음성 대조 포함).
 6. 커밋 신원은 전역 git 설정을 그대로 쓴다.
 
-## 1. 현재 단계 (AUTONOMOUS_MVP_LOOP 기준)
+## 1. 현재 단계 (AUTONOMOUS_MVP_LOOP 기준) — 03:45
 
 | Phase | 상태 |
 |---|---|
-| 조사·설계·시드(Sprint 0) | 완료 — 문서 00–07, DECISIONS(ADR-001~020), Wiki 설계 4종, 시드 Claim 105·인용 121/121, atlas 분야 96·논문 54/54 arXiv 일치 |
+| 조사·설계·시드(Sprint 0) | 완료 |
 | A 독립 설계 감사 | 진행 중 — sonnet 서브에이전트, 보고서 `scratchpad/design_audit.md` |
-| B Critical/Major 수정 | 감사 결과 대기 |
-| C–G 사이트·하네스·E2E | 진행 중 — Codex `1015-023556-aixon`(worktree `~/wt/aixon-base-1015-022629-aixon`), 한도 대기 후 03:17 자동 재개 |
+| B Critical/Major 수정 | 감사 결과 대기. 그사이 찾아 고친 것: I-18(pypdf), I-19(KaTeX 복원), Codex 대체 시드 병합 차단 |
+| C–G 사이트·하네스·E2E | 첫 Codex 결과는 얇은 뼈대(310줄, 그래프·공개 관문·E2E 없음) → 병합 후 3갈래로 재분배 |
 | H 회귀·CI·Clean env | 대기 |
 | I 최종 독립 리뷰 | 대기 |
-| Acceptance | 대기 |
+
+### 진행 중인 작업
+
+| 작업 | 명세 | 위치 | 확인 방법 |
+|---|---|---|---|
+| A 그래프 화면(Codex) | `specs/codex_site_A_graph.md` | `~/wt/aixon-base-1015-034008-x` (브랜치 `codex/1015-034008-x`), pid 3128250 | `hub codex` (프로젝트 `[?]`라 완료 알림 없음 → 오케스트레이터 백그라운드 감시) |
+| B 페이지·Lab·공개 관문(Codex) | `specs/codex_site_B_pages.md` | `~/wt/aixon-base-1015-034016-x` (브랜치 `codex/1015-034016-x`), pid 3128818 | 위와 같음 |
+| C 하네스(Claude sonnet 서브에이전트) | `specs/site_C_harness.md` | `~/wt/aixon-harness` (브랜치 `harness/c`) | 완료 알림 |
+
+공통 규칙·파일 소유·선택자 약속: `specs/site_common.md`. Codex 5시간 한도는 04:12에 풀린다(그 전에는 대기).
 
 ## 2. 산출물·자료 위치
 
@@ -43,8 +52,8 @@
 ## 3. 다음 할 일 (순서)
 
 1. 감사 보고서 수신 → Critical/Major 수정 → `08_ARCHITECTURE_REVIEW.md`
-2. Codex 사이트 작업 종료 → 샌드박스 밖에서 `make lint typecheck test validate build check-dist e2e` 실제 실행, 음성 대조, 실패 수정
-3. base에 병합 → 대표 MDX·실제 시드/atlas로 E2E-1·2·6·7 재실행
-4. 전체 `make verify` → `artifacts/verification/runs/<run-id>/`, Clean env(새 clone + `npm ci`) 검증
-5. 최종 독립 리뷰 → `MVP_ACCEPTANCE_REPORT.md` (GitHub Pages 실배포 NOT RUN)
-6. 사용자 확인 대기 항목: I-14(`~/aixon/ss_copilot.html` 삭제 여부), 07 §4 열린 질문(라이선스·공개 시점·콘텐츠 검토), git init 여부
+2. A·B·C 완료 → 각 브랜치에서 직접 재실행(음성 대조 포함) → `main`에 병합(A → B → C 순, 충돌은 소유표 기준)
+3. `make verify`(fixture E2E + seed E2E 포함) → 실패 수정 → `artifacts/verification/runs/<run-id>/`
+4. Clean env 검증(새 clone + `npm ci` + venv) → 최종 독립 리뷰 → `MVP_ACCEPTANCE_REPORT.md`(GitHub Pages 실배포 NOT RUN)
+5. `~/aixon`으로 동기화(§0.4 명령)
+6. 사용자 확인 대기 항목: `BLOCKERS.md`
