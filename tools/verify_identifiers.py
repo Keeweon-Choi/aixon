@@ -61,6 +61,11 @@ def papers_in_file(path: Path) -> list[dict]:
             continue
         if not in_papers:
             continue
+        flow = re.match(r"^  - \{.*?id: (paper:[a-z0-9-]+), title: (.*?), authors: .*?identifiers: \{arxiv: ([^}]+)\}.*\}$", line)
+        if flow:
+            title = _unquote(flow.group(2))
+            papers.append({"id": flow.group(1), "title": title, "arxiv": _unquote(flow.group(3)), "path": path, "lines": lines})
+            continue
         match = re.match(r"^  - id:\s*(.+?)\s*$", line)
         if match:
             if current:
