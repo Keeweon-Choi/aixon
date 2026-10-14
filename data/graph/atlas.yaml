@@ -154,7 +154,7 @@ methods:
   - {<<: *ku, id: method:pixelrnn, name: PixelRNN, aliases: [PixelRNN], summary: PixelRNN은 이전 픽셀에 조건부로 이미지 픽셀 분포를 순차적으로 예측하는 모델이다., fields: [field:autoregressive-models]}
   - {<<: *ku, id: method:contrastive-language-image-pretraining, name: 대조 언어 이미지 사전학습, aliases: [Contrastive Language-Image Pre-training, CLIP], summary: 대조 언어 이미지 사전학습은 짝지은 이미지와 텍스트의 유사도를 높이는 방법이다., fields: [field:vision-language-learning]}
   - {<<: *ku, id: method:cross-attention-fusion, name: 교차 어텐션 융합, aliases: [Cross-Attention Fusion], summary: 교차 어텐션 융합은 한 모달리티의 표현으로 다른 모달리티의 정보를 선택하는 방법이다., fields: [field:multimodal-fusion]}
-  - {<<: *ku, id: model:show-and-tell, name: Show and Tell, aliases: [Show and Tell], summary: Show and Tell은 이미지 표현을 조건으로 순환 신경망이 문장을 생성하는 캡셔닝 모델이다., fields: [field:image-captioning]}
+  - {<<: *ku, id: method:show-and-tell, name: Show and Tell, aliases: [Show and Tell], summary: Show and Tell은 이미지 표현을 조건으로 순환 신경망이 문장을 생성하는 캡셔닝 모델이다., fields: [field:image-captioning]}
   - {<<: *ku, id: method:joint-embedding-retrieval, name: 공동 임베딩 검색, aliases: [Joint Embedding Retrieval], summary: 공동 임베딩 검색은 서로 다른 모달리티를 비교 가능한 벡터 공간에 매핑하는 방법이다., fields: [field:multimodal-retrieval]}
   - {<<: *ku, id: method:message-passing, name: 메시지 전달, aliases: [Message Passing], summary: 메시지 전달은 이웃 노드의 정보를 집계해 노드 표현을 갱신하는 그래프 학습 방법이다., fields: [field:graph-neural-networks]}
   - {<<: *ku, id: method:node2vec, name: node2vec, aliases: [node2vec], summary: node2vec은 편향된 무작위 보행의 문맥으로 노드 임베딩을 학습하는 방법이다., fields: [field:graph-representation-learning]}
@@ -163,15 +163,15 @@ methods:
   - {<<: *ku, id: method:knowledge-graph-embedding, name: 지식 그래프 임베딩, aliases: [Knowledge Graph Embedding], summary: 지식 그래프 임베딩은 엔티티와 관계를 벡터 공간에 표현하는 방법이다., fields: [field:knowledge-graphs]}
   - {<<: *ku, id: method:resolution-theorem-proving, name: 해소 정리 증명, aliases: [Resolution Theorem Proving], summary: 해소 정리 증명은 절 형태의 논리식에 해소 규칙을 반복 적용하는 추론 방법이다., fields: [field:automated-reasoning]}
   - {<<: *ku, id: method:differentiable-logic, name: 미분가능 논리, aliases: [Differentiable Logic], summary: 미분가능 논리는 논리 연산과 제약을 연속적이고 학습 가능한 형태로 완화하는 방법이다., fields: [field:neuro-symbolic-ai]}
-  - {<<: *ku, id: concept:description-logic, name: 기술 논리, aliases: [Description Logic], summary: 기술 논리는 개념과 역할 및 개체에 대한 지식을 표현하는 형식 논리 계열이다., fields: [field:ontology-engineering]}
+  - {<<: *ku, id: method:description-logic, name: 기술 논리, aliases: [Description Logic], summary: 기술 논리는 개념과 역할 및 개체에 대한 지식을 표현하는 형식 논리 계열이다., fields: [field:ontology-engineering]}
   - {<<: *ku, id: method:a-star-search, name: A 별 탐색, aliases: [A* Search], summary: A 별 탐색은 누적 비용과 휴리스틱 추정 비용의 합으로 노드를 선택하는 탐색 방법이다., fields: [field:heuristic-search]}
-  - {<<: *ku, id: concept:planning-domain-definition-language, name: 계획 도메인 정의 언어, aliases: [Planning Domain Definition Language, PDDL], summary: 계획 도메인 정의 언어는 자동 계획 문제의 행동과 상태를 기술하는 표준 표현 언어이다., fields: [field:automated-planning]}
+  - {<<: *ku, id: method:planning-domain-definition-language, name: 계획 도메인 정의 언어, aliases: [Planning Domain Definition Language, PDDL], summary: 계획 도메인 정의 언어는 자동 계획 문제의 행동과 상태를 기술하는 표준 표현 언어이다., fields: [field:automated-planning]}
   - {<<: *ku, id: method:monte-carlo-tree-search, name: 몬테카를로 트리 탐색, aliases: [Monte Carlo Tree Search, MCTS], summary: 몬테카를로 트리 탐색은 시뮬레이션 결과로 트리의 선택과 확장을 안내하는 방법이다., fields: [field:monte-carlo-tree-search]}
   - {<<: *ku, id: method:hierarchical-task-network, name: 계층적 과업 네트워크, aliases: [Hierarchical Task Network, HTN], summary: 계층적 과업 네트워크는 복합 과업을 방법에 따라 하위 과업으로 분해하는 계획 방법이다., fields: [field:hierarchical-planning]}
   - {<<: *ku, id: method:centralized-training-decentralized-execution, name: 중앙집중 학습과 분산 실행, aliases: [Centralized Training with Decentralized Execution, CTDE], summary: 중앙집중 학습과 분산 실행은 학습 중 전역 정보를 쓰고 실행 중 지역 관측만 쓰는 방법이다., fields: [field:multi-agent-reinforcement-learning]}
   - {<<: *ku, id: method:multi-agent-credit-assignment, name: 다중 에이전트 공적 할당, aliases: [Multi-Agent Credit Assignment], summary: 다중 에이전트 공적 할당은 공동 보상에서 각 에이전트 행동의 기여를 추정하는 방법이다., fields: [field:cooperative-ai]}
   - {<<: *ku, id: method:referential-game, name: 지시 게임, aliases: [Referential Game], summary: 지시 게임은 한 에이전트가 메시지로 다른 에이전트가 목표 대상을 고르게 하는 학습 과업이다., fields: [field:emergent-communication]}
-  - {<<: *ku, id: concept:incentive-compatibility, name: 유인 양립성, aliases: [Incentive Compatibility], summary: 유인 양립성은 참여자가 자신의 실제 정보나 선호를 드러내는 것이 최선이 되는 성질이다., fields: [field:mechanism-design]}
+  - {<<: *ku, id: method:incentive-compatibility, name: 유인 양립성, aliases: [Incentive Compatibility], summary: 유인 양립성은 참여자가 자신의 실제 정보나 선호를 드러내는 것이 최선이 되는 성질이다., fields: [field:mechanism-design]}
   - {<<: *ku, id: method:adversarial-training, name: 적대적 학습, aliases: [Adversarial Training], summary: 적대적 학습은 적대적 교란 예제를 포함하여 모델을 학습하는 견고성 방법이다., fields: [field:robustness]}
   - {<<: *ku, id: method:inverse-reinforcement-learning, name: 역강화학습, aliases: [Inverse Reinforcement Learning, IRL], summary: 역강화학습은 전문가 행동으로부터 그 행동을 설명하는 보상 함수를 추정하는 방법이다., fields: [field:reward-learning]}
   - {<<: *ku, id: method:preference-modeling, name: 선호 모델링, aliases: [Preference Modeling], summary: 선호 모델링은 두 응답이나 궤적 사이의 사람 선호를 예측하는 모델을 학습하는 방법이다., fields: [field:reinforcement-learning-from-human-feedback]}
@@ -182,8 +182,8 @@ methods:
   - {<<: *ku, id: method:testing-with-concept-activation-vectors, name: 개념 활성화 벡터 검정, aliases: [Testing with Concept Activation Vectors, TCAV], summary: 개념 활성화 벡터 검정은 사람 정의 개념 방향에 대한 모델 민감도를 측정하는 방법이다., fields: [field:concept-based-explanations]}
   - {<<: *ku, id: method:demographic-parity, name: 인구통계학적 동등성, aliases: [Demographic Parity], summary: 인구통계학적 동등성은 보호 집단별 긍정 예측 비율을 같게 하는 공정성 기준이다., fields: [field:algorithmic-fairness]}
   - {<<: *ku, id: method:differential-privacy, name: 차등 프라이버시, aliases: [Differential Privacy, DP], summary: 차등 프라이버시는 한 개인의 포함 여부가 출력 분포에 미치는 영향을 제한하는 보장이다., fields: [field:privacy-preserving-ml]}
-  - {<<: *ku, id: concept:ai-audit, name: 인공지능 감사, aliases: [AI Audit], summary: 인공지능 감사는 시스템의 설계와 데이터 및 결과를 독립적으로 점검하는 절차이다., fields: [field:ai-governance]}
-  - {<<: *ku, id: concept:model-card, name: 모델 카드, aliases: [Model Card], summary: 모델 카드는 모델의 의도된 사용과 성능 및 한계를 문서화하는 형식이다., fields: [field:responsible-ai]}
+  - {<<: *ku, id: method:ai-audit, name: 인공지능 감사, aliases: [AI Audit], summary: 인공지능 감사는 시스템의 설계와 데이터 및 결과를 독립적으로 점검하는 절차이다., fields: [field:ai-governance]}
+  - {<<: *ku, id: method:model-card, name: 모델 카드, aliases: [Model Card], summary: 모델 카드는 모델의 의도된 사용과 성능 및 한계를 문서화하는 형식이다., fields: [field:responsible-ai]}
   - {<<: *ku, id: method:quantization, name: 양자화, aliases: [Quantization], summary: 양자화는 가중치와 활성값을 낮은 정밀도 수로 표현해 계산과 저장을 줄이는 방법이다., fields: [field:model-compression]}
   - {<<: *ku, id: method:linear-attention, name: 선형 어텐션, aliases: [Linear Attention], summary: 선형 어텐션은 어텐션 계산을 토큰 수에 대해 선형 또는 준선형으로 근사하는 방법이다., fields: [field:efficient-transformers]}
   - {<<: *ku, id: method:data-parallel-training, name: 데이터 병렬 학습, aliases: [Data Parallel Training], summary: 데이터 병렬 학습은 각 장치가 다른 미니배치의 기울기를 계산하고 이를 동기화하는 방법이다., fields: [field:distributed-training]}
@@ -193,10 +193,10 @@ methods:
   - {<<: *ku, id: method:matrix-factorization-recommender, name: 행렬 분해 추천, aliases: [Matrix Factorization], summary: 행렬 분해 추천은 사용자와 항목의 상호작용 행렬을 저차원 잠재 요인으로 분해하는 방법이다., fields: [field:collaborative-filtering]}
   - {<<: *ku, id: method:pairwise-ranking-loss, name: 쌍대 순위 손실, aliases: [Pairwise Ranking Loss], summary: 쌍대 순위 손실은 관련 항목의 점수가 비관련 항목보다 높도록 학습하는 목적함수이다., fields: [field:learning-to-rank]}
   - {<<: *ku, id: method:region-proposal-network, name: 영역 제안 네트워크, aliases: [Region Proposal Network, RPN], summary: 영역 제안 네트워크는 이미지 특징에서 객체 후보 경계 상자를 예측하는 방법이다., fields: [field:object-detection]}
-  - {<<: *ku, id: model:fully-convolutional-network, name: 완전 합성곱 신경망, aliases: [Fully Convolutional Network, FCN], summary: 완전 합성곱 신경망은 합성곱 층만 사용해 픽셀 단위 예측을 수행하는 모델이다., fields: [field:semantic-segmentation]}
+  - {<<: *ku, id: method:fully-convolutional-network, name: 완전 합성곱 신경망, aliases: [Fully Convolutional Network, FCN], summary: 완전 합성곱 신경망은 합성곱 층만 사용해 픽셀 단위 예측을 수행하는 모델이다., fields: [field:semantic-segmentation]}
   - {<<: *ku, id: method:masked-image-modeling, name: 마스크 이미지 모델링, aliases: [Masked Image Modeling, MIM], summary: 마스크 이미지 모델링은 가려진 이미지 영역을 예측하도록 시각 표현을 학습하는 방법이다., fields: [field:visual-self-supervision]}
-  - {<<: *ku, id: model:stylegan, name: StyleGAN, aliases: [StyleGAN], summary: StyleGAN은 잠재 스타일을 계층적으로 주입해 고해상도 이미지를 생성하는 모델이다., fields: [field:visual-generation]}
-  - {<<: *ku, id: model:autoregressive-language-model, name: 자기회귀 언어 모델, aliases: [Autoregressive Language Model], summary: 자기회귀 언어 모델은 앞선 토큰에 조건부로 다음 토큰 확률을 모델링한다., fields: [field:language-modeling]}
+  - {<<: *ku, id: method:stylegan, name: StyleGAN, aliases: [StyleGAN], summary: StyleGAN은 잠재 스타일을 계층적으로 주입해 고해상도 이미지를 생성하는 모델이다., fields: [field:visual-generation]}
+  - {<<: *ku, id: method:autoregressive-language-model, name: 자기회귀 언어 모델, aliases: [Autoregressive Language Model], summary: 자기회귀 언어 모델은 앞선 토큰에 조건부로 다음 토큰 확률을 모델링한다., fields: [field:language-modeling]}
   - {<<: *ku, id: method:named-entity-recognition, name: 개체명 인식, aliases: [Named Entity Recognition, NER], summary: 개체명 인식은 텍스트 토큰에 사람과 장소 및 조직 같은 개체 범주를 할당하는 방법이다., fields: [field:information-extraction]}
   - {<<: *ku, id: method:extractive-question-answering, name: 추출형 질의응답, aliases: [Extractive Question Answering], summary: 추출형 질의응답은 문맥에서 질문의 답이 되는 연속 구간을 선택하는 방법이다., fields: [field:question-answering]}
   - {<<: *ku, id: method:abstractive-summarization, name: 추상적 요약, aliases: [Abstractive Summarization], summary: 추상적 요약은 원문에 없는 표현도 사용하여 핵심 내용을 생성하는 방법이다., fields: [field:text-summarization]}
