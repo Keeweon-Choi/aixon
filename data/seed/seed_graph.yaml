@@ -1,0 +1,57 @@
+schema_version: 1
+graph: {id: aixon-demo, name: AIXON demo, description: "정적 지식 지도", updated_at: 2026-10-15}
+fields:
+  - {id: field:artificial-intelligence, name: 인공지능, summary: "지능적 계산을 연구하는 분야."}
+  - {id: field:machine-learning, name: 머신러닝, summary: "데이터에서 패턴을 학습한다.", parents: [field:artificial-intelligence]}
+  - {id: field:deep-learning, name: 딥러닝, summary: "다층 신경망 기반 학습.", parents: [field:machine-learning]}
+concepts:
+  - {id: concept:softmax, name: Softmax, aliases: [소프트맥스], summary: "점수를 확률 분포로 바꾸는 함수.", dimensions: [recognize, explain, derive], fields: [field:deep-learning]}
+  - {id: concept:softmax-temperature, name: Softmax Temperature, summary: "온도로 softmax 집중도를 조절한다.", dimensions: [recognize, explain, derive], fields: [field:deep-learning]}
+  - {id: concept:variance-of-sum, name: Variance of Sum, summary: "독립 합의 분산 성질.", dimensions: [recognize, explain, derive], fields: [field:deep-learning]}
+  - {id: concept:dot-product, name: Dot Product, summary: "두 벡터의 내적.", dimensions: [recognize, explain], fields: [field:deep-learning]}
+methods:
+  - {id: method:scaled-dot-product-attention, name: Scaled Dot-Product Attention, aliases: [어텐션], summary: "Q와 K의 호환도로 V를 가중합한다.", summary_by: agent:codex, dimensions: [recognize, explain, derive, implement], fields: [field:deep-learning]}
+models:
+  - {id: model:transformer, name: Transformer, summary: "attention 기반 시퀀스 모델.", dimensions: [recognize, explain], fields: [field:deep-learning]}
+  - {id: model:vit, name: Vision Transformer, aliases: [ViT], summary: "이미지를 토큰으로 처리하는 Transformer.", dimensions: [recognize, explain], fields: [field:deep-learning]}
+papers:
+  - {id: paper:vaswani2017-transformer, title: Attention Is All You Need, authors: [Ashish Vaswani], earliest_public_date: 2017-06-12, identifiers: {arxiv: '1706.03762'}, fields: [field:deep-learning]}
+  - {id: paper:dosovitskiy2020-vit, title: An Image is Worth 16x16 Words, authors: [Alexey Dosovitskiy], earliest_public_date: 2020-10-22, identifiers: {arxiv: '2010.11929'}, fields: [field:deep-learning]}
+sources:
+  - {id: src:arxiv:1706.03762v7, name: Transformer arXiv v7, kind: paper_version, paper: paper:vaswani2017-transformer, url: https://arxiv.org/abs/1706.03762v7, fulltext_url: https://arxiv.org/html/1706.03762v7, version: v7, retrieved_at: 2026-10-15}
+  - {id: src:arxiv:2010.11929v2, name: ViT arXiv v2, kind: paper_version, paper: paper:dosovitskiy2020-vit, url: https://arxiv.org/abs/2010.11929v2, fulltext_url: https://arxiv.org/html/2010.11929v2, version: v2, retrieved_at: 2026-10-15}
+assessment_items:
+  - {id: ai:lab-softmax-temp-01, name: 온도 예측, assesses: {unit: concept:softmax-temperature, dimension: explain}, kind: lab_prediction, lab: lab:softmax-temperature, scenario: {T_from: 1, T_to: 0.1}, prompt: "온도를 낮추면?", choices: [커진다, 작아진다], answer: 0, rationale: "분포가 집중된다."}
+labs:
+  - {id: lab:softmax-temperature, name: Softmax Temperature Lab, component: softmax-temperature, version: 1, parameters: [], demonstrates: [{unit: concept:softmax, dimensions: [explain]}], items: [ai:lab-softmax-temp-01], reference_impl: tools/gen_lab_fixtures.py}
+claims:
+  - id: clm:intro-sdpa
+    predicate: INTRODUCES
+    subject: paper:vaswani2017-transformer
+    object: method:scaled-dot-product-attention
+    qualifiers: {}
+    status: verified
+    confidence: high
+    evidence: [{source: src:arxiv:1706.03762v7, locator: {section: '3.2.1'}, quote: 'We call our particular attention Scaled Dot-Product Attention.', type: author_statement, stance: supports}]
+    verification: {method: quote_match, by: agent:codex, at: 2026-10-15}
+    review: {by: human:editor, at: 2026-10-15, decision: approve, note: checked}
+  - id: clm:sdpa-needs-softmax
+    predicate: PREREQUISITE_OF
+    subject: concept:softmax
+    object: method:scaled-dot-product-attention
+    qualifiers: {required_dimension: explain, for_dimension: explain}
+    status: verified
+    confidence: high
+    evidence: [{source: src:arxiv:1706.03762v7, locator: {section: '3.2.1'}, quote: 'Attention uses softmax over scaled dot products.', type: definitional_dependency, stance: supports}]
+    verification: {method: quote_match, by: agent:codex, at: 2026-10-15}
+    review: {by: human:editor, at: 2026-10-15, decision: approve, note: checked}
+  - id: clm:sdpa-part-of-transformer
+    predicate: PART_OF
+    subject: method:scaled-dot-product-attention
+    object: model:transformer
+    qualifiers: {}
+    status: verified
+    confidence: high
+    evidence: [{source: src:arxiv:1706.03762v7, locator: {section: '3.2'}, quote: 'The Transformer uses attention mechanisms.', type: author_statement, stance: supports}]
+    verification: {method: quote_match, by: agent:codex, at: 2026-10-15}
+    review: null
