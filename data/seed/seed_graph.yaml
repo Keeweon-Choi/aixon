@@ -800,9 +800,1034 @@ benchmarks:
   metrics:
   - metric:bleu
   split: newstest2014
-objectives: []
-resources: []
+objectives:
+- id: lo:vit-attention-math
+  name: ViT의 Attention 수식 이해하기
+  targets:
+  - unit: method:scaled-dot-product-attention
+    dimension: derive
+  - unit: method:multi-head-attention
+    dimension: explain
+  context: paper:dosovitskiy2020-vit
+- id: lo:sdpa-intuition
+  name: Scaled Dot-Product Attention 직관
+  targets:
+  - unit: method:scaled-dot-product-attention
+    dimension: explain
+  context: paper:vaswani2017-transformer
+resources:
+- id: res:vaswani-attention
+  name: Attention Is All You Need
+  url: https://arxiv.org/abs/1706.03762
+  format: paper_section
+  author: Ashish Vaswani 외
+  license: arXiv 비독점 배포 라이선스
+  verified_at: '2026-10-15'
+  explains:
+  - unit: method:scaled-dot-product-attention
+    dimensions:
+    - recognize
+    - explain
+    - derive
+    locator: §3.2.1 Scaled Dot-Product Attention
+  - unit: method:multi-head-attention
+    dimensions:
+    - recognize
+    - explain
+    locator: §3.2.2 Multi-Head Attention
 assessment_items: []
 labs: []
-sources: []
-claims: []
+sources:
+- id: src:pdf:deng2009-imagenet
+  name: ImageNet PDF
+  kind: paper_version
+  paper: paper:deng2009-imagenet
+  url: https://www.image-net.org/static_files/papers/imagenet_cvpr09.pdf
+  fulltext_url: https://www.image-net.org/static_files/papers/imagenet_cvpr09.pdf
+  retrieved_at: '2026-10-15'
+- id: src:pdf:krizhevsky2012-alexnet
+  name: AlexNet PDF
+  kind: paper_version
+  paper: paper:krizhevsky2012-alexnet
+  url: https://proceedings.neurips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf
+  fulltext_url: https://proceedings.neurips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf
+  retrieved_at: '2026-10-15'
+- id: src:arxiv:1409.1556v6
+  name: arXiv 1409.1556v6
+  kind: paper_version
+  paper: paper:simonyan2014-vgg
+  url: https://arxiv.org/abs/1409.1556v6
+  fulltext_url: https://arxiv.org/html/1409.1556v6
+  version: 1409.1556v6
+  retrieved_at: '2026-10-15'
+- id: src:arxiv:1502.03167v3
+  name: arXiv 1502.03167v3
+  kind: paper_version
+  paper: paper:ioffe2015-batchnorm
+  url: https://arxiv.org/abs/1502.03167v3
+  fulltext_url: https://arxiv.org/html/1502.03167v3
+  version: 1502.03167v3
+  retrieved_at: '2026-10-15'
+- id: src:arxiv:1805.11604v5
+  name: arXiv 1805.11604v5
+  kind: paper_version
+  paper: paper:santurkar2018-bn-optimization
+  url: https://arxiv.org/abs/1805.11604v5
+  fulltext_url: https://arxiv.org/html/1805.11604v5
+  version: 1805.11604v5
+  retrieved_at: '2026-10-15'
+- id: src:arxiv:1512.03385v1
+  name: arXiv 1512.03385v1
+  kind: paper_version
+  paper: paper:he2015-resnet
+  url: https://arxiv.org/abs/1512.03385v1
+  fulltext_url: https://arxiv.org/html/1512.03385v1
+  version: 1512.03385v1
+  retrieved_at: '2026-10-15'
+- id: src:arxiv:1409.0473v7
+  name: arXiv 1409.0473v7
+  kind: paper_version
+  paper: paper:bahdanau2014-attention
+  url: https://arxiv.org/abs/1409.0473v7
+  fulltext_url: https://arxiv.org/html/1409.0473v7
+  version: 1409.0473v7
+  retrieved_at: '2026-10-15'
+- id: src:arxiv:1607.06450v1
+  name: arXiv 1607.06450v1
+  kind: paper_version
+  paper: paper:ba2016-layernorm
+  url: https://arxiv.org/abs/1607.06450v1
+  fulltext_url: https://arxiv.org/html/1607.06450v1
+  version: 1607.06450v1
+  retrieved_at: '2026-10-15'
+- id: src:arxiv:1706.03762v7
+  name: arXiv 1706.03762v7
+  kind: paper_version
+  paper: paper:vaswani2017-transformer
+  url: https://arxiv.org/abs/1706.03762v7
+  fulltext_url: https://arxiv.org/html/1706.03762v7
+  version: 1706.03762v7
+  retrieved_at: '2026-10-15'
+- id: src:arxiv:1810.04805v2
+  name: arXiv 1810.04805v2
+  kind: paper_version
+  paper: paper:devlin2018-bert
+  url: https://arxiv.org/abs/1810.04805v2
+  fulltext_url: https://arxiv.org/html/1810.04805v2
+  version: 1810.04805v2
+  retrieved_at: '2026-10-15'
+- id: src:arxiv:1912.11370v3
+  name: arXiv 1912.11370v3
+  kind: paper_version
+  paper: paper:kolesnikov2019-bit
+  url: https://arxiv.org/abs/1912.11370v3
+  fulltext_url: https://arxiv.org/html/1912.11370v3
+  version: 1912.11370v3
+  retrieved_at: '2026-10-15'
+- id: src:arxiv:2010.11929v2
+  name: arXiv 2010.11929v2
+  kind: paper_version
+  paper: paper:dosovitskiy2020-vit
+  url: https://arxiv.org/abs/2010.11929v2
+  fulltext_url: https://arxiv.org/html/2010.11929v2
+  version: 2010.11929v2
+  retrieved_at: '2026-10-15'
+- id: src:arxiv:2012.12877v2
+  name: arXiv 2012.12877v2
+  kind: paper_version
+  paper: paper:touvron2020-deit
+  url: https://arxiv.org/abs/2012.12877v2
+  fulltext_url: https://arxiv.org/html/2012.12877v2
+  version: 2012.12877v2
+  retrieved_at: '2026-10-15'
+- id: src:arxiv:2103.14030v2
+  name: arXiv 2103.14030v2
+  kind: paper_version
+  paper: paper:liu2021-swin
+  url: https://arxiv.org/abs/2103.14030v2
+  fulltext_url: https://arxiv.org/html/2103.14030v2
+  version: 2103.14030v2
+  retrieved_at: '2026-10-15'
+- id: src:arxiv:1503.02531v1
+  name: arXiv 1503.02531v1
+  kind: paper_version
+  paper: paper:hinton2015-distillation
+  url: https://arxiv.org/abs/1503.02531v1
+  fulltext_url: https://arxiv.org/html/1503.02531v1
+  version: 1503.02531v1
+  retrieved_at: '2026-10-15'
+claims:
+- id: clm:intro-imagenet
+  predicate: INTRODUCES
+  subject: paper:deng2009-imagenet
+  object: dataset:imagenet
+  qualifiers: {}
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:pdf:deng2009-imagenet
+    locator:
+      section: 1 Introduction
+      paragraph: 1
+    quote: In this paper, we introduce a new image database called “ImageNet”, a large-scale ontology of images.
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:intro-alexnet
+  predicate: INTRODUCES
+  subject: paper:krizhevsky2012-alexnet
+  object: model:alexnet
+  qualifiers: {}
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:pdf:krizhevsky2012-alexnet
+    locator:
+      section: Abstract
+    quote: We trained a large, deep convolutional neural network to classify the 1.2 million high-resolution images in the ImageNet LSVRC-2010 contest
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:intro-vgg
+  predicate: INTRODUCES
+  subject: paper:simonyan2014-vgg
+  object: model:vgg
+  qualifiers: {}
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1409.1556v6
+    locator:
+      section: 2.2 Configurations
+      paragraph: 1
+    quote: The ConvNet configurations, evaluated in this paper, are outlined in Table 1, one per column.
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:intro-batchnorm
+  predicate: INTRODUCES
+  subject: paper:ioffe2015-batchnorm
+  object: method:batch-normalization
+  qualifiers: {}
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1502.03167v3
+    locator:
+      section: 1 Introduction
+      paragraph: 5
+    quote: We propose a new mechanism, which we call Batch Normalization, that takes a step towards reducing internal covariate shift, and in doing so dramatically accelerates the training of deep neural nets.
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:intro-resnet
+  predicate: INTRODUCES
+  subject: paper:he2015-resnet
+  object: model:resnet
+  qualifiers: {}
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1512.03385v1
+    locator:
+      section: Abstract
+    quote: We present a residual learning framework to ease the training of networks that are substantially deeper than those used previously.
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:intro-residual-connection
+  predicate: INTRODUCES
+  subject: paper:he2015-resnet
+  object: method:residual-connection
+  qualifiers: {}
+  status: verified
+  confidence: medium
+  evidence:
+  - source: src:arxiv:1512.03385v1
+    locator:
+      section: Abstract
+    quote: We explicitly reformulate the layers as learning residual functions with reference to the layer inputs, instead of learning unreferenced functions.
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:intro-additive-attention
+  predicate: INTRODUCES
+  subject: paper:bahdanau2014-attention
+  object: method:additive-attention
+  qualifiers: {}
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1409.0473v7
+    locator:
+      section: 1 Introduction
+      paragraph: 4
+      html_id: S1.p4
+    quote: In order to address this issue, we introduce an extension to the encoder–decoder model which learns to align and translate jointly.
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:intro-layernorm
+  predicate: INTRODUCES
+  subject: paper:ba2016-layernorm
+  object: method:layer-normalization
+  qualifiers: {}
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1607.06450v1
+    locator:
+      section: 1 Introduction
+      paragraph: 3
+      html_id: S1.p3
+    quote: This paper introduces layer normalization, a simple normalization method to improve the training speed for various neural network models.
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:intro-transformer
+  predicate: INTRODUCES
+  subject: paper:vaswani2017-transformer
+  object: model:transformer
+  qualifiers: {}
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1706.03762v7
+    locator:
+      section: Abstract
+    quote: We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely.
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:intro-sdpa
+  predicate: INTRODUCES
+  subject: paper:vaswani2017-transformer
+  object: method:scaled-dot-product-attention
+  qualifiers: {}
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1706.03762v7
+    locator:
+      section: 3.2.1 Scaled Dot-Product Attention
+      paragraph: 1
+      html_id: S3.SS2.SSS1.p1
+    quote: We call our particular attention "Scaled Dot-Product Attention" (Figure 2).
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:intro-mha
+  predicate: INTRODUCES
+  subject: paper:vaswani2017-transformer
+  object: method:multi-head-attention
+  qualifiers: {}
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1706.03762v7
+    locator:
+      section: 3.2.2 Multi-Head Attention
+      paragraph: 1
+      html_id: S3.SS2.SSS2.p1
+    quote: we found it beneficial to linearly project the queries, keys and values
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:intro-bert
+  predicate: INTRODUCES
+  subject: paper:devlin2018-bert
+  object: model:bert
+  qualifiers: {}
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1810.04805v2
+    locator:
+      section: Abstract
+    quote: We introduce a new language representation model called BERT, which stands for Bidirectional Encoder Representations from Transformers.
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:intro-bit
+  predicate: INTRODUCES
+  subject: paper:kolesnikov2019-bit
+  object: model:bit
+  qualifiers: {}
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1912.11370v3
+    locator:
+      section: Abstract
+    quote: We scale up pre-training, and propose a simple recipe that we call Big Transfer (BiT).
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:intro-vit
+  predicate: INTRODUCES
+  subject: paper:dosovitskiy2020-vit
+  object: model:vit
+  qualifiers: {}
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:2010.11929v2
+    locator:
+      section: Abstract
+    quote: When pre-trained on large amounts of data and transferred to multiple mid-sized or small image recognition benchmarks (ImageNet, CIFAR-100, VTAB, etc.), Vision Transformer (ViT) attains excellent results compared to state-of-the-art convolutional networks while requiring substantially fewer computa
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:intro-patch-embedding
+  predicate: INTRODUCES
+  subject: paper:dosovitskiy2020-vit
+  object: method:patch-embedding
+  qualifiers: {}
+  status: verified
+  confidence: medium
+  evidence:
+  - source: src:arxiv:2010.11929v2
+    locator:
+      section: 3.1 Vision Transformer (ViT)
+      paragraph: 1
+    quote: dimensions with a trainable linear projection (Eq. 1). We refer to the output of this projection as the patch embeddings.
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:intro-deit
+  predicate: INTRODUCES
+  subject: paper:touvron2020-deit
+  object: model:deit
+  qualifiers: {}
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:2012.12877v2
+    locator:
+      section: 1 Introduction
+      paragraph: 3
+    quote: With our Data-efficient image Transformers (DeiT), we report large improvements over previous results, see Figure 1.
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:intro-distillation-token
+  predicate: INTRODUCES
+  subject: paper:touvron2020-deit
+  object: method:distillation-token
+  qualifiers: {}
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:2012.12877v2
+    locator:
+      section: 1 Introduction
+      paragraph: 5
+    quote: We introduce a new distillation procedure based on a distillation token, which plays the same role as the class token, except that it aims at reproducing the label estimated by the teacher.
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:intro-swin
+  predicate: INTRODUCES
+  subject: paper:liu2021-swin
+  object: model:swin
+  qualifiers: {}
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:2103.14030v2
+    locator:
+      section: Abstract
+    quote: This paper presents a new vision Transformer, called Swin Transformer, that capably serves as a general-purpose backbone for computer vision.
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:intro-shifted-window
+  predicate: INTRODUCES
+  subject: paper:liu2021-swin
+  object: method:shifted-window-attention
+  qualifiers: {}
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:2103.14030v2
+    locator:
+      section: 3.2 Shifted Window based Self-Attention
+      paragraph: 3
+    quote: To introduce cross-window connections while maintaining the efficient computation of non-overlapping windows, we propose a shifted window partitioning approach which alternates between two partitioning configurations in consecutive Swin Transformer blocks.
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:alexnet-addresses-overfitting
+  predicate: ADDRESSES
+  subject: model:alexnet
+  object: problem:overfitting-large-networks
+  qualifiers: {}
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:pdf:krizhevsky2012-alexnet
+    locator:
+      section: 1 Introduction
+      paragraph: 4
+    quote: The size of our network made overfitting a significant problem, even with 1.2 million labeled training examples, so we used several effective techniques for preventing overfitting, which are described in Section 4.
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:vgg-addresses-depth
+  predicate: ADDRESSES
+  subject: model:vgg
+  object: problem:depth-vs-accuracy
+  qualifiers: {}
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1409.1556v6
+    locator:
+      section: Abstract
+    quote: In this work we investigate the effect of the convolutional network depth on its accuracy in the large-scale image recognition setting.
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:batchnorm-addresses-ics
+  predicate: ADDRESSES
+  subject: method:batch-normalization
+  object: problem:internal-covariate-shift
+  qualifiers: {}
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1502.03167v3
+    locator:
+      section: Abstract
+    quote: We refer to this phenomenon as internal covariate shift, and address the problem by normalizing layer inputs.
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:residual-addresses-degradation
+  predicate: ADDRESSES
+  subject: method:residual-connection
+  object: problem:degradation-in-deep-networks
+  qualifiers: {}
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1512.03385v1
+    locator:
+      section: 1 Introduction
+      paragraph: 5
+    quote: In this paper, we address the degradation problem by introducing a deep residual learning framework.
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:additive-addresses-bottleneck
+  predicate: ADDRESSES
+  subject: method:additive-attention
+  object: problem:fixed-length-bottleneck
+  qualifiers: {}
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1409.0473v7
+    locator:
+      section: Abstract
+    quote: we conjecture that the use of a fixed-length vector is a bottleneck in improving the performance of this basic encoder–decoder architecture
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:layernorm-addresses-batch-dependence
+  predicate: ADDRESSES
+  subject: method:layer-normalization
+  object: problem:batch-dependence-of-normalization
+  qualifiers: {}
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1607.06450v1
+    locator:
+      section: Abstract
+    quote: However, the effect of batch normalization is dependent on the mini-batch size and it is not obvious how to apply it to recurrent neural networks.
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:transformer-addresses-sequential
+  predicate: ADDRESSES
+  subject: model:transformer
+  object: problem:sequential-computation-in-rnns
+  qualifiers: {}
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1706.03762v7
+    locator:
+      section: 1 Introduction
+      paragraph: 2
+      html_id: S1.p2
+    quote: This inherently sequential nature precludes parallelization within training examples, which becomes critical at longer sequence lengths, as memory constraints limit batching across examples.
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:vit-addresses-convolution-free
+  predicate: ADDRESSES
+  subject: model:vit
+  object: problem:convolution-free-image-recognition
+  qualifiers: {}
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:2010.11929v2
+    locator:
+      section: Abstract
+    quote: We show that this reliance on CNNs is not necessary and a pure transformer applied directly to sequences of image patches can perform very well on image classification tasks.
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:deit-addresses-data-hunger
+  predicate: ADDRESSES
+  subject: model:deit
+  object: problem:vit-data-hunger
+  qualifiers: {}
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:2012.12877v2
+    locator:
+      section: Abstract
+    quote: These high-performing vision transformers are pre-trained with hundreds of millions of images using a large infrastructure, thereby limiting their adoption.
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:swin-addresses-quadratic
+  predicate: ADDRESSES
+  subject: model:swin
+  object: problem:quadratic-attention-cost-high-resolution
+  qualifiers: {}
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:2103.14030v2
+    locator:
+      section: 1 Introduction
+      paragraph: 3
+    quote: There exist many vision tasks such as semantic segmentation that require dense prediction at the pixel level, and this would be intractable for Transformer on high-resolution images, as the computational complexity of its self-attention is quadratic to image size.
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:residual-mitigates-degradation
+  predicate: MITIGATES
+  subject: method:residual-connection
+  object: problem:degradation-in-deep-networks
+  qualifiers: {}
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1512.03385v1
+    locator:
+      section: 4.1 ImageNet Classification
+      paragraph: 6
+    quote: First, the situation is reversed with residual learning – the 34-layer ResNet is better than the 18-layer ResNet (by 2.8%).
+    type: experimental_result
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:additive-mitigates-bottleneck
+  predicate: MITIGATES
+  subject: method:additive-attention
+  object: problem:fixed-length-bottleneck
+  qualifiers: {}
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1409.0473v7
+    locator:
+      section: 5.1 Quantitative Results
+      paragraph: 2
+      html_id: S5.SS1.p2
+    quote: RNNsearch-50, especially, shows no performance deterioration even with sentences of length 50 or more.
+    type: experimental_result
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:transformer-mitigates-sequential
+  predicate: MITIGATES
+  subject: model:transformer
+  object: problem:sequential-computation-in-rnns
+  qualifiers: {}
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1706.03762v7
+    locator:
+      section: 4 Why Self-Attention
+      paragraph: 4
+      html_id: S4.p4
+    quote: As noted in Table 1, a self-attention layer connects all positions with a constant number of sequentially executed operations, whereas a recurrent layer requires
+    type: analytical_result
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:deit-mitigates-data-hunger
+  predicate: MITIGATES
+  subject: model:deit
+  object: problem:vit-data-hunger
+  qualifiers: {}
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:2012.12877v2
+    locator:
+      section: '5.3 Efficiency vs accuracy: a comparative study with convnets'
+      paragraph: 3
+    quote: These results are a major improvement (+6.3% top-1 in a comparable setting) over previous ViT models trained on Imagenet1k only [15].
+    type: experimental_result
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:swin-mitigates-quadratic
+  predicate: MITIGATES
+  subject: model:swin
+  object: problem:quadratic-attention-cost-high-resolution
+  qualifiers: {}
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:2103.14030v2
+    locator:
+      section: 1 Introduction
+      paragraph: 3
+    quote: The linear computational complexity is achieved by computing self-attention locally within non-overlapping windows that partition an image (outlined in red). The number of patches in each window is fixed, and thus the complexity becomes linear to image size.
+    type: analytical_result
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:vit-adapts-transformer
+  predicate: ADAPTS
+  subject: model:vit
+  object: model:transformer
+  qualifiers:
+    from_field: field:natural-language-processing
+    to_field: field:computer-vision
+  status: verified
+  confidence: medium
+  evidence:
+  - source: src:arxiv:2010.11929v2
+    locator:
+      section: 3 Method
+      paragraph: 1
+    quote: In model design we follow the original Transformer (Vaswani et al., 2017) as closely as possible.
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:swin-adapts-transformer
+  predicate: ADAPTS
+  subject: model:swin
+  object: model:transformer
+  qualifiers:
+    from_field: field:natural-language-processing
+    to_field: field:computer-vision
+  status: verified
+  confidence: medium
+  evidence:
+  - source: src:arxiv:2103.14030v2
+    locator:
+      section: Abstract
+    quote: Challenges in adapting Transformer from language to vision arise from differences between the two domains, such as large variations in the scale of visual entities and the high resolution of pixels in images compared to words in text.
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:deit-extends-vit
+  predicate: EXTENDS
+  subject: model:deit
+  object: model:vit
+  qualifiers: {}
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:2012.12877v2
+    locator:
+      section: 5.1 Transformer models
+      paragraph: 1
+    quote: As mentioned earlier, our architecture design is identical to the one proposed by Dosovitskiy et al. [15] with no convolutions. Our only differences are the training strategies, and the distillation token.
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:bit-extends-resnet
+  predicate: EXTENDS
+  subject: model:bit
+  object: model:resnet
+  qualifiers: {}
+  status: verified
+  confidence: medium
+  evidence:
+  - source: src:arxiv:1912.11370v3
+    locator:
+      section: 3.3 Hyperparameter Details
+      paragraph: 1
+    quote: All of our BiT models use a vanilla ResNet-v2 architecture [16], except that we replace all Batch Normalization [21] layers with Group Normalization [60] and use Weight Standardization [43] in all convolutional layers.
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:layernorm-extends-batchnorm
+  predicate: EXTENDS
+  subject: method:layer-normalization
+  object: method:batch-normalization
+  qualifiers: {}
+  status: verified
+  confidence: medium
+  evidence:
+  - source: src:arxiv:1607.06450v1
+    locator:
+      section: Abstract
+    quote: In this paper, we transpose batch normalization into layer normalization by computing the mean and variance used for normalization from all of the summed inputs to the neurons in a layer on a single training case.
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:vit-trained-on-jft
+  predicate: TRAINED_ON
+  subject: model:vit
+  object: dataset:jft-300m
+  qualifiers:
+    stage: pretraining
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:2010.11929v2
+    locator: &id005
+      section: 4.1 Setup
+      paragraph: 1
+    quote: its superset ImageNet-21k with 21k classes and 14M images (Deng et al., 2009), and JFT (Sun et al., 2017) with 18k classes and 303M high-resolution images.
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:vit-trained-on-imagenet-21k
+  predicate: TRAINED_ON
+  subject: model:vit
+  object: dataset:imagenet-21k
+  qualifiers:
+    stage: pretraining
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:2010.11929v2
+    locator: *id005
+    quote: its superset ImageNet-21k with 21k classes and 14M images (Deng et al., 2009), and JFT (Sun et al., 2017) with 18k classes and 303M high-resolution images.
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:deit-trained-on-imagenet-1k
+  predicate: TRAINED_ON
+  subject: model:deit
+  object: dataset:imagenet-1k
+  qualifiers:
+    stage: training
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:2012.12877v2
+    locator:
+      section: 1 Introduction
+      paragraph: 3
+    quote: It uses Imagenet as the sole training set.
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:resnet-evaluated-on-ilsvrc
+  predicate: EVALUATED_ON
+  subject: model:resnet
+  object: benchmark:ilsvrc-cls-test
+  qualifiers: {}
+  status: verified
+  confidence: high
+  evidence:
+  - source: src:arxiv:1512.03385v1
+    locator:
+      section: Abstract
+    quote: An ensemble of these residual nets achieves 3.57% error on the ImageNet test set.
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
+- id: clm:transformer-evaluated-on-wmt-en-fr
+  predicate: EVALUATED_ON
+  subject: model:transformer
+  object: benchmark:wmt14-en-fr-newstest2014
+  qualifiers: {}
+  status: verified
+  confidence: medium
+  evidence:
+  - source: src:arxiv:1706.03762v7
+    locator:
+      section: Abstract
+    quote: On the WMT 2014 English-to-French translation task, our model establishes a new single-model state-of-the-art BLEU score of 41.8 after training for 3.5 days on eight GPUs
+    type: author_statement
+    stance: supports
+  review: null
+  verification:
+    method: quote_match
+    by: agent:claude-opus-5-5
+    at: '2026-10-15'
