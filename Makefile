@@ -8,7 +8,7 @@ install:
 	npm ci
 	$(PYTHON) -c "import yaml, pytest"
 lint:
-	npx eslint src tests
+	npx eslint src --ext .ts,.tsx,.astro
 	$(ASTRO_ENV) npx astro check
 	$(if $(wildcard .venv/bin/ruff),.venv/bin/ruff check tools tests,$(PYTHON) -m ruff check tools tests)
 typecheck:

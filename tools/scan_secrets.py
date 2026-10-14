@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import re, subprocess, sys
+import re, subprocess
 patterns=[r'AKIA[0-9A-Z]{16}',r'gh[pousr]_[A-Za-z0-9]{20,}',r'sk-(?:proj-)?[A-Za-z0-9_-]{20,}',r'Anthropic[a-zA-Z0-9_-]{20,}',r'-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----']
 files=subprocess.check_output(['git','ls-files'],text=True).splitlines(); hits=[]
 for name in files:

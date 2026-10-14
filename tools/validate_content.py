@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Validate the MDX/graph contract without requiring an Astro runtime."""
 from __future__ import annotations
-import argparse, datetime as dt, json, os, re, subprocess, sys, tempfile
+import argparse, json, os, re, subprocess, sys, tempfile
 from pathlib import Path
 import yaml
 from seedtool import load_graph

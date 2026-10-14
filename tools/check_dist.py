@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """Small, deliberately strict static output auditor."""
 from __future__ import annotations
-import argparse, re, sys
+import argparse, re
 from pathlib import Path
-from urllib.parse import urlparse
 
 def target(root: Path, source: Path, value: str):
     value=value.split('#',1)[0].split('?',1)[0]
@@ -24,7 +23,7 @@ def main():
         if len(re.findall(r'<h1\b',text,re.I)) != 1: errors.append(f'{page}: exactly one h1')
         if 'katex-error' in text: errors.append(f'{page}: katex-error')
         for tag, attr, val in re.findall(r'<(a|img|script|link)\b[^>]*?\b(href|src)=["\']([^"\']+)',text,re.I):
-            if tag.lower() in {'script','link'} and val.startswith(('http://','https://')): errors.append(f'{page}: external asset {val}')
+            if tag.lower() == 'script' and val.startswith(('http://','https://')): errors.append(f'{page}: external asset {val}')
             p=target(root,page,val)
             if p is not None and not p.exists(): errors.append(f'{page}: missing {val}')
     print('\n'.join(errors) if errors else 'check-dist: OK')

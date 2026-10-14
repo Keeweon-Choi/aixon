@@ -2,8 +2,9 @@
 import { getCollection, render } from 'astro:content'; import Base from '../../layouts/Base.astro';
 import Section from '../../components/wiki/Section.astro'; import Level from '../../components/wiki/Level.astro'; import ConceptLink from '../../components/wiki/ConceptLink.astro'; import Cite from '../../components/wiki/Cite.astro'; import Callout from '../../components/wiki/Callout.astro'; import Figure from '../../components/wiki/Figure.astro'; import SoftmaxTemperatureLab from '../../islands/SoftmaxTemperatureLab';
 import { getGraph, claimPath, entityPath } from '../../lib/graph'; import { url } from '../../lib/url';
+interface Props { entry: any }
 export async function getStaticPaths() { return (await getCollection('wiki')).filter(x => import.meta.env.AIXON_BUILD !== 'public' || x.data.status === 'published').map(entry => ({ params: { slug: entry.id }, props: { entry } })); }
-const entry: any = Astro.props.entry; const { Content } = await render(entry); const graph = getGraph(); const cited = [...entry.data.sources, ...entry.data.claims];
+const entry = Astro.props.entry; const { Content } = await render(entry); const graph = getGraph(); const cited = [...entry.data.sources, ...entry.data.claims];
 const related = Object.values(graph.claims).filter((c: any) => (c.subject === entry.data.entity || c.object === entry.data.entity) && ['PREREQUISITE_OF','RECOMMENDED_BEFORE','PART_OF','IS_A'].includes(c.predicate as string));
 ---
 <Base title={`${entry.data.title} | AIXON`} description={entry.data.subtitle}>
