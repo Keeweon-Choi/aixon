@@ -16,6 +16,9 @@ labs: [lab:softmax-temperature]
 figures: [{id: fig-flow, origin: self-made, alt: QKᵀ에서 softmax를 거쳐 V로 가는 흐름}]
 updated_at: 2026-10-15
 ---
+
+import SoftmaxTemperatureLab from '../../islands/SoftmaxTemperatureLab';
+
 <Section id="overview" level="intuition" title="개요와 직관">
 <Level of="intuition">각 query는 key를 비교해 value의 가중합을 만듭니다.</Level>
 </Section>
@@ -25,7 +28,7 @@ updated_at: 2026-10-15
 </Section>
 
 <Section id="math" level="fundamentals" title="수학적 기초">
-$$\operatorname{Attention}(Q,K,V)=\operatorname{softmax}(QK^\top/\sqrt{d_k})V$$
+<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>Attention</mi><mo>(</mo><mi>Q</mi><mo>,</mo><mi>K</mi><mo>,</mo><mi>V</mi><mo>)</mo><mo>=</mo><mi>softmax</mi><mo>(</mo><mi>QKᵀ</mi><mo>/</mo><msqrt><msub><mi>d</mi><mi>k</mi></msub></msqrt><mo>)</mo><mi>V</mi></mrow></math>Attention(Q,K,V)=softmax(QKᵀ/√dₖ)V</span>
 <Cite src="src:arxiv:1706.03762v7" loc="§3.2.1" />
 </Section>
 

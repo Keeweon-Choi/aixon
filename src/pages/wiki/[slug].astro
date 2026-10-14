@@ -3,7 +3,7 @@ import { getCollection, render } from 'astro:content'; import Base from '../../l
 import Section from '../../components/wiki/Section.astro'; import Level from '../../components/wiki/Level.astro'; import ConceptLink from '../../components/wiki/ConceptLink.astro'; import Cite from '../../components/wiki/Cite.astro'; import Callout from '../../components/wiki/Callout.astro'; import Figure from '../../components/wiki/Figure.astro'; import SoftmaxTemperatureLab from '../../islands/SoftmaxTemperatureLab';
 import { getGraph, claimPath, entityPath } from '../../lib/graph'; import { url } from '../../lib/url';
 export async function getStaticPaths() { return (await getCollection('wiki')).filter(x => import.meta.env.AIXON_BUILD !== 'public' || x.data.status === 'published').map(entry => ({ params: { slug: entry.id }, props: { entry } })); }
-const { entry } = Astro.props; const { Content } = await render(entry); const graph = getGraph(); const cited = [...entry.data.sources, ...entry.data.claims];
+const entry: any = Astro.props.entry; const { Content } = await render(entry); const graph = getGraph(); const cited = [...entry.data.sources, ...entry.data.claims];
 const related = Object.values(graph.claims).filter((c: any) => (c.subject === entry.data.entity || c.object === entry.data.entity) && ['PREREQUISITE_OF','RECOMMENDED_BEFORE','PART_OF','IS_A'].includes(c.predicate as string));
 ---
 <Base title={`${entry.data.title} | AIXON`} description={entry.data.subtitle}>
@@ -13,5 +13,5 @@ const related = Object.values(graph.claims).filter((c: any) => (c.subject === en
 <section><h2>관련 개념</h2><ul>{related.map((c: any) => <li><a href={url(entityPath(c.subject === entry.data.entity ? c.object : c.subject, graph))}>{String(c.predicate)} · {c.subject === entry.data.entity ? c.object : c.subject}</a></li>)}</ul></section>
 <section><h2>참고문헌과 근거</h2><ul>{cited.map(id => <li>{id.startsWith('clm:') ? <a href={url(claimPath(id))}>{id}</a> : <a href={String(graph.sources[id]?.url)}>{graph.sources[id]?.name || id}</a>}</li>)}</ul></section>
 </article>
-<script>const rank={intuition:0,fundamentals:1,deep:2};document.querySelectorAll('[name="wiki-level"]').forEach(i=>i.addEventListener('change',()=>{const n=rank[i.value];document.querySelectorAll('[data-level]').forEach(x=>x.hidden=rank[x.dataset.level]>n)}));</script>
+<script>const rank:Record<string,number>={intuition:0,fundamentals:1,deep:2};document.querySelectorAll<HTMLInputElement>('[name="wiki-level"]').forEach(i=>i.addEventListener('change',()=>{const n=rank[i.value];document.querySelectorAll<HTMLElement>('[data-level]').forEach(x=>x.hidden=(rank[x.dataset.level || 'deep'] ?? 2)>n)}));</script>
 </Base>

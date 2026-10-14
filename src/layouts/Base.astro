@@ -18,9 +18,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <main data-pagefind-body><slot /></main><footer>AIXON · 정적 Knowledge Atlas</footer>
     <script>
       import { url } from '../lib/url';
-      const input = document.querySelector('#quick-search'); const output = document.querySelector('#quick-results');
-      let index = []; fetch(url('node-index.json')).then(r => r.ok ? r.json() : []).then(x => index = x);
-      input?.addEventListener('input', () => { const q = input.value.toLowerCase().trim(); output.innerHTML = q ? index.filter(n => [n.name, n.id, ...(n.aliases || [])].join(' ').toLowerCase().includes(q)).slice(0,8).map(n => `<a href="${n.url}">${n.name}</a>`).join('') || '결과 없음' : ''; });
+      const input = document.querySelector<HTMLInputElement>('#quick-search'); const output = document.querySelector<HTMLOutputElement>('#quick-results');
+      let index: Array<{name:string; id:string; aliases?:string[]; url:string}> = []; fetch(url('node-index.json')).then(r => r.ok ? r.json() : []).then((x: typeof index) => index = x);
+      input?.addEventListener('input', () => { const q = input.value.toLowerCase().trim(); if (output) output.innerHTML = q ? index.filter(n => [n.name, n.id, ...(n.aliases || [])].join(' ').toLowerCase().includes(q)).slice(0,8).map(n => `<a href="${n.url}">${n.name}</a>`).join('') || '결과 없음' : ''; });
     </script>
   </body>
 </html>

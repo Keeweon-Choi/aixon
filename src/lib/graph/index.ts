@@ -48,3 +48,7 @@ let cached: GraphData | undefined;
 export function getGraph() { return cached ||= loadGraph(); }
 export function entityPath(id: string, graph = getGraph()): string { const [prefix, slug] = id.split(':'); return prefix === 'field' ? `fields/${slug}/` : `e/${prefix}/${slug}/`; }
 export function claimPath(id: string): string { return `claims/${id.replace(/^clm:/, '')}/`; }
+export function publicSummary(entity: RecordMap, build: GraphData['build']): string {
+  return build === 'public' && str(entity.summary_by).startsWith('agent:') && record(entity.summary_review).decision !== 'approve'
+    ? '준비 중' : str(entity.summary) || '준비 중';
+}
