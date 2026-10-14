@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Iterable
 
 
-ARXIV_URL = "http://export.arxiv.org/api/query"
+ARXIV_URL = "https://export.arxiv.org/api/query"
 USER_AGENT = "aixon-verify/0.1"
 ATOM = "{http://www.w3.org/2005/Atom}"
 
@@ -95,6 +95,24 @@ def papers_in_file(path: Path) -> list[dict]:
     return [paper for paper in papers if paper.get("arxiv")]
 
 
+def papers_from_yaml(paths: list[Path]) -> tuple[list[dict], list[dict]]:
+    """Read papers with a real YAML parser (any indentation). An arXiv id that YAML did not load as a
+    string (e.g. unquoted 1611.03530 -> float 1611.0353) is reported as invalid_id_type, never compared."""
+    import yaml
+    papers, bad = [], []
+    for path in paths:
+        data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        for rec in data.get("papers", []) or []:
+            arxiv = (rec.get("identifiers") or {}).get("arxiv")
+            if arxiv is None:
+                continue
+            if not isinstance(arxiv, str):
+                bad.append({"paper": rec.get("id"), "arxiv": str(arxiv), "status": "invalid_id_type", "yaml_title": rec.get("title", ""), "detail": "arXiv id must be a quoted string"})
+                continue
+            papers.append({"id": rec.get("id"), "arxiv": arxiv, "title": rec.get("title", ""), "earliest_public_date": str(rec.get("earliest_public_date", "")), "path": str(path)})
+    return papers, bad
+
+
 def _arxiv_id(entry: ET.Element) -> str:
     value = entry.findtext(f"{ATOM}id", "")
     match = re.search(r"/(?:abs|pdf)/([^/]+?)(?:\.pdf)?$", value)
@@ -141,8 +159,8 @@ def fetch_entries(identifiers: list[str], cache: Path, offline: bool) -> tuple[d
     entries: dict[str, dict[str, str]] = {}
     errors: dict[str, str] = {}
     last_request = 0.0
-    for start in range(0, len(identifiers), 50):
-        batch = identifiers[start:start + 50]
+    for start in range(0, len(identifiers), 25):
+        batch = identifiers[start:start + 25]
         path = _cache_path(cache, batch)
         try:
             if path.exists():
@@ -155,8 +173,15 @@ def fetch_entries(identifiers: list[str], cache: Path, offline: bool) -> tuple[d
                     time.sleep(delay)
                 query = urllib.parse.urlencode({"id_list": ",".join(batch), "max_results": 100})
                 request = urllib.request.Request(f"{ARXIV_URL}?{query}", headers={"User-Agent": USER_AGENT})
-                with urllib.request.urlopen(request, timeout=30) as response:
-                    raw = response.read()
+                for attempt in range(4):  # arXiv asks for <= 1 request / 3 s; back off on 429 and timeouts
+                    try:
+                        with urllib.request.urlopen(request, timeout=60) as response:
+                            raw = response.read()
+                        break
+                    except Exception as exc:  # noqa: BLE001 - retried, then reported per id
+                        if attempt == 3 or not ("429" in str(exc) or "503" in str(exc) or "timed out" in str(exc)):
+                            raise
+                        time.sleep(15 * (attempt + 1))
                 last_request = time.monotonic()
                 cache.mkdir(parents=True, exist_ok=True)
                 path.write_bytes(raw)
@@ -195,16 +220,16 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--json", action="store_true")
     parser.add_argument("--write-checked", action="store_true")
     args = parser.parse_args(argv)
-    papers = [paper for path in _paths(args.graph) for paper in papers_in_file(path)]
+    papers, bad_type = papers_from_yaml(_paths(args.graph))
     identifiers = sorted({paper["arxiv"].split("v", 1)[0] for paper in papers})
     entries, errors = fetch_entries(identifiers, Path(args.cache), args.offline)
-    rows = compare_papers(papers, entries, errors)
+    rows = compare_papers(papers, entries, errors) + bad_type
     if args.write_checked:
         write_checked(papers, rows, dt.date.today().isoformat())
         cache = Path(args.cache); cache.mkdir(parents=True, exist_ok=True)
         (cache / "report.json").write_text(json.dumps(rows, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(rows, ensure_ascii=False, indent=2) if args.json else "\n".join(f"{row['status']} {row['paper']} {row['arxiv']}" for row in rows))
-    return 1 if any(row["status"] in {"title_mismatch", "not_found", "error"} for row in rows) else 0
+    return 1 if any(row["status"] in {"title_mismatch", "not_found", "error", "invalid_id_type"} for row in rows) else 0
 
 
 if __name__ == "__main__":
