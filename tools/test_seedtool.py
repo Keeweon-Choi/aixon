@@ -251,6 +251,32 @@ def test_assumed_background_warning_includes_items(tmp_path):
     assert warning == {"code": "assumed_background", "ref": "graph", "items": ["algebra", "logs"]}
 
 
+def test_load_graph_merges_two_files_and_headers(tmp_path):
+    first = {"schema_version": 1, "graph": {"id": "first", "name": "First", "assumed_background": ["algebra"]},
+             "fields": [{"id": "field:one", "name": "One", "summary": "첫 번째 분야이다."}]}
+    second = {"schema_version": 1, "graph": {"id": "second", "name": "Second", "assumed_background": ["calculus", "algebra"]},
+              "concepts": [{"id": "concept:two", "name": "Two", "summary": "두 번째 개념이다.", "dimensions": ["recognize", "explain"], "fields": ["field:one"]}]}
+    a, b = tmp_path / "a.yaml", tmp_path / "b.yaml"
+    a.write_text(yaml.safe_dump(first, sort_keys=False), encoding="utf-8")
+    b.write_text(yaml.safe_dump(second, sort_keys=False), encoding="utf-8")
+    graph = load_graph([b, a])
+    assert not [issue for issue in validate(graph) if issue.code.startswith("G")]
+    assert graph["raw"]["graph"] == {"id": "first", "name": "First", "assumed_background": ["algebra", "calculus"]}
+
+
+def test_load_graph_duplicate_id_across_files_is_g001(tmp_path):
+    for name in ("a", "b"):
+        (tmp_path / f"{name}.yaml").write_text(yaml.safe_dump({"schema_version": 1, "concepts": [{"id": "concept:duplicate", "name": "Duplicate", "summary": "중복 개념이다.", "dimensions": ["recognize", "explain"]}]}), encoding="utf-8")
+    assert "G001" in cs(load_graph([tmp_path / "a.yaml", tmp_path / "b.yaml"]))
+
+
+def test_load_graph_file_order_does_not_change_graph_version(tmp_path):
+    for name, ident in (("a", "concept:alpha"), ("b", "concept:beta")):
+        (tmp_path / f"{name}.yaml").write_text(yaml.safe_dump({"schema_version": 1, "graph": {"id": "merged"}, "concepts": [{"id": ident, "name": ident, "summary": "개념이다.", "dimensions": ["recognize", "explain"]}]}), encoding="utf-8")
+    a, b = tmp_path / "a.yaml", tmp_path / "b.yaml"
+    assert graph_version(load_graph([a, b])) == graph_version(load_graph([b, a]))
+
+
 def qgraph(tmp_path, text, quote, digest=None, name="q"):
     html = tmp_path / f"{name}.html"; html.write_text(text)
     _, raw = mini(tmp_path, name=f"{name}0"); raw["claims"] = [raw["claims"][0]]; raw["sources"][0]["fulltext_url"] = html.as_uri(); raw["claims"][0]["evidence"][0]["quote"] = quote
