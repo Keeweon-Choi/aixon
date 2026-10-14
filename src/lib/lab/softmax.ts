@@ -1,4 +1,4 @@
-export function mulberry32(seed: number) { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) >>> 0; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+export function mulberry32(seed: number) { let a = seed >>> 0; return () => { a = (a + 0x6D2B79F5) >>> 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = ((t + Math.imul(t ^ (t >>> 7), 61 | t)) >>> 0) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
 export function gaussian(r: () => number) { const u1 = 1 - r(), u2 = r(); return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2); }
 export function softmax(z: number[], T = 1) { const scaled = z.map(x => x / T), max = Math.max(...scaled), e = scaled.map(x => Math.exp(x - max)), sum = e.reduce((a,b)=>a+b,0); return e.map(x => x / sum); }
 export function entropy(p: number[]) { return -p.reduce((s,x) => s + (x ? x * Math.log(x) : 0), 0); }
