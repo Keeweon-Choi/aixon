@@ -353,12 +353,19 @@ def test_public_security_and_cdn_failures(tmp_path, audit, public_inputs, snippe
     assert any(error["code"] == code for error in report["errors"])
 
 
-def test_stale_gate_file_and_taint_fail(tmp_path, audit, public_inputs):
+@pytest.mark.parametrize(
+    "leak",
+    [
+        VIT_SUMMARY,
+        "We split an image into fixed-size patches and feed the sequence of patch embeddings to a Transformer. (fixture)",
+    ],
+)
+def test_stale_gate_file_and_taint_fail(tmp_path, audit, public_inputs, leak):
     graph, wiki_dir = public_inputs
     dist = make_public_dist(tmp_path / "dist")
     gate = tmp_path / "gate.json"
     gate.write_text(json.dumps({"entities": [], "claims": [], "wiki": [], "sources": []}), encoding="utf8")
-    mutate_append_to_home(VIT_SUMMARY)(dist)
+    mutate_append_to_home(leak)(dist)
     exit_code, report = audit(dist, "public", graph=graph, wiki_dir=wiki_dir, gate=gate)
     assert exit_code == 1
     assert has_error(report, "V-PUBLIC", "differ from a fresh public_gate run")
