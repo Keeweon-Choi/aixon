@@ -2,7 +2,7 @@
 
 > 2026-10-15. 범위는 ADR-019(v0.1 = Knowledge Atlas + Interactive AI Wiki)다. 요구사항은 [07_MVP_ROADMAP.md §1](../07_MVP_ROADMAP.md), 추적은 [REQUIREMENT_TRACEABILITY.md](REQUIREMENT_TRACEABILITY.md), 계획은 [VERIFICATION_PLAN.md](VERIFICATION_PLAN.md), 테스트별 결과는 [TEST_MATRIX.md](TEST_MATRIX.md)에 있다.
 > 상태는 PASS / FAIL / BLOCKED / NOT RUN / NOT APPLICABLE 다섯 가지만 쓴다. 증거 파일 경로는 저장소 기준이다. `artifacts/verification/runs/`와 `final-review-*/`는 git에 넣지 않는 로컬 증거이고, 통합 저장소 `~/wt/aixon-base`에 있다.
-> 기준 커밋: 깨끗한 환경 검증은 `b6ca3d7`에서 돌렸다. 이 보고서가 얹힌 `main`(436076a)은 그 뒤에 `.gitignore` 한 줄만 바뀌었다.
+> 기준 커밋: 깨끗한 환경 검증은 `b6ca3d7`에서 돌렸다. 그 뒤 `main`의 커밋은 문서, `.gitignore`, 재현용 `tools/clean_env_verify.sh`(검증 파이프라인 밖)뿐이고 검증 대상 코드는 바뀌지 않았다(`git diff --stat b6ca3d7..main -- src tests tools/*.py Makefile`가 비어 있다).
 
 ## 1. 판정 요약
 
