@@ -3,7 +3,10 @@ import { entropy, sdpaStats, softmax } from '../lib/lab/softmax';
 
 const number = (n: number) => n.toFixed(4);
 // `items`: lab_prediction assessment items from the graph (quiz UI: task B).
-export default function SoftmaxTemperatureLab(_props: { items?: Record<string, unknown>[] }) {
+export default function SoftmaxTemperatureLab(_props: {
+  items?: Record<string, unknown>[];
+  varianceClaim?: Record<string, unknown>;
+}) {
   const [logits, setLogits] = useState([3, 1, 0.2, -1, 2.5]),
     [T, setT] = useState(1),
     [dk, setDk] = useState(64),

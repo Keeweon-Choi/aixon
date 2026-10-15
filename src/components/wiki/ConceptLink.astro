@@ -1,14 +1,17 @@
 ---
-import fs from 'node:fs';
 import { getGraph, entityPath } from '../../lib/graph';
 import { url } from '../../lib/url';
 const { id } = Astro.props;
 const graph = getGraph();
-if (!graph.entities[id]) throw new Error(`Unknown ConceptLink: ${id}`);
+if (!graph.allEntities[id]) throw new Error(`Unknown ConceptLink: ${id}`);
 const slug = String(id).split(':')[1];
-const wiki = fs.existsSync(`${process.env.AIXON_WIKI_DIR || 'src/content/wiki'}/${slug}.mdx`);
+const wiki = graph.wikiFor(id);
 ---
 
-<a href={url(wiki ? `wiki/${slug}/` : entityPath(id, graph))}>
+{graph.isVisible('entity', id) ? (
+  <a data-concept-id={id} href={url(wiki ? `wiki/${slug}/` : entityPath(id, graph))}>
+    <slot />
+  </a>
+) : (
   <slot />
-</a>
+)}

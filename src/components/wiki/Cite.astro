@@ -4,12 +4,17 @@ import { url } from '../../lib/url';
 const { src, claim, loc } = Astro.props;
 const graph = getGraph();
 const id = src || claim;
-if (!id || !(src ? graph.sources[id] : graph.claims[id])) throw new Error(`Unknown Cite: ${id}`);
-const target = claim ? url(claimPath(claim)) : String(graph.sources[src].url || '#');
+if (!id) throw new Error('Cite needs src or claim');
+const visible = claim ? graph.isVisible('claim', claim) : graph.isVisible('source', src);
+const target = claim ? url(claimPath(claim)) : String(graph.sources[src]?.url || '#');
 ---
 
 <sup class="cite">
-  <a href={target} title={loc || id}>
-    [{id.replace(/^(src|clm):/, '')}]
-  </a>
+  {visible ? (
+    <a href={target} title={loc || id}>
+      [{id.replace(/^(src|clm):/, '')}]
+    </a>
+  ) : (
+    <span title={loc || id}>[{id.replace(/^(src|clm):/, '')}] (검토 대기)</span>
+  )}
 </sup>
