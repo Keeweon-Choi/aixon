@@ -25,14 +25,37 @@ export function hasMachineCitation(claim: RecordMap): boolean {
   return ['verified', 'disputed'].includes(String(claim.status)) && Boolean(claim.verification);
 }
 
-export function humanReviewLabel(claim: RecordMap): string {
-  const review = claim.review as RecordMap | undefined;
+export function reviewLabel(record: RecordMap): string {
+  const review = record.review as RecordMap | undefined;
+  const at = review?.at instanceof Date ? review.at.toISOString().slice(0, 10) : review?.at;
   if (
     review?.decision === 'approve' &&
     typeof review.by === 'string' &&
-    review.by.startsWith('human:')
+    typeof at === 'string' &&
+    at.length > 0 &&
+    /^human:[a-z0-9][a-z0-9_-]*$/.test(review.by)
   ) {
-    return `승인: ${review.by}, ${review.at || '날짜 미지정'}`;
+    return `사람 검토: ${review.by}, ${at}`;
+  }
+  if (
+    review?.decision === 'approve' &&
+    typeof review.by === 'string' &&
+    /^panel:[a-z0-9][a-z0-9_-]*$/.test(review.by) &&
+    review.method === 'cross-review' &&
+    typeof at === 'string' &&
+    at.length > 0 &&
+    Array.isArray(review.reviewers) &&
+    review.reviewers.length >= 2 &&
+    review.reviewers.every(
+      (name) => typeof name === 'string' && /^agent:[a-z0-9][a-z0-9_.-]*$/.test(name),
+    ) &&
+    new Set(review.reviewers).size === review.reviewers.length &&
+    typeof review.audit === 'string' &&
+    /^agent:[a-z0-9][a-z0-9_.-]*$/.test(review.audit) &&
+    !review.reviewers.includes(review.audit) &&
+    review.report === `review/cross/${review.by.slice(6)}`
+  ) {
+    return `AI 교차 검증 ${review.reviewers.length}명, ${at}`;
   }
   return '검토 대기';
 }

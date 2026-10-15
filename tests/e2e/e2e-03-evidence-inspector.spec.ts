@@ -52,7 +52,7 @@ test('E2E-3 entity page → verified claim page shows quote, locator, source lin
     await expect(status).toContainText(STATUS_PATTERN[claim.status]);
     await expect(status, 'no bare status word (ADR-022)').not.toContainText(/\bverified\b|검증됨/);
     await expect(status, 'human review state').toContainText('fixture-editor');
-    await expect(status, 'human review state').toContainText(/승인/);
+    await expect(status, 'human review state').toContainText(/사람 검토/);
   });
 
   await test.step('evidence: quote, locator and #:~:text= source link match the YAML', async () => {

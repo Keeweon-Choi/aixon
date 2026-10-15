@@ -10,7 +10,7 @@ Implements the content rules of docs/CONTENT_VALIDATION_PLAN.md (layer L-C):
     V-CITE-1    every <Cite src|claim> target exists in the graph
     V-CITE-2    math / mechanism / history sections contain a <Cite> (status above outline)
     V-CITE-3    every cited Source / Claim is listed in the frontmatter `sources` / `claims`
-    V-STATUS-1  reviewed / published need a human approval, published needs published_at
+    V-STATUS-1  reviewed / published need a human or cross-review panel approval, published needs published_at
     V-STATUS-2  an AI generated document is never reviewed by an agent
     V-STATUS-3  citing a rejected / deprecated claim is an error, proposed / disputed a warning
     V-CODE-1    every ```python verify block runs and passes (20 s limit, numpy only)
@@ -42,7 +42,7 @@ from typing import Any
 import yaml
 
 import public_gate
-from seedtool import load_graph
+from seedtool import approval_kind, load_graph
 
 DEFAULT_GRAPH = "data/seed/seed_graph.yaml,data/graph/atlas.yaml"
 DEFAULT_WIKI_DIR = "src/content/wiki"
@@ -509,7 +509,7 @@ def check_status(document: Document) -> None:
         document.report("V-STATUS-1", f"status {status} needs a human review (review is null)", line)
     else:
         reviewer = str(review.get("by", ""))
-        if not reviewer.startswith("human:"):
+        if not reviewer.startswith("human:") and approval_kind(review) != "panel":  # ADR-026; the gate re-checks reports
             if meta["ai_generated"]:
                 message = f"AI generated document reviewed by non-human '{reviewer}'"
                 document.report("V-STATUS-2", message, document.line_of_key("review"))

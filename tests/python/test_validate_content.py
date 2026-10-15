@@ -255,3 +255,18 @@ def test_real_wiki_validates_against_the_seed_graph(run_tool):
     report = json.loads(result.stdout)
     assert result.returncode == 0, report["errors"]
     assert report["documents"] >= 1
+
+
+def test_panel_approval_satisfies_status_rules(tmp_path, validate):
+    """ADR-026: a cross-review panel signature is not 'reviewed by an agent' (the gate checks the reports)."""
+    panel = (
+        "review:\n  by: panel:test\n  method: cross-review\n  reviewers: [agent:a, agent:b]\n  audit: agent:c\n"
+        "  report: review/cross/test\n"
+    )
+    text = re.sub(r"review:\n  by: [^\n]+\n", panel, transformer_text(), count=1)
+    write_doc(tmp_path, "transformer.mdx", text)
+    _, report = validate(tmp_path)
+    assert not codes(report) & {"V-STATUS-1", "V-STATUS-2"}, report["errors"]
+    write_doc(tmp_path, "transformer.mdx", text.replace("by: panel:test", "by: agent:x"))
+    _, report = validate(tmp_path)
+    assert "V-STATUS-2" in codes(report)

@@ -1,15 +1,15 @@
 ---
-import { hasMachineCitation, humanReviewLabel } from '../lib/badges';
+import { hasMachineCitation, reviewLabel } from '../lib/badges';
 const { claim, publicBuild = false } = Astro.props;
 ---
 
 <span class="claim-badges">
   <span
     class="badge"
-    title="인용문이 지정한 판의 원문에 있음을 기계로 확인. 인용이 관계를 뒷받침하는지는 사람 검토가 판단"
+    title="인용문이 지정한 판의 원문에 있음을 기계로 확인. 관계의 근거 부합 여부는 검토자가 판단"
   >
     {hasMachineCitation(claim) ? '인용 확인(기계)' : '인용 확인 대기'}
   </span>
-  <span class="badge">사람 검토: {humanReviewLabel(claim)}</span>
+  <span class="badge">{reviewLabel(claim)}</span>
   {publicBuild && <span class="badge">공개</span>}
 </span>
