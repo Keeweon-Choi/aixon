@@ -148,7 +148,9 @@
   }
   async function save() {
     const current = records[selected];
-    if (current && $('#note')) {
+    // Only keep the note of a record that already has a decision; an undecided entry would make
+    // the server refuse the whole batch.
+    if (current && $('#note') && saved[current.id]) {
       saved[current.id] = {
         ...(saved[current.id] || {}),
         note: $('#note').value,
