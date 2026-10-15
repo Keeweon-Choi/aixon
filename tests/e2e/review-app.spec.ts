@@ -25,7 +25,7 @@ test.beforeAll(async () => {
   fs.mkdirSync(wiki);
   fs.mkdirSync(review);
   serverProcess = spawn(
-    'python3',
+    fs.existsSync('.venv/bin/python') ? '.venv/bin/python' : 'python3', // same choice as the Makefile
     [
       'tools/review_server.py',
       '--graph',
