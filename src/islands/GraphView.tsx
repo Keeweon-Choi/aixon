@@ -333,6 +333,9 @@ export default function GraphView({
           <p className="badge">{selectedNode.status || 'active'}</p>
           <p>{selectedNode.summary || '준비 중'}</p>
           <p>도입 연도: {selectedNode.year || '연도 미상'}</p>
+          {selectedNode.paperTitles?.length && (
+            <p>소개 논문: {selectedNode.paperTitles.join(', ')}</p>
+          )}
           {selectedNode.url && (
             <a data-testid="panel-entity-link" href={selectedNode.url}>
               항목 상세 보기
