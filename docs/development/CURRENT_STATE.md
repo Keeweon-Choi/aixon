@@ -27,15 +27,16 @@
 | H 회귀·CI·Clean env | 대기 |
 | I 최종 독립 리뷰 | 대기 |
 
-### 진행 중인 작업
+### 진행 중인 작업 (11:30, WSL 재시작 뒤 재개)
 
-| 작업 | 명세 | 위치 | 확인 방법 |
+| 작업 | 담당 | 위치 | 비고 |
 |---|---|---|---|
-| A 그래프 화면(Codex) | `specs/codex_site_A_graph.md` | `~/wt/aixon-base-1015-034008-x` (브랜치 `codex/1015-034008-x`), pid 3128250 | `hub codex` (프로젝트 `[?]`라 완료 알림 없음 → 오케스트레이터 백그라운드 감시) |
-| B 페이지·Lab·공개 관문(Codex) | `specs/codex_site_B_pages.md` | `~/wt/aixon-base-1015-034016-x` (브랜치 `codex/1015-034016-x`), pid 3128818 | 위와 같음 |
-| C 하네스(Claude sonnet 서브에이전트) | `specs/site_C_harness.md` | `~/wt/aixon-harness` (브랜치 `harness/c`) | 완료 알림 |
+| H1 하네스 정리(테스트·검증기·CI) | Codex Terra `1015-112914-aixon` | `~/wt/aixon-base-1015-112914-aixon` | 명세 `specs/codex_H1_harness_align.md` |
+| F13 검증 재현성 | Codex Terra `1015-112925-aixon` | `~/wt/aixon-base-1015-112925-aixon` | 명세 `specs/codex_F13_reproducible_checks.md` |
+| E2E 통합(실제 브라우저) | Sonnet 서브에이전트 | `~/wt/aixon-e2e` (`e2e/integrate`) | 결과 = 테스트×기기×대상 표 |
+| 감사 문서화(08, ISSUE_LOG, 불일치) | Sonnet 서브에이전트 | `~/wt/aixon-docs` (`docs/audit`) | 감사 원본은 04:27 재시작으로 소실 → 오케스트레이터 기록 사용 |
 
-공통 규칙·파일 소유·선택자 약속: `specs/site_common.md`. Codex 5시간 한도는 04:12에 풀린다(그 전에는 대기).
+완료·병합: A(그래프)·B(페이지·관문)·C(하네스 일부) → `main`. 모델 배정은 `~/.local/share/hub/rules.md`(10-15 사용자 결정)를 따른다.
 
 ## 2. 산출물·자료 위치
 
