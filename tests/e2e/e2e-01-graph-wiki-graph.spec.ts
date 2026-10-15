@@ -101,3 +101,33 @@ test('E2E-1 quick search results are keyboard navigable @seed', async ({ page })
   expect(hrefs).toContain(new URL(page.url()).pathname);
   await expect(page.locator('h1')).toBeVisible();
 });
+
+test('E2E-1 wiki "관련 개념" respects direction and status @seed', async ({ page }) => {
+  const data = graph();
+  const MHA = 'method:multi-head-attention';
+  await page.goto('wiki/scaled-dot-product-attention/');
+  const ids = (selector: string, predicate = '') =>
+    page
+      .getByTestId('related')
+      .locator(`${selector} li[data-node-id]${predicate}`)
+      .evaluateAll((items) => [...new Set(items.map((item) => item.getAttribute('data-node-id')))]);
+  const sorted = (values: (string | null)[]) => [...values].sort();
+
+  const hard = await ids('[data-testid=related-prerequisites]', '[data-predicate=PREREQUISITE_OF]');
+  expect(sorted(hard), 'prerequisites = verified PREREQUISITE_OF claims into SDPA').toEqual(
+    sorted(data.hardPrerequisites(SDPA)),
+  );
+  const soft = await ids(
+    '[data-testid=related-prerequisites]',
+    '[data-predicate=RECOMMENDED_BEFORE]',
+  );
+  expect(sorted(soft)).toEqual(sorted(data.softPrerequisites(SDPA)));
+  const all = await ids('[data-testid=related-prerequisites]');
+  expect(all).not.toContain(MHA);
+  for (const unverified of data.unverifiedPrerequisites(SDPA))
+    expect(all).not.toContain(unverified);
+
+  expect(await ids('[data-testid=related-dependents]')).toContain(MHA);
+  await expect(page.getByTestId('related-prerequisites')).toContainText('먼저 알아야 할 개념');
+  await expect(page.getByTestId('related-dependents')).toContainText('바탕으로 하는');
+});

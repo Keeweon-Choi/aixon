@@ -9,6 +9,7 @@ import Lab from '../../components/wiki/Lab.astro';
 import Level from '../../components/wiki/Level.astro';
 import Section from '../../components/wiki/Section.astro';
 import { claimPath, entityPath, getGraph } from '../../lib/graph';
+import { dimensionLabels } from '../../lib/badges';
 import { url } from '../../lib/url';
 const graph = getGraph();
 interface Props {
@@ -27,12 +28,6 @@ const sectionTitles: Record<string, string> = {
   related: '관련 개념',
   references: '참고문헌과 근거',
 };
-const relatedLabels: Record<string, string> = {
-  PREREQUISITE_OF: '선수 지식',
-  RECOMMENDED_BEFORE: '권장 선수 지식',
-  PART_OF: '부분/전체',
-  IS_A: '상위 개념',
-};
 export async function getStaticPaths() {
   const current = getGraph();
   return (await getCollection('wiki'))
@@ -41,11 +36,42 @@ export async function getStaticPaths() {
 }
 const entry: any = Astro.props.entry;
 const { Content } = await render(entry);
-const related = Object.values(graph.claims).filter(
+const E = String(entry.data.entity);
+// Only verified claims whose other end is visible; direction decides the group (docs/02 section 6).
+const relatedClaims = Object.values(graph.claims).filter(
   (claim) =>
-    (claim.subject === entry.data.entity || claim.object === entry.data.entity) &&
-    ['PREREQUISITE_OF', 'RECOMMENDED_BEFORE', 'PART_OF', 'IS_A'].includes(String(claim.predicate)),
+    claim.status === 'verified' &&
+    graph.isVisible('entity', String(claim.subject)) &&
+    graph.isVisible('entity', String(claim.object)),
 );
+const into = (predicates: string[]) =>
+  relatedClaims.filter(
+    (claim) => claim.object === E && predicates.includes(String(claim.predicate)),
+  );
+const outOf = (predicates: string[]) =>
+  relatedClaims.filter(
+    (claim) => claim.subject === E && predicates.includes(String(claim.predicate)),
+  );
+const prerequisiteClaims = into(['PREREQUISITE_OF', 'RECOMMENDED_BEFORE']);
+const prerequisiteGroups = Object.entries(
+  Object.groupBy(prerequisiteClaims, (claim) =>
+    String((claim.qualifiers as Record<string, unknown> | undefined)?.for_dimension || 'explain'),
+  ),
+);
+const relatedGroups = [
+  [
+    'related-dependents',
+    '이 개념을 바탕으로 하는 개념',
+    outOf(['PREREQUISITE_OF', 'RECOMMENDED_BEFORE']),
+    'object',
+  ],
+  ['related-parts', '구성 요소', into(['PART_OF']), 'subject'],
+  ['related-wholes', '이것이 들어가는 구조', outOf(['PART_OF']), 'object'],
+  ['related-subtypes', '하위 개념', into(['IS_A']), 'subject'],
+  ['related-supertypes', '상위 개념', outOf(['IS_A']), 'object'],
+] as const;
+const displayName = (id: string) =>
+  String(graph.entities[id]?.name || graph.entities[id]?.title || id);
 const references = [
   ...entry.data.sources.filter((id) => graph.isVisible('source', id)),
   ...entry.data.claims.filter((id) => graph.isVisible('claim', id)),
@@ -98,20 +124,43 @@ const review = entry.data.review;
     <Content components={{ Section, Level, ConceptLink, Cite, Callout, Figure, Lab }} />
     <section data-testid="related">
       <h2>관련 개념</h2>
-      <ul>
-        {related.map((claim) => {
-          const other =
-            claim.subject === entry.data.entity ? String(claim.object) : String(claim.subject);
-          return (
-            <li>
-              {relatedLabels[String(claim.predicate)] || claim.predicate}:{' '}
-              <a href={url(entityPath(other, graph))}>
-                {String(graph.entities[other]?.name || graph.entities[other]?.title || other)}
-              </a>
-            </li>
-          );
-        })}
-      </ul>
+      {prerequisiteClaims.length > 0 && (
+        <section data-testid="related-prerequisites">
+          <h3>먼저 알아야 할 개념</h3>
+          {prerequisiteGroups.map(([dimension, rows]) => (
+            <>
+              <h4>{dimensionLabels[dimension] || dimension}</h4>
+              <ul>
+                {rows?.map((claim) => (
+                  <li data-node-id={String(claim.subject)} data-predicate={String(claim.predicate)}>
+                    <a href={url(entityPath(String(claim.subject), graph))}>
+                      {displayName(String(claim.subject))}
+                    </a>
+                    {claim.predicate === 'RECOMMENDED_BEFORE' && ' · 권장'}
+                  </li>
+                ))}
+              </ul>
+            </>
+          ))}
+        </section>
+      )}
+      {relatedGroups
+        .filter(([, , rows]) => rows.length > 0)
+        .map(([testid, label, rows, end]) => (
+          <section data-testid={testid}>
+            <h3>{label}</h3>
+            <ul>
+              {rows.map((claim) => (
+                <li data-node-id={String(claim[end])} data-predicate={String(claim.predicate)}>
+                  <a href={url(entityPath(String(claim[end]), graph))}>
+                    {displayName(String(claim[end]))}
+                  </a>
+                  {claim.predicate === 'RECOMMENDED_BEFORE' && ' · 권장'}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
     </section>
     <section data-testid="references">
       <h2>참고문헌과 근거</h2>

@@ -51,3 +51,11 @@ export const entityTypeLabels: Record<string, string> = {
   AssessmentItem: '평가 문항',
   LabExperiment: '실험실',
 };
+
+export const dimensionLabels: Record<string, string> = {
+  recognize: '알아봄',
+  explain: '설명',
+  derive: '유도',
+  implement: '구현',
+  analyze: '분석',
+};
