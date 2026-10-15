@@ -177,7 +177,7 @@ R-03, R-06, R-10, R-13의 PARTIAL은 수정 뒤 PASS로 올렸다. 근거는 수
 git clone <저장소> aixon-clean && cd aixon-clean
 git checkout ab363f0
 npm ci
-python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt
+uv venv --python 3.12 .venv && uv pip install -r requirements-dev.txt
 make verify
 ```
 

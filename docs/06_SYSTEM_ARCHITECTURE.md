@@ -19,7 +19,7 @@
 
 품질 속성 우선순위: **정확성(결정성·근거 추적) > 유지보수성 > 학습 흐름 속도 > 확장성**.
 
-현재 개발 환경(2026-10-15 확인): Node 22.23.2, pnpm, Python 3.12.7(anaconda), SQLite 3.45.3(FTS5 trigram 사용 가능). Docker·PostgreSQL·uv는 설치되어 있지 않다. 이 설계는 Docker와 PostgreSQL이 **필요하지 않다**.
+현재 개발 환경(2026-10-15 확인): Node 22.23.2, pnpm, Python 3.12.15(uv가 받은 Python으로 만든 `.venv`, Anaconda는 쓰지 않는다), SQLite 3.53.1(FTS5 trigram 사용 가능). Docker·PostgreSQL은 설치되어 있지 않다. 이 설계는 Docker와 PostgreSQL이 **필요하지 않다**.
 
 ---
 

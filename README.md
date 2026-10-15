@@ -9,10 +9,11 @@ AIXON v0.1은 AI 연구 지식을 근거와 함께 탐색하는 **Knowledge Atla
 
 ## 빠른 시작
 
-필요한 것: Node 22, Python 3.12, GNU make.
+필요한 것: Node 22, [uv](https://docs.astral.sh/uv/)(Python 3.12를 uv가 받는다), GNU make.
 
 ```bash
-make install                 # npm ci + Python 의존성 확인 (pip install -r requirements-dev.txt는 직접)
+uv venv --python 3.12 .venv && uv pip install -r requirements-dev.txt   # Python 의존성(requirements-dev.in을 uv pip compile로 고정)
+make install                 # npm ci + Python 의존성 확인
 make build                   # 미리보기 빌드(dist/) + Pagefind 색인
 npx astro preview            # http://localhost:4321/
 make verify                  # 전체 검증 (아래 "검증" 참고)
