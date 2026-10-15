@@ -67,11 +67,19 @@ export async function quickSearch(page: Page, query: string): Promise<void> {
 
 /** Switch a graph view to the table or the canvas; both are required by the contract. */
 export async function showView(page: Page, view: 'graph' | 'list'): Promise<void> {
+  // The default view (list on narrow screens) is decided after hydration and data loading.
+  await expect(page.locator('[data-node-id]').first()).toBeAttached();
   const list = page.getByTestId('graph-list');
   const showingList = await list.isVisible();
   if ((view === 'list') !== showingList) await page.getByTestId('list-toggle').click();
   if (view === 'list') await expect(list).toBeVisible();
   else await expect(list).toBeHidden();
+}
+
+/** Zoom the canvas so every node is inside the viewport, as a user would with the fit-view control. */
+export async function fitView(page: Page): Promise<void> {
+  const control = page.locator('.react-flow__controls-fitview');
+  if (await control.isVisible()) await control.click();
 }
 
 /** Expand a field node (progressive expansion) and wait for aria-expanded to say so. */

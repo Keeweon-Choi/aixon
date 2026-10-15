@@ -11,7 +11,7 @@ import {
   WIKI_DIR,
   publicOrigin,
 } from './support/env';
-import { claimPath, entityPath, graph, humanApproved, wikiPath } from './support/data';
+import { claimPath, entityPath, graph, wikiPath } from './support/data';
 
 /**
  * The public build of the fixture data (dist-public-e2e, AIXON_BUILD=public) must contain only what
@@ -28,49 +28,100 @@ function htmlFiles(directory: string): string[] {
   });
 }
 
-const approved = () => graph().claims.filter(humanApproved);
-const unapproved = () => graph().claims.filter((claim) => !humanApproved(claim));
+/**
+ * ADR-021: the public set of the fixture is decided by tools/public_gate.py (human approvals bound
+ * to content hashes). Exactly these four records are public; everything else must be absent.
+ */
+const PUBLIC = {
+  entities: ['model:transformer', 'paper:fixture-attention-2017'],
+  claims: ['clm:intro-transformer'],
+  wiki: ['transformer'],
+};
+const GATE_FILE = '.aixon/public-gate-e2e.json';
+const SOURCE_TYPES = ['Source', 'Claim'];
 
-test('E2E-9 the fixture has exactly one human-approved claim', () => {
-  expect(approved().map((claim) => claim.id)).toEqual(['clm:intro-transformer']);
-  expect(unapproved().length).toBeGreaterThan(5);
+const pageEntities = () =>
+  [...graph().entities.keys()].filter((id) => !SOURCE_TYPES.includes(graph().types.get(id) ?? ''));
+const hiddenEntities = () => pageEntities().filter((id) => !PUBLIC.entities.includes(id));
+const hiddenClaims = () =>
+  graph()
+    .claims.map((claim) => claim.id)
+    .filter((id) => !PUBLIC.claims.includes(id));
+const wikiSlugs = () =>
+  fs
+    .readdirSync(WIKI_DIR)
+    .filter((name) => name.endsWith('.mdx'))
+    .map((name) => name.replace(/\.mdx$/, ''));
+const hiddenWiki = () => wikiSlugs().filter((slug) => !PUBLIC.wiki.includes(slug));
+
+interface PublicGraph {
+  build: string;
+  nodes: Array<{ id: string }>;
+  edges: Array<{ id: string; kind: string }>;
+}
+
+test('E2E-9 the gate publishes exactly the four human-approved records', () => {
+  const gate = JSON.parse(fs.readFileSync(GATE_FILE, 'utf8'));
+  expect(gate.errors).toEqual([]);
+  expect([...gate.entities].sort()).toEqual([...PUBLIC.entities].sort());
+  expect(gate.claims).toEqual(PUBLIC.claims);
+  expect(gate.wiki).toEqual(PUBLIC.wiki.map((slug) => `wiki:${slug}`));
+  expect(hiddenEntities().length).toBeGreaterThan(5);
+  expect(hiddenClaims().length).toBeGreaterThan(5);
+  expect(hiddenWiki()).toEqual(['scaled-dot-product-attention']);
 });
 
-test('E2E-9 only the approved claim has a page; unapproved claims answer 404', async ({
+test('E2E-9 only the approved claim has a page; every other claim answers 404', async ({
   request,
 }) => {
   const folders = fs.existsSync(`${DIST.public}/claims`)
     ? fs.readdirSync(`${DIST.public}/claims`)
     : [];
-  expect(folders.sort()).toEqual(
-    approved()
-      .map((claim) => claim.id.replace(/^clm:/, ''))
-      .sort(),
-  );
+  expect(folders.sort()).toEqual(PUBLIC.claims.map((id) => id.replace(/^clm:/, '')).sort());
 
-  for (const claim of approved()) {
-    expect((await request.get(url(claimPath(claim.id)))).status(), claim.id).toBe(200);
+  for (const id of PUBLIC.claims) {
+    expect((await request.get(url(claimPath(id)))).status(), id).toBe(200);
   }
-  for (const claim of unapproved()) {
-    expect((await request.get(url(claimPath(claim.id)))).status(), claim.id).toBe(404);
+  for (const id of hiddenClaims()) {
+    expect((await request.get(url(claimPath(id)))).status(), id).toBe(404);
   }
 });
 
-test('E2E-9 an approval by an agent does not publish a claim', async ({ request }) => {
-  const trap = graph().claim('clm:intro-vit');
-  expect(trap.review?.decision).toBe('approve');
-  expect(String(trap.review?.by)).toMatch(/^agent:/);
-  expect((await request.get(url(claimPath(trap.id)))).status()).toBe(404);
-  const json = await (await request.get(url('graph.json'))).json();
-  expect(json.edges.map((edge: { id: string }) => edge.id)).not.toContain(trap.id);
-});
-
-test('E2E-9 the draft wiki is absent, the published and reviewed one is present', async ({
-  page,
+test('E2E-9 only approved entities and wiki documents have pages; the rest answer 404', async ({
   request,
 }) => {
-  expect((await request.get(url(wikiPath('scaled-dot-product-attention')))).status()).toBe(404);
+  for (const id of PUBLIC.entities) {
+    expect((await request.get(url(entityPath(id)))).status(), id).toBe(200);
+  }
+  for (const id of hiddenEntities()) {
+    expect((await request.get(url(entityPath(id)))).status(), id).toBe(404);
+  }
+  for (const slug of PUBLIC.wiki) {
+    expect((await request.get(url(wikiPath(slug)))).status(), slug).toBe(200);
+  }
+  for (const slug of hiddenWiki()) {
+    expect((await request.get(url(wikiPath(slug)))).status(), slug).toBe(404);
+  }
+});
 
+test('E2E-9 graph.json and node-index.json list only approved nodes and claims', async ({
+  request,
+}) => {
+  const json = (await (await request.get(url('graph.json'))).json()) as PublicGraph;
+  expect(json.build).toBe('public');
+  expect(json.nodes.map((item) => item.id).sort()).toEqual([...PUBLIC.entities].sort());
+  const claimEdges = json.edges.filter((edge) => edge.kind === 'claim');
+  expect(claimEdges.map((edge) => edge.id)).toEqual(PUBLIC.claims);
+
+  const index = (await (await request.get(url('node-index.json'))).json()) as Array<{
+    id: string;
+  }>;
+  expect(index.map((item) => item.id).sort()).toEqual([...PUBLIC.entities].sort());
+});
+
+test('E2E-9 the published wiki has no draft banner; its claim citation links to the claim page', async ({
+  page,
+}) => {
   await page.goto(url(wikiPath('transformer')));
   await expect(page.locator('h1')).toHaveText('Transformer');
   await expect(page.getByTestId('status-banner')).toContainText('검토 완료');
@@ -82,40 +133,35 @@ test('E2E-9 the draft wiki is absent, the published and reviewed one is present'
   await expect(claimLink, 'the citation of the approved claim links to its page').toBeVisible();
 });
 
-test('E2E-9 no emitted file mentions the draft banner or the draft document', () => {
+test('E2E-9 no emitted file mentions the draft banner, the draft document or a hidden record', () => {
   const pages = htmlFiles(DIST.public);
   expect(pages.length).toBeGreaterThan(0);
-  for (const file of pages) {
+  const hiddenSummaries = hiddenEntities()
+    .map((id) => String(graph().entity(id).summary ?? ''))
+    .filter(Boolean);
+  expect(hiddenSummaries.length).toBeGreaterThan(5);
+  const emitted = [...pages, `${DIST.public}/graph.json`, `${DIST.public}/node-index.json`];
+  for (const file of emitted) {
     const text = fs.readFileSync(file, 'utf8');
     expect(text, file).not.toContain(DRAFT_BANNER);
     expect(text, file).not.toContain(FIXTURE_UNIQUE_WORD);
+    for (const summary of hiddenSummaries) expect(text, file).not.toContain(summary);
   }
 });
 
-test('E2E-9 graph.json has no unapproved claim edge and says it is public', async ({ request }) => {
-  const json = await (await request.get(url('graph.json'))).json();
-  expect(json.build).toBe('public');
-  const edges = json.edges.filter((edge: { kind: string }) => edge.kind === 'claim');
-  expect(edges.map((edge: { id: string }) => edge.id).sort()).toEqual(
-    approved().map((claim) => claim.id),
-  );
-});
-
-test('E2E-9 unapproved AI summaries are replaced by "준비 중"', async ({ page }) => {
+test('E2E-9 an approved entity shows its summary; the 404 page stands in for a hidden one', async ({
+  page,
+}) => {
   const data = graph();
-  const approvedSummary = data.entity('model:transformer');
   await page.goto(url(entityPath('model:transformer')));
-  await expect(page.locator('main')).toContainText(String(approvedSummary.summary));
-
-  const hidden = data.entity('model:vit');
-  await page.goto(url(entityPath('model:vit')));
-  await expect(page.locator('h1')).toHaveText(data.name('model:vit'));
-  await expect(page.locator('main')).toContainText('준비 중');
-  await expect(page.locator('main')).not.toContainText(String(hidden.summary));
-  await expect(page.locator('meta[name=description]')).not.toHaveAttribute(
-    'content',
-    new RegExp(String(hidden.summary).slice(0, 12)),
+  await expect(page.locator('main')).toContainText(
+    String(data.entity('model:transformer').summary),
   );
+
+  const response = await page.goto(url(entityPath('model:vit')));
+  expect(response?.status()).toBe(404);
+  await expect(page.locator('h1')).toHaveText('페이지를 찾을 수 없습니다');
+  await expect(page.locator('body')).not.toContainText(String(data.entity('model:vit').summary));
 });
 
 test('E2E-9 robots.txt allows indexing and lists the sitemap; the sitemap omits unpublished pages', async ({
@@ -134,12 +180,13 @@ test('E2E-9 robots.txt allows indexing and lists the sitemap; the sitemap omits 
     const body = await (await request.get(url(sitemap.split('/').pop() as string))).text();
     locations.push(...[...body.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]));
   }
-  expect(locations).toContain(`${SITE}${BASE_PATH}wiki/transformer/`);
-  expect(
-    locations.filter((location) => location.includes('/scaled-dot-product-attention/')),
-  ).toEqual([`${SITE}${BASE_PATH}e/method/scaled-dot-product-attention/`]);
-  for (const claim of unapproved())
-    expect(locations).not.toContain(`${SITE}${BASE_PATH}${claimPath(claim.id)}`);
+  const at = (relative: string) => `${SITE}${BASE_PATH}${relative}`;
+  expect(locations).toContain(at(wikiPath('transformer')));
+  for (const id of PUBLIC.entities) expect(locations).toContain(at(entityPath(id)));
+  for (const id of PUBLIC.claims) expect(locations).toContain(at(claimPath(id)));
+  for (const id of hiddenEntities()) expect(locations).not.toContain(at(entityPath(id)));
+  for (const id of hiddenClaims()) expect(locations).not.toContain(at(claimPath(id)));
+  for (const slug of hiddenWiki()) expect(locations).not.toContain(at(wikiPath(slug)));
 });
 
 test('E2E-9 the search index of the public build does not know the draft', async ({ page }) => {

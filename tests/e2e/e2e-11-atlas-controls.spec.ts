@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { graph, nodeAnchor } from './support/data';
-import { claimElement, expandField, node, showView } from './support/ui';
+import { claimElement, expandField, fitView, node, showView } from './support/ui';
 
 /**
  * Not a scenario of docs/CONTENT_VALIDATION_PLAN.md: it exercises the Atlas controls of the
@@ -62,6 +62,7 @@ test('E2E-11 selecting a node fills the panel with its name and links', async ({
 
   await expandField(page, NLP);
   await expandField(page, MACHINE_TRANSLATION);
+  await fitView(page);
   await node(page, 'method:scaled-dot-product-attention').click();
   await expect(panel.locator('h2')).toHaveText(data.name('method:scaled-dot-product-attention'));
   await expect(panel.getByTestId('panel-wiki-link'), 'SDPA has a wiki').toHaveAttribute(
@@ -74,6 +75,7 @@ test('E2E-11 an #node- anchor opens the Atlas with the chain of fields expanded'
   page,
 }) => {
   await page.goto(`atlas/${nodeAnchor('concept:softmax')}`);
+  await page.reload(); // beforeEach already opened atlas/: a hash-only goto does not reload the page
   await expect(node(page, 'concept:softmax')).toBeVisible();
   await expect(node(page, ML)).toHaveAttribute('aria-expanded', 'true');
   await expect(node(page, DL)).toHaveAttribute('aria-expanded', 'true');
