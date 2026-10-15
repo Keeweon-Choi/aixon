@@ -1,0 +1,145 @@
+{
+  "run_id": "20261015T034011Z",
+  "started_at": "2026-10-15T03:40:11Z",
+  "finished_at": "2026-10-15T03:42:55Z",
+  "duration_s": 164.44,
+  "status": "FAIL",
+  "git": {
+    "commit": "118eb3600638c54ac12b194c3dc888081b2ef296",
+    "branch": "HEAD",
+    "dirty": false
+  },
+  "versions": {
+    "node": "v22.23.2",
+    "python": "3.12.7",
+    "playwright": "1.64.1",
+    "make": "GNU Make 4.3"
+  },
+  "os": {
+    "system": "Linux",
+    "release": "6.18.54.1-microsoft-standard-WSL2",
+    "machine": "x86_64",
+    "platform": "Linux-6.18.54.1-microsoft-standard-WSL2-x86_64-with-glibc2.35"
+  },
+  "steps": [
+    {
+      "name": "lint",
+      "command": "make lint",
+      "exit_code": 0,
+      "status": "PASS",
+      "duration_s": 7.38,
+      "log": "logs/01-lint.log"
+    },
+    {
+      "name": "typecheck",
+      "command": "make typecheck",
+      "exit_code": 0,
+      "status": "PASS",
+      "duration_s": 13.4,
+      "log": "logs/02-typecheck.log"
+    },
+    {
+      "name": "test",
+      "command": "make test",
+      "exit_code": 0,
+      "status": "PASS",
+      "duration_s": 19.5,
+      "log": "logs/03-test.log"
+    },
+    {
+      "name": "validate",
+      "command": "make validate",
+      "exit_code": 0,
+      "status": "PASS",
+      "duration_s": 1.77,
+      "log": "logs/04-validate.log"
+    },
+    {
+      "name": "validate-fixtures",
+      "command": "make validate-fixtures",
+      "exit_code": 0,
+      "status": "PASS",
+      "duration_s": 0.32,
+      "log": "logs/05-validate-fixtures.log"
+    },
+    {
+      "name": "build",
+      "command": "make build",
+      "exit_code": 0,
+      "status": "PASS",
+      "duration_s": 2.85,
+      "log": "logs/06-build.log"
+    },
+    {
+      "name": "check-dist",
+      "command": "make check-dist",
+      "exit_code": 0,
+      "status": "PASS",
+      "duration_s": 0.47,
+      "log": "logs/07-check-dist.log"
+    },
+    {
+      "name": "build-public",
+      "command": "make build-public",
+      "exit_code": 0,
+      "status": "PASS",
+      "duration_s": 2.28,
+      "log": "logs/08-build-public.log"
+    },
+    {
+      "name": "check-dist-public",
+      "command": "make check-dist-public",
+      "exit_code": 0,
+      "status": "PASS",
+      "duration_s": 0.47,
+      "log": "logs/09-check-dist-public.log"
+    },
+    {
+      "name": "e2e",
+      "command": "make e2e",
+      "exit_code": 2,
+      "status": "FAIL",
+      "duration_s": 43.55,
+      "log": "logs/10-e2e.log"
+    },
+    {
+      "name": "e2e-seed",
+      "command": "make e2e-seed",
+      "exit_code": 2,
+      "status": "FAIL",
+      "duration_s": 67.43,
+      "log": "logs/11-e2e-seed.log"
+    },
+    {
+      "name": "check-dist-seed",
+      "command": "make check-dist-seed",
+      "exit_code": 0,
+      "status": "PASS",
+      "duration_s": 1.47,
+      "log": "logs/12-check-dist-seed.log"
+    },
+    {
+      "name": "secrets",
+      "command": "make secrets",
+      "exit_code": 0,
+      "status": "PASS",
+      "duration_s": 3.22,
+      "log": "logs/13-secrets.log"
+    }
+  ],
+  "evidence": {
+    "graph_validation": "graph-validation.json",
+    "reports": [
+      "test-results/playwright-fixture.json",
+      "test-results/playwright-seed.json"
+    ],
+    "screenshots": [
+      "screenshots/fixture/e2e-11-atlas-controls-E2E--0198c-mbers-collapsing-hides-them-desktop__test-failed-1.png",
+      "screenshots/seed/e2e-10-vit-journey-E2E-10--2ffaf--the-Dosovitskiy-2020-paper-desktop__test-failed-1.png"
+    ],
+    "traces": [
+      "playwright-traces/fixture/e2e-11-atlas-controls-E2E--0198c-mbers-collapsing-hides-them-desktop.zip",
+      "playwright-traces/seed/e2e-10-vit-journey-E2E-10--2ffaf--the-Dosovitskiy-2020-paper-desktop.zip"
+    ]
+  }
+}
