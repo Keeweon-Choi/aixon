@@ -3,9 +3,16 @@
 from __future__ import annotations
 
 import json
+import shutil
+import sys
+from pathlib import Path
 
 import pytest
 from conftest import FIXTURE_GRAPH, FIXTURE_WIKI
+
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "tools"))
+import review  # noqa: E402
 
 SITE = "http://127.0.0.1:4329"
 BASE = "/aixon/"
@@ -89,12 +96,15 @@ def make_dist(root, mode="preview", extra_pages=()):
 def audit(run_tool):
     """Return audit(dist, mode="preview", *extra args) -> (exit code, JSON report)."""
 
-    def run(dist, mode="preview", *extra):
+    def run(dist, mode="preview", *extra, graph=FIXTURE_GRAPH, wiki_dir=FIXTURE_WIKI, gate=None):
         args = [dist, "--base", BASE, "--site", SITE, "--mode", mode, "--json"]
         if mode == "public":
-            args += ["--graph", FIXTURE_GRAPH, "--wiki-dir", FIXTURE_WIKI]
+            args += ["--graph", graph, "--wiki-dir", wiki_dir]
+            if gate is not None:
+                args += ["--gate", gate]
         result = run_tool("check_dist.py", *args, *extra)
-        report = json.loads(result.stdout) if result.stdout.strip().startswith("{") else None
+        assert result.stdout.strip().startswith("{"), result.stderr
+        report = json.loads(result.stdout)
         return result.returncode, report
 
     return run
@@ -246,76 +256,113 @@ def test_missing_dist_is_a_setup_error(tmp_path, run_tool):
     assert "dist directory not found" in result.stderr
 
 
-def public_extra_pages():
-    """Return the pages a clean public build contains in addition to the base tree."""
-    return [
-        ("claims/intro-transformer/index.html", page("근거: 승인된 Claim")),
-        ("wiki/transformer/index.html", page("Transformer", "사람 검토 완료")),
-        ("e/model/transformer/index.html", page("Transformer", f"<p>{TRANSFORMER_SUMMARY}</p>")),
-    ]
+@pytest.fixture
+def public_inputs(tmp_path):
+    """A throwaway graph/wiki pair approved through the real review helpers."""
+    graph = tmp_path / "graph.yaml"
+    wiki_dir = tmp_path / "wiki"
+    shutil.copy(FIXTURE_GRAPH, graph)
+    shutil.copytree(FIXTURE_WIKI, wiki_dir)
+    paths = [str(graph)]
+    for ident in ("paper:fixture-attention-2017", "model:transformer", "clm:intro-transformer"):
+        review.approve_record(paths, ident, "human:test-reviewer", "test", ["support"], "2026-10-15")
+    review.approve_wiki(wiki_dir / "transformer.mdx", "human:test-reviewer", "test", "2026-10-15")
+    return graph, wiki_dir
 
 
 def make_public_dist(root, extra=()):
-    """Write a clean public build: approved claim, published wiki, approved summary."""
-    dist = make_dist(root, "public", [*public_extra_pages(), *extra])
+    """Write a clean tree with one public claim and its two public endpoints."""
+    dist = make_dist(root, "public", extra)
+    write(dist, "e/model/vit/index.html", page("이동", '<meta http-equiv="refresh" content="0; url=/aixon/">'))
+    home = (dist / "index.html")
+    home.write_text(home.read_text(encoding="utf8").replace('e/model/vit/', 'e/model/transformer/'), encoding="utf8")
+    write(dist, "claims/intro-transformer/index.html", page("근거: 승인된 Claim"))
+    write(dist, "wiki/transformer/index.html", page("Transformer", "사람 검토 완료"))
+    write(dist, "e/model/transformer/index.html", page("Transformer", f"<p>{TRANSFORMER_SUMMARY}</p>"))
+    write(dist, "e/paper/fixture-attention-2017/index.html", page("Fixture Attention 2017"))
     graph = {
         "build": "public",
-        "nodes": [{"id": "model:transformer", "summary": TRANSFORMER_SUMMARY}],
-        "edges": [{"id": "clm:intro-transformer", "kind": "claim", "predicate": "INTRODUCES"}],
+        "nodes": [{"id": "model:transformer", "summary": TRANSFORMER_SUMMARY}, {"id": "paper:fixture-attention-2017"}],
+        "edges": [{"id": "clm:intro-transformer", "kind": "claim", "predicate": "INTRODUCES", "source": "paper:fixture-attention-2017", "target": "model:transformer"}],
     }
     write(dist, "graph.json", json.dumps(graph, ensure_ascii=False))
     return dist
 
 
-def test_clean_public_tree_passes(tmp_path, audit):
-    exit_code, report = audit(make_public_dist(tmp_path), "public")
+    write(dist, "node-index.json", json.dumps([{"id": "model:transformer"}, {"id": "paper:fixture-attention-2017"}]))
+    return dist
+
+
+def test_clean_public_tree_passes(tmp_path, audit, public_inputs):
+    graph, wiki_dir = public_inputs
+    exit_code, report = audit(make_public_dist(tmp_path / "dist"), "public", graph=graph, wiki_dir=wiki_dir)
     assert exit_code == 0, report["errors"]
 
 
-PUBLIC_FAILURES = {
-    "draft-banner": (
-        mutate_append_to_home("<p>검토 전 초안 · AI 작성</p>"), "V-PUBLIC", "검토 전 초안"),
-    "claim-page-without-approval": (
-        mutate_write("claims/vit-adapts-transformer/index.html", page("근거")), "V-PUBLIC", "without a human approval"),
-    "claim-page-approved-only-by-an-agent": (
-        mutate_write("claims/intro-vit/index.html", page("근거")), "V-PUBLIC", "without a human approval"),
-    "claim-page-for-an-unknown-claim": (
-        mutate_write("claims/ghost/index.html", page("근거")), "V-PUBLIC", "without a human approval"),
-    "graph-json-with-an-unapproved-claim-edge": (
-        mutate_write(
-            "graph.json",
-            json.dumps({"build": "public", "nodes": [], "edges": [{"id": "clm:vit-adapts-transformer", "kind": "claim"}]}),
-        ),
-        "V-PUBLIC", "not a human-approved claim"),
-    "graph-json-built-in-preview-mode": (
-        mutate_write("graph.json", json.dumps({"build": "preview", "nodes": [], "edges": []})), "V-PUBLIC", "build is"),
-    "wiki-page-of-a-draft-document": (
-        mutate_write("wiki/scaled-dot-product-attention/index.html", page("초안")), "V-PUBLIC", "published, human-reviewed"),
-    "wiki-page-without-a-document": (
-        mutate_write("wiki/ghost/index.html", page("유령")), "V-PUBLIC", "published, human-reviewed"),
-    "unapproved-ai-summary-on-a-page": (
-        mutate_write("e/model/vit/index.html", page("ViT", f"<p>{VIT_SUMMARY}</p>")), "V-PUBLIC", "unapproved AI summary"),
-    "unapproved-ai-summary-in-graph-json": (
-        mutate_write(
-            "graph.json",
-            json.dumps({"build": "public", "nodes": [{"id": "model:vit", "summary": VIT_SUMMARY}], "edges": []}, ensure_ascii=False),
-        ),
-        "V-PUBLIC", "unapproved AI summary"),
-    "public-robots-disallows-everything": (
-        mutate_write("robots.txt", "User-agent: *\nDisallow: /\n"), "V-SEO", "must not contain"),
-    "public-robots-without-sitemap": (
-        mutate_write("robots.txt", "User-agent: *\nAllow: /\n"), "V-SEO", "sitemap-index.xml"),
-}
+@pytest.mark.parametrize("claim", ["clm:vit-adapts-transformer", "clm:intro-vit"])
+def test_public_claim_outside_gate_fails(tmp_path, audit, public_inputs, claim):
+    graph, wiki_dir = public_inputs
+    dist = make_public_dist(tmp_path / "dist")
+    write(dist, f"claims/{claim.split(':', 1)[1]}/index.html", page("근거"))
+    exit_code, report = audit(dist, "public", graph=graph, wiki_dir=wiki_dir)
+    assert exit_code == 1
+    assert has_error(report, "V-PUBLIC", f"{claim} is published but not in the public gate")
 
 
-@pytest.mark.parametrize("name", sorted(PUBLIC_FAILURES))
-def test_public_failure(name, tmp_path, audit):
-    mutation, code, needle = PUBLIC_FAILURES[name]
-    dist = make_public_dist(tmp_path)
-    mutation(dist)
-    exit_code, report = audit(dist, "public")
-    assert exit_code == 1, f"{name} was not detected"
-    assert has_error(report, code, needle), report["errors"]
+def test_agent_signed_and_stale_claims_are_not_public(tmp_path, audit, public_inputs):
+    graph, wiki_dir = public_inputs
+    review.approve_record([str(graph)], "clm:intro-vit", "human:test-reviewer", "bad", [], "2026-10-15")
+    graph.write_text(graph.read_text(encoding="utf8").replace("by: human:test-reviewer", "by: agent:trap", 1), encoding="utf8")
+    dist = make_public_dist(tmp_path / "agent")
+    write(dist, "claims/intro-vit/index.html", page("근거"))
+    assert has_error(audit(dist, "public", graph=graph, wiki_dir=wiki_dir)[1], "V-PUBLIC", "clm:intro-vit is published")
+    review.approve_record([str(graph)], "clm:vit-adapts-transformer", "human:test-reviewer", "test", [], "2026-10-15")
+    graph.write_text(graph.read_text(encoding="utf8").replace("ViT가 Transformer", "수정된 ViT가 Transformer"), encoding="utf8")
+    stale = make_public_dist(tmp_path / "stale")
+    write(stale, "claims/vit-adapts-transformer/index.html", page("근거"))
+    assert has_error(audit(stale, "public", graph=graph, wiki_dir=wiki_dir)[1], "V-PUBLIC", "clm:vit-adapts-transformer is published")
+
+
+@pytest.mark.parametrize(
+    ("relative", "content", "needle"),
+    [
+        ("graph.json", json.dumps({"build": "public", "nodes": [{"id": "model:vit"}], "edges": []}), "node model:vit"),
+        ("graph.json", json.dumps({"build": "public", "nodes": [], "edges": [{"id": "clm:intro-vit", "kind": "claim", "source": "model:transformer", "target": "model:transformer"}]}), "edge clm:intro-vit"),
+        ("node-index.json", json.dumps([{"id": "model:vit"}]), "model:vit is not in the public gate"),
+        ("e/model/vit/index.html", page("ViT"), "model:vit is published"),
+        ("fields/machine-learning/index.html", page("분야"), "field:machine-learning is published"),
+        ("wiki/scaled-dot-product-attention/index.html", page("초안"), "wiki:scaled-dot-product-attention is published"),
+    ],
+)
+def test_public_records_outside_gate_fail(tmp_path, audit, public_inputs, relative, content, needle):
+    graph, wiki_dir = public_inputs
+    dist = make_public_dist(tmp_path / "dist")
+    write(dist, relative, content)
+    exit_code, report = audit(dist, "public", graph=graph, wiki_dir=wiki_dir)
+    assert exit_code == 1
+    assert has_error(report, "V-PUBLIC", needle)
+
+
+@pytest.mark.parametrize("snippet,code", [("<button onclick=\"x()\">x</button>", "V-SEC"), ("<a href=\"javascript:alert(1)\">x</a>", "V-SEC"), ("<img src=\"https://cdn.example/x.png\" alt=\"x\">", "V-NO-CDN")])
+def test_public_security_and_cdn_failures(tmp_path, audit, public_inputs, snippet, code):
+    graph, wiki_dir = public_inputs
+    dist = make_public_dist(tmp_path / "dist")
+    mutate_append_to_home(snippet)(dist)
+    exit_code, report = audit(dist, "public", graph=graph, wiki_dir=wiki_dir)
+    assert exit_code == 1
+    assert any(error["code"] == code for error in report["errors"])
+
+
+def test_stale_gate_file_and_taint_fail(tmp_path, audit, public_inputs):
+    graph, wiki_dir = public_inputs
+    dist = make_public_dist(tmp_path / "dist")
+    gate = tmp_path / "gate.json"
+    gate.write_text(json.dumps({"entities": [], "claims": [], "wiki": [], "sources": []}), encoding="utf8")
+    mutate_append_to_home(VIT_SUMMARY)(dist)
+    exit_code, report = audit(dist, "public", graph=graph, wiki_dir=wiki_dir, gate=gate)
+    assert exit_code == 1
+    assert has_error(report, "V-PUBLIC", "differ from a fresh public_gate run")
+    assert has_error(report, "V-PUBLIC", "shows text of a non-public record")
 
 
 def test_public_mode_without_a_graph_is_a_setup_error(tmp_path, run_tool):
