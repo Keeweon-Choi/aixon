@@ -15,6 +15,7 @@ export type GraphNode = {
   url?: string;
   paperTitles?: string[];
   synthetic?: boolean;
+  position?: { x: number; y: number };
 };
 
 export type GraphEdge = {
@@ -246,7 +247,7 @@ export function dagreLayout<T extends DagreNode>(
   nodes: T[],
   edges: DagreEdge[],
   direction: 'TB' | 'LR' = 'TB',
-): T[] {
+): Array<T & { position: { x: number; y: number } }> {
   const graph = new graphlib.Graph();
   graph.setGraph({ rankdir: direction, nodesep: 36, ranksep: 72 });
   graph.setDefaultEdgeLabel(() => ({}));

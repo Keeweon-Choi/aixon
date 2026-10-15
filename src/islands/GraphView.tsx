@@ -1,123 +1,353 @@
+import {
+  Background,
+  Controls,
+  MarkerType,
+  ReactFlow,
+  type Edge,
+  type Node,
+  type ReactFlowInstance,
+} from '@xyflow/react';
 import { useEffect, useMemo, useState } from 'react';
-type Node = {
-  id: string;
-  name: string;
-  type: string;
-  status?: string;
-  summary?: string;
-  url: string;
-  year?: number;
-};
-type Edge = {
-  id: string;
-  source: string;
-  target: string;
-  predicate?: string;
-  status?: string;
-  url: string;
-};
+import {
+  atlasVisible,
+  dagreLayout,
+  edgeStyle,
+  localNeighbourhood,
+  parseNodeAnchor,
+  traceLayout,
+  type GraphEdge,
+  type GraphNode as GraphDataNode,
+  type GraphViewData,
+} from '../lib/graph/view';
+import ClaimEdge, { type ClaimEdgeData } from './graph/ClaimEdge';
+import GraphNode, { type FlowNodeData } from './graph/GraphNode';
+import '../styles/graph.css';
+
+type Mode = 'atlas' | 'local' | 'trace';
+type TopField = { id: string; name: string; url?: string };
+type FlowGraphNode = Node<FlowNodeData, 'graph'>;
+type FlowGraphEdge = Edge<ClaimEdgeData, 'claim'>;
+
+const nodeTypes = { graph: GraphNode };
+const edgeTypes = { claim: ClaimEdge };
+
+function fallbackFields(topFields: TopField[]) {
+  return (
+    <ul className="graph-fallback-fields">
+      {topFields.map((field) => (
+        <li key={field.id} data-node-id={field.id}>
+          {field.url ? <a href={field.url}>{field.name}</a> : field.name}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function expandableFields(data: GraphViewData, selectedId: string): Set<string> {
+  const byId = new Map(data.nodes.map((node) => [node.id, node]));
+  const expanded = new Set<string>();
+  const revealField = (fieldId: string) => {
+    const field = byId.get(fieldId);
+    if (!field || field.type !== 'ResearchField') return;
+    for (const parent of field.parents || []) {
+      revealField(parent);
+      expanded.add(parent);
+    }
+  };
+  const selected = byId.get(selectedId);
+  if (!selected) return expanded;
+  if (selected.type === 'ResearchField') revealField(selected.id);
+  for (const field of selected.fields || []) {
+    revealField(field);
+    expanded.add(field);
+  }
+  return expanded;
+}
+
+function edgeLabel(edge: GraphEdge): string {
+  const style = edgeStyle(edge.predicate, edge.status);
+  const review = edge.status === 'verified' && !edge.reviewed ? ' ○' : '';
+  return `${style.badge || style.label || edge.predicate || '관계'}${review}`;
+}
+
+function nodeRow(node: GraphDataNode, select: (id: string) => void) {
+  return (
+    <tr
+      key={node.id}
+      data-node-id={node.id}
+      aria-label={`${node.type} ${node.name} ${node.status || 'active'}`}
+      tabIndex={0}
+      onClick={() => select(node.id)}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          select(node.id);
+        }
+      }}
+    >
+      <td>{node.url ? <a href={node.url}>{node.name}</a> : node.name}</td>
+      <td>{node.type}</td>
+      <td>{node.status || 'active'}</td>
+      <td>{node.year || '연도 미상'}</td>
+    </tr>
+  );
+}
+
 export default function GraphView({
   mode,
   focus,
+  topFields = [],
 }: {
-  mode: 'atlas' | 'local' | 'trace';
+  mode: Mode;
   focus?: string;
+  topFields?: TopField[];
 }) {
-  const [data, setData] = useState<{ nodes: Node[]; edges: Edge[] }>({ nodes: [], edges: [] }),
-    [selected, setSelected] = useState(focus || ''),
-    [list, setList] = useState(false),
-    [verified, setVerified] = useState(false);
+  const [data, setData] = useState<GraphViewData>();
+  const [failed, setFailed] = useState(false);
+  const [list, setList] = useState(false);
+  const [selected, setSelected] = useState(focus || '');
+  const [expanded, setExpanded] = useState(new Set<string>());
+  const [enabledTypes, setEnabledTypes] = useState<Set<string>>();
+  const [verifiedOnly, setVerifiedOnly] = useState(false);
+  const [showCites, setShowCites] = useState(false);
+  const [flow, setFlow] = useState<ReactFlowInstance<FlowGraphNode, FlowGraphEdge>>();
+
   useEffect(() => {
-    fetch(`${import.meta.env.BASE_URL}graph.json`)
-      .then((r) => r.json())
-      .then(setData);
+    const controller = new AbortController();
+    fetch(`${import.meta.env.BASE_URL}graph.json`, { signal: controller.signal })
+      .then((response) => {
+        if (!response.ok) throw new Error(`graph.json: ${response.status}`);
+        return response.json() as Promise<GraphViewData>;
+      })
+      .then((result) => {
+        setData(result);
+        setEnabledTypes(new Set(result.nodes.map((node) => node.type)));
+        const hashSelection = parseNodeAnchor(location.hash);
+        const initialSelection = hashSelection || focus || '';
+        if (initialSelection) {
+          setSelected(initialSelection);
+          if (mode === 'atlas') setExpanded(expandableFields(result, initialSelection));
+        }
+      })
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === 'AbortError') return;
+        setFailed(true);
+      });
     setList(matchMedia('(max-width: 700px)').matches);
-  }, []);
+    return () => controller.abort();
+  }, [focus, mode]);
+
+  const projection = useMemo(() => {
+    if (!data) return { nodes: [], edges: [] };
+    if (mode === 'atlas')
+      return atlasVisible(data, expanded, { types: enabledTypes, verifiedOnly });
+    if (mode === 'local') return localNeighbourhood(data, focus || selected, { showCites });
+    return traceLayout(data, { showCites });
+  }, [data, enabledTypes, expanded, focus, mode, selected, showCites, verifiedOnly]);
+
+  function selectNode(id: string) {
+    setSelected(id);
+    if (mode === 'atlas') {
+      const node = data?.nodes.find((item) => item.id === id);
+      if (node?.type === 'ResearchField')
+        setExpanded((current) => {
+          const next = new Set(current);
+          if (next.has(id)) next.delete(id);
+          else next.add(id);
+          return next;
+        });
+    }
+    history.replaceState(null, '', `#node-${id.replace(/:/g, '~')}`);
+  }
+
+  const flowNodes = useMemo((): FlowGraphNode[] => {
+    const positioned =
+      mode === 'trace'
+        ? projection.nodes
+        : dagreLayout(
+            projection.nodes.map((node) => ({ ...node, width: 180, height: 54 })),
+            projection.edges,
+          );
+    return positioned.map((node) => ({
+      id: node.id,
+      type: 'graph',
+      position: node.position || { x: 0, y: 0 },
+      data: { node, expanded: expanded.has(node.id), activate: selectNode },
+      selected: node.id === selected,
+      focusable: true,
+    }));
+  }, [expanded, mode, projection.edges, projection.nodes, selected]);
+
+  const flowEdges = useMemo((): FlowGraphEdge[] => {
+    const output: FlowGraphEdge[] = [];
+    for (const edge of projection.edges) {
+      const style = edgeStyle(edge.predicate, edge.status);
+      if (style.hidden) continue;
+      output.push({
+        id: edge.id,
+        type: 'claim',
+        source: edge.source,
+        target: edge.target,
+        data: { edge, style, label: edgeLabel(edge) },
+        markerEnd: style.markerEnd ? { type: MarkerType.ArrowClosed } : undefined,
+        focusable: false,
+      });
+    }
+    return output;
+  }, [projection.edges]);
+
   useEffect(() => {
-    const h = decodeURIComponent(location.hash.replace(/^#node-/, '')).replace(/~/g, ':');
-    if (h) setSelected(h);
-  }, []);
-  const edges = useMemo(
-    () => data.edges.filter((e) => !verified || e.status === 'verified'),
-    [data, verified],
-  );
-  const ids =
-    mode === 'local' && focus
-      ? new Set([
-          focus,
-          ...edges
-            .filter((e) => e.source === focus || e.target === focus)
-            .flatMap((e) => [e.source, e.target]),
-        ])
-      : new Set(data.nodes.map((n) => n.id));
-  const nodes = data.nodes.filter((n) => ids.has(n.id)).slice(0, 80);
-  const chosen = nodes.find((n) => n.id === selected);
+    if (!selected || !flow || !flowNodes.some((node) => node.id === selected)) return;
+    requestAnimationFrame(() =>
+      flow.fitView({ nodes: [{ id: selected }], duration: 0, padding: 0.5 }),
+    );
+  }, [flow, flowNodes, selected]);
+
+  const selectedNode =
+    projection.nodes.find((node) => node.id === selected) ||
+    data?.nodes.find((node) => node.id === selected);
+  const trace =
+    mode === 'trace' ? traceLayout(data || { nodes: [], edges: [] }, { showCites }) : undefined;
+  const allTypes = data ? [...new Set(data.nodes.map((node) => node.type))].sort() : [];
+
   return (
-    <section className="graph-view">
-      <p>
-        <button onClick={() => setList(!list)}>목록 보기</button>
+    <section className="graph-view" data-testid="graph-view" data-mode={mode}>
+      <div className="graph-controls">
+        <button
+          type="button"
+          data-testid="list-toggle"
+          onClick={() => setList((current) => !current)}
+        >
+          {list ? '그래프 보기' : '목록 보기'}
+        </button>
+        {mode === 'atlas' &&
+          allTypes.map((type) => (
+            <label key={type}>
+              <input
+                type="checkbox"
+                data-testid={`type-filter-${type}`}
+                checked={enabledTypes?.has(type) || false}
+                onChange={() =>
+                  setEnabledTypes((current) => {
+                    const next = new Set(current);
+                    if (next.has(type)) next.delete(type);
+                    else next.add(type);
+                    return next;
+                  })
+                }
+              />
+              {type}
+            </label>
+          ))}
         {mode === 'atlas' && (
           <label>
             <input
               type="checkbox"
-              checked={verified}
-              onChange={(e) => setVerified(e.target.checked)}
+              data-testid="verified-only"
+              checked={verifiedOnly}
+              onChange={(event) => setVerifiedOnly(event.target.checked)}
             />
             검증된 관계만
           </label>
         )}
-      </p>
-      {list ? (
-        <table>
-          <thead>
-            <tr>
-              <th>노드</th>
-              <th>유형</th>
-              <th>연결</th>
-            </tr>
-          </thead>
-          <tbody>
-            {nodes.map((n) => (
-              <tr id={`node-${n.id.replace(/:/g, '~')}`} key={n.id}>
-                <td>
-                  <a href={n.url}>{n.name}</a>
-                </td>
-                <td>{n.type}</td>
-                <td>
-                  {edges
-                    .filter((e) => e.source === n.id || e.target === n.id)
-                    .map((e) => (
-                      <a href={e.url} key={e.id}>
-                        {e.predicate || '분류'}{' '}
-                      </a>
-                    ))}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <div role="list">
-          {nodes.map((n) => (
-            <button
-              role="listitem"
-              key={n.id}
-              id={`node-${n.id.replace(/:/g, '~')}`}
-              aria-label={`${n.type} ${n.name} ${n.status || 'active'}`}
-              onClick={() => setSelected(n.id)}
-            >
-              {n.name}
-              {mode === 'trace' && n.year ? ` (${n.year})` : ''}
-            </button>
-          ))}
+        {(mode === 'local' || mode === 'trace') && (
+          <label>
+            <input
+              type="checkbox"
+              checked={showCites}
+              onChange={(event) => setShowCites(event.target.checked)}
+            />
+            인용 관계 보기
+          </label>
+        )}
+      </div>
+
+      {!data && !failed && <p>그래프를 불러오는 중…</p>}
+      {failed && (
+        <div role="alert">
+          <p>그래프를 불러오지 못했습니다</p>
+          {fallbackFields(topFields)}
         </div>
       )}
-      {data.nodes.length > 80 && <p>+{data.nodes.length - 80}개 더</p>}
-      {chosen && (
-        <aside>
-          <h2>{chosen.name}</h2>
-          <p>{chosen.summary}</p>
-          <a href={chosen.url}>상세 보기</a>
+      {data &&
+        (list ? (
+          <table data-testid="graph-list">
+            <thead>
+              <tr>
+                <th>노드</th>
+                <th>유형</th>
+                <th>상태</th>
+                <th>도입 연도</th>
+              </tr>
+            </thead>
+            <tbody>{projection.nodes.map((node) => nodeRow(node, selectNode))}</tbody>
+            {(mode === 'local' || mode === 'trace') && (
+              <tbody>
+                {projection.edges.map((edge) => (
+                  <tr key={edge.id} data-claim-id={edge.id}>
+                    <td colSpan={2}>{edge.source}</td>
+                    <td>{edge.predicate}</td>
+                    <td>{edge.url && <a href={edge.url}>근거 보기</a>}</td>
+                  </tr>
+                ))}
+              </tbody>
+            )}
+          </table>
+        ) : (
+          <div className={`graph-canvas graph-canvas-${mode}`}>
+            {trace && (
+              <div className="graph-trace-labels" aria-hidden="true">
+                <span>연도 미상</span>
+                {[...new Set(trace.nodes.flatMap((node) => (node.year ? [node.year] : [])))].map(
+                  (year) => (
+                    <span key={year}>{year}</span>
+                  ),
+                )}
+                {trace.lanes.map((lane) => (
+                  <span key={lane}>{lane.replace(/^field:/, '')}</span>
+                ))}
+              </div>
+            )}
+            <ReactFlow<FlowGraphNode, FlowGraphEdge>
+              nodes={flowNodes}
+              edges={flowEdges}
+              nodeTypes={nodeTypes}
+              edgeTypes={edgeTypes}
+              onInit={setFlow}
+              nodesFocusable
+              edgesFocusable={false}
+              nodesDraggable={false}
+              onlyRenderVisibleElements
+              fitView
+            >
+              <Background />
+              <Controls />
+            </ReactFlow>
+          </div>
+        ))}
+
+      {selectedNode && !selectedNode.synthetic && (
+        <aside data-testid="node-panel" className="node-panel">
+          <h2>{selectedNode.name}</h2>
+          <p>{selectedNode.type}</p>
+          <p className="badge">{selectedNode.status || 'active'}</p>
+          <p>{selectedNode.summary || '준비 중'}</p>
+          <p>도입 연도: {selectedNode.year || '연도 미상'}</p>
+          {selectedNode.url && (
+            <a data-testid="panel-entity-link" href={selectedNode.url}>
+              항목 상세 보기
+            </a>
+          )}
+          {selectedNode.hasWiki && selectedNode.wikiUrl && (
+            <a data-testid="panel-wiki-link" href={selectedNode.wikiUrl}>
+              Wiki 읽기
+            </a>
+          )}
+          {selectedNode.type === 'ResearchField' && mode === 'atlas' && (
+            <button type="button" onClick={() => selectNode(selectedNode.id)}>
+              {expanded.has(selectedNode.id) ? '접기' : '펼치기'}
+            </button>
+          )}
         </aside>
       )}
     </section>
