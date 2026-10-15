@@ -3,14 +3,25 @@ id: wiki:scaled-dot-product-attention
 entity: method:scaled-dot-product-attention
 title: "Scaled Dot-Product Attention"
 subtitle: "query와 key의 내적으로 value를 섞는 Transformer의 핵심 연산과, √d_k로 나누는 이유"
-status: draft
+status: published
 levels: [intuition, fundamentals, deep]
 sections: [overview, why, mechanism, math, example, code, visual, limitations, history]
 authors:
   - {id: "agent:claude-opus-5-5", role: draft}
 ai_generated: true
-review: null
-published_at: null
+review:
+  by: panel:first-release
+  method: cross-review
+  reviewers:
+  - agent:opus55-clm-wiki-1015
+  - agent:opus55-src-wiki-1015
+  audit: agent:opus55-aud-1015
+  at: '2026-10-15'
+  decision: approve
+  reviewed_hash: f7d4d6f07706
+  report: review/cross/first-release
+  note: ''
+published_at: '2026-10-15'
 sources: [src:arxiv:1706.03762v7, src:arxiv:1409.0473v7, src:arxiv:2010.11929v2, src:arxiv:2103.14030v2, src:url:b301323053b2]
 claims: [clm:intro-sdpa, clm:sdpa-is-a-attention, clm:scaled-dot-product-attention-part-of-multi-head-attention, clm:multi-head-attention-part-of-transformer-encoder-layer, clm:transformer-encoder-layer-part-of-bert, clm:transformer-encoder-layer-part-of-vit, clm:transformer-addresses-sequential, clm:transformer-mitigates-sequential, clm:intro-additive-attention, clm:vit-adapts-transformer, clm:swin-mitigates-quadratic, clm:intro-shifted-window]
 labs: [lab:softmax-temperature]

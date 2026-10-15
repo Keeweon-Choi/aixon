@@ -147,6 +147,18 @@ fields:
   summary: ML Systems and Efficient Inference는 모델 학습과 배포의 계산 및 메모리 효율을 연구하는 분야이다.
   parents:
   - field:machine-learning
+  review:
+    by: panel:first-release
+    method: cross-review
+    reviewers:
+    - agent:opus55-clm-ent-1015
+    - agent:opus55-src-ent-1015
+    audit: agent:opus55-aud-1015
+    at: '2026-10-15'
+    decision: approve
+    reviewed_hash: 8f7a7505f510
+    report: review/cross/first-release
+    note: ''
 - summary_by: agent:codex
   id: field:information-retrieval-recommender-systems
   name: 정보 검색과 추천 시스템
@@ -646,6 +658,18 @@ fields:
   parents:
   - field:ml-systems-efficient-inference
   - field:deep-learning
+  review:
+    by: panel:first-release
+    method: cross-review
+    reviewers:
+    - agent:opus55-clm-ent-1015
+    - agent:opus55-src-ent-1015
+    audit: agent:opus55-aud-1015
+    at: '2026-10-15'
+    decision: approve
+    reviewed_hash: c9cdbf805250
+    report: review/cross/first-release
+    note: ''
 - summary_by: agent:codex
   id: field:distributed-training
   name: 분산 학습
@@ -745,6 +769,18 @@ fields:
   summary: 언어 모델링은 텍스트의 확률 구조를 학습하는 분야로, 앞 문맥으로 다음 토큰을 예측하는 자기회귀 방식과 가려진 토큰을 양쪽 문맥으로 예측하는 마스크 언어 모델 방식을 포함한다.
   parents:
   - field:natural-language-processing
+  review:
+    by: panel:first-release
+    method: cross-review
+    reviewers:
+    - agent:opus55-clm-ent-1015
+    - agent:opus55-src-ent-1015
+    audit: agent:opus55-aud-1015
+    at: '2026-10-15'
+    decision: approve
+    reviewed_hash: 1cb173641a0b
+    report: review/cross/first-release
+    note: ''
 - summary_by: agent:codex
   id: field:information-extraction
   name: 정보 추출
