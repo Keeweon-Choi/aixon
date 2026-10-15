@@ -187,6 +187,7 @@ def collect_playwright_evidence(run_dir: Path) -> dict[str, list[str]]:
         report = Path("playwright-report") / f"{target}.json"
         if report.is_file():
             destination = run_dir / "test-results" / f"playwright-{target}.json"
+            destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(report, destination)
             copied["reports"].append(destination.relative_to(run_dir).as_posix())
         results = Path("test-results") / target

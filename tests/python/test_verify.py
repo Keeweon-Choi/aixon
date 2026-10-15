@@ -71,6 +71,21 @@ def test_a_passing_run_exits_zero(project, run_tool):
     assert summary["status"] == "PASS"
 
 
+def test_playwright_reports_and_failure_evidence_are_copied(project, run_tool):
+    """Regression: the first clean-env run crashed copying the JSON report into a missing folder."""
+    (project / "playwright-report").mkdir()
+    (project / "playwright-report" / "fixture.json").write_text('{"stats": {}}', encoding="utf8")
+    shot = project / "test-results" / "fixture" / "e2e-01-desktop" / "failure.png"
+    shot.parent.mkdir(parents=True)
+    shot.write_bytes(b"png")
+    result = run_tool("verify.py", "--steps", "lint", cwd=project)
+    assert result.returncode == 0, result.stdout
+    run = latest_run(project)
+    assert (run / "test-results" / "playwright-fixture.json").is_file()
+    assert (run / "screenshots" / "fixture" / "e2e-01-desktop__failure.png").is_file()
+    assert json.loads((run / "summary.json").read_text(encoding="utf8"))["status"] == "PASS"
+
+
 def test_environment_variables_never_reach_the_evidence(project, run_tool):
     environment = {**os.environ, "AIXON_TEST_SECRET": "do-not-leak-0123456789"}
     run_tool("verify.py", "--steps", "lint", cwd=project, env=environment)
