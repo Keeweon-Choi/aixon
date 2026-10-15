@@ -100,3 +100,75 @@ def test_review_cli_refuses_inside_agent_sessions():
     assert review.agent_session({"CLAUDECODE": "1"})
     assert review.agent_session({"CODEX_SANDBOX": "seatbelt"})
     assert not review.agent_session({"HOME": "/home/x"})
+
+
+def test_approve_batch_approves_graph_and_publishes_wiki(tmp_path):
+    paths, wiki = setup(tmp_path, status="draft")
+    worksheet = tmp_path / "review.yaml"
+    worksheet.write_text(
+        """release: first-release
+items:
+  - id: concept:algebra
+    kind: entity
+    recommendation: approve
+  - id: concept:softmax
+    kind: entity
+    decision: approve
+  - id: clm:algebra-prereq-softmax
+    kind: claim
+    decision: approve
+  - id: wiki:softmax
+    kind: wiki
+    decision: approve
+    publish: true
+    notes: checked for release
+  - id: method:attention
+    kind: entity
+    decision: exclude
+""",
+        encoding="utf-8",
+    )
+
+    result = review.approve_batch(paths, wiki, worksheet, "human:tester", "2026-10-15")
+
+    assert [item["id"] for item in result["approved"]] == [
+        "concept:algebra", "concept:softmax", "clm:algebra-prereq-softmax", "wiki:softmax"
+    ]
+    assert [item["id"] for item in result["published"]] == ["wiki:softmax"]
+    assert [item["id"] for item in result["skipped"]] == ["method:attention"]
+    assert result["failed"] == []
+    out = pg.gate(paths, wiki)
+    assert out["entities"] == ["concept:algebra", "concept:softmax"]
+    assert out["claims"] == ["clm:algebra-prereq-softmax"]
+    assert out["wiki"] == ["wiki:softmax"] and out["errors"] == []
+    graph = st.load_graph(paths)
+    assert graph["entities"]["method:attention"].get("review") is None
+    meta, body = pg.read_wiki(Path(wiki) / "softmax.mdx")
+    assert meta["status"] == "published" and meta["published_at"] == "2026-10-15"
+    assert pg.wiki_approval(meta, body) == "approved"
+
+
+def test_publish_cli_refuses_stale_wiki_approval(tmp_path, monkeypatch, capsys):
+    paths, wiki = setup(tmp_path, status="draft")
+    page = Path(wiki) / "softmax.mdx"
+    review.approve_wiki(page, "human:tester", "ok", "2026-10-15")
+    page.write_text(page.read_text(encoding="utf-8") + "\nChanged after approval.\n", encoding="utf-8")
+    monkeypatch.setattr(review, "agent_session", lambda: False)
+
+    code = review.main(["--graph", paths[0], "--wiki-dir", wiki, "publish", "wiki:softmax", "--by", "human:tester"])
+
+    assert code == 1
+    assert "fresh before publishing" in capsys.readouterr().err
+
+
+def test_approve_batch_cli_refuses_agent_session(tmp_path, monkeypatch):
+    paths, wiki = setup(tmp_path)
+    worksheet = tmp_path / "review.yaml"
+    worksheet.write_text("items: []\n", encoding="utf-8")
+    monkeypatch.setenv("CLAUDECODE", "1")
+
+    code = review.main([
+        "--graph", paths[0], "--wiki-dir", wiki, "approve-batch", str(worksheet), "--by", "human:tester", "--yes"
+    ])
+
+    assert code == 2

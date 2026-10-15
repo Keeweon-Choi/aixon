@@ -46,8 +46,8 @@ Astro 명령은 쓰기 가능한 설정 폴더가 필요합니다: `XDG_CONFIG_H
 ## 콘텐츠 작업 흐름
 
 1. **draft**: 문서를 쓰고(`status: draft`, AI가 썼다면 `ai_generated: true`) `make validate`로 검사합니다. 수식·역사·원리 섹션에는 `<Cite>`가, 실행 가능한 코드에는 ` ```python verify ` 블록과 `assert`가 필요합니다.
-2. **사람 검토**: 사람이 근거와 숫자를 확인하고 frontmatter에 `review: {by: human:<id>, at: YYYY-MM-DD, decision: approve, note: …}`를 적습니다(`status: reviewed`). 그래프의 Claim과 AI 요약도 같은 방식으로 `review` / `summary_review`를 받습니다.
-3. **published**: `published_at`을 적고 `status: published`로 올립니다. 이 단계부터 `public` 빌드에 나타납니다.
+2. **사람 검토·일괄 승인**: `review/<name>.yaml`에 그래프 ID와 `wiki:<slug>`의 `recommendation`·`decision`을 적습니다. 사람이 근거와 숫자를 확인한 뒤 `tools/review.py approve-batch review/<name>.yaml --by human:<id>`를 실행합니다. 도구는 승인할 항목과 건너뛸 항목을 먼저 보여 주고 `승인할까요? [y/N]`를 묻습니다(`--yes`는 그 확인을 생략). 각 승인은 현재 콘텐츠 해시에 묶여 이후 수정하면 다시 승인해야 합니다.
+3. **published**: Wiki 항목에 `publish: true`를 넣으면 일괄 승인 직후 `status: published`와 `published_at`이 기록됩니다. 이미 신선하게 승인된 문서 하나는 `tools/review.py publish wiki:<slug> --by human:<id>`로 게시할 수 있습니다. 이 단계부터 `public` 빌드에 나타납니다.
 
 문서 형식은 [docs/CONTENT_SCHEMA.md](docs/CONTENT_SCHEMA.md), 검사 규칙(V-\*)은 [docs/CONTENT_VALIDATION_PLAN.md](docs/CONTENT_VALIDATION_PLAN.md)에 있습니다.
 
