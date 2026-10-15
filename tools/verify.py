@@ -2,7 +2,7 @@
 """Run every verification step and keep auditable evidence of the run.
 
 Steps (each is a `make` target, run in this order, a failure does not stop the later steps):
-    lint, typecheck, test, validate, build, check-dist, build-public, check-dist-public,
+    lint, typecheck, test, validate, validate-fixtures, build, check-dist, build-public, check-dist-public,
     e2e, e2e-seed, secrets
 
 Evidence is written to artifacts/verification/runs/<UTC yyyymmddTHHMMSSZ>/:
@@ -39,6 +39,7 @@ STEPS = (
     "typecheck",
     "test",
     "validate",
+    "validate-fixtures",
     "build",
     "check-dist",
     "build-public",
