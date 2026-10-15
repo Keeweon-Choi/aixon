@@ -34,7 +34,7 @@ TYPE_LABELS = {
     "LearningResource": "학습 자료", "AssessmentItem": "평가 문항", "LabExperiment": "실험실",
 }
 PREDICATE_LABELS = {
-    "INTRODUCES": "제시", "EXTENDS": "확장", "ADAPTS": "적용", "ADDRESSES": "문제 해결",
+    "INTRODUCES": "제시", "EXTENDS": "확장", "ADAPTS": "적용", "ADDRESSES": "다루는 문제",
     "MITIGATES": "완화", "PREREQUISITE_OF": "선수 지식", "RECOMMENDED_BEFORE": "권장 선수",
     "PART_OF": "구성 요소", "IS_A": "한 종류", "CITES": "인용", "EVALUATED_ON": "평가",
     "TRAINED_ON": "학습", "IMPROVES_ON": "성능 비교", "COMPARED_WITH": "비교",
