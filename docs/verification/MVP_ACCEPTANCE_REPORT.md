@@ -6,9 +6,22 @@
 
 ## 1. 판정 요약
 
-**판정: PASS (조건 4개).** v0.1의 코드, 검증 하네스, 시드 그래프는 인수 기준을 채웠다. Critical 미해결은 0건이다. 다만 아래 네 가지는 하지 않았거나 못 했으므로 "공개 가능"이라는 뜻은 아니다.
+**판정: PASS.** [AUTONOMOUS_MVP_LOOP §11](../AUTONOMOUS_MVP_LOOP.md) MVP Acceptance Gate의 항목은 모두 PASS이거나, 범위 밖이라 NOT APPLICABLE이거나, 지침이 허용한 대로 실행 제한을 밝혔다. Critical 미해결은 0건이다.
 
-| # | 조건 | 상태 |
+| 영역 | 게이트 항목 | 상태 | 근거 |
+|---|---|---|---|
+| Functional | P0 요구사항 R-01–R-16(07 문서의 인수 기준) | PASS | §2 |
+| Functional | Explore·Trace·Interactive Lab 동작, 핵심 E2E 사용자 시나리오 | PASS | E2E fixture 122, seed 50(E2E-10 ①–④) |
+| Functional | Learn(맞춤 학습 경로)·Remember(학습 이력 영속·복원) | NOT APPLICABLE | 사용자 범위 재조정으로 P2(ADR-019). 계획기 기준 구현은 golden 테스트 통과 |
+| Knowledge | Seed 검증, Critical 불변식 위반 0, Verified 근거 확인, Golden Learning Path, Citation/Prerequisite 구분 | PASS | §4, T16·V-CITES-NOT-INFLUENCE |
+| Engineering | Lint·Typecheck·Unit·Integration·Playwright E2E·Build·회귀 | PASS | `runs/20261015T040334Z` 13단계 |
+| Engineering | DB Migration | NOT APPLICABLE | v0.1에는 DB가 없다(ADR-015) |
+| Engineering | CI 검증 성공 또는 실제 실행 제한 사항 명시 | 제한 사항 명시 | GitHub 원격 저장소가 없어 Actions는 NOT RUN. CI와 같은 `make verify`를 깨끗한 환경에서 실행해 PASS |
+| Evidence | 검증 보고서·추적표·실행 요약·E2E 증거·이슈 목록·재현 명령 | PASS | 이 문서, TEST_MATRIX, §6·§7 |
+
+**공개 준비는 인수 기준 밖이다.** 아래 네 가지는 외부 배포 금지 때문에 하지 않았거나 사용자만 할 수 있는 일이다. 그래서 이 판정이 "지금 공개해도 된다"는 뜻은 아니다.
+
+| # | 공개 준비 항목 | 상태 |
 |---|---|---|
 | 1 | 실제 GitHub Pages 배포 | NOT RUN (사용자 승인 필요, B-01) |
 | 2 | 사람의 콘텐츠 승인 | 0건. 공개 빌드는 정적 7쪽뿐이다 (B-02) |
@@ -47,12 +60,12 @@
 | R-07 | 검색 | PASS | `tests/unit/search.test.ts` 3개, E2E-1 "2-character Korean query", E2E-5 Pagefind | E2E-5는 fixture 빌드에서만 돈다. 실제 시드 빌드는 Pagefind 색인 632쪽까지만 확인했다(`logs/06-build.log`) |
 | R-08 | 근거·참고문헌 | PASS | E2E-3 12건(fixture), E2E-1 "references and inline citations are human readable" | 화면 상태 문구는 "인용 확인"(ADR-022). E2E-3에 "bare verified가 없다"는 음성 검사가 있다 |
 | R-09 | 검증된 시드 콘텐츠 | PASS | Claim 105(95/1/8/1), 인용 132/132, golden 계획 `test_t18_p15` 등 3개 통과 | §4. 사람 승인 0건 |
-| R-10 | GitHub Pages 배포 | PASS (로컬 재현). 실배포는 NOT RUN | `/aixon/` base로 E2E-6 fixture 8건·seed 8건, `check-dist-public`, `check-dist-seed`. `.github/workflows/pages.yml`은 작성만 했다 | 리뷰어 PARTIAL(Lab "근거 보기" 링크가 base 경로를 무시, M2) → 수정, `check-dist-seed` 단계 추가 |
+| R-10 | GitHub Pages 배포 | PASS (07 기준: `pages.yml`, base 경로·디렉터리 URL, 로컬 직접 링크·새로고침 재현). 실배포는 기준 밖 NOT RUN(B-01) | `/aixon/` base로 E2E-6 fixture 8건·seed 8건, `check-dist-public`, `check-dist-seed`. `.github/workflows/pages.yml`은 작성만 했다 | 리뷰어 PARTIAL(Lab "근거 보기" 링크가 base 경로를 무시, M2) → 수정, `check-dist-seed` 단계 추가 |
 | R-11 | 자동 검증 하네스 | PASS (로컬) | `make verify` 13단계, `tests/python/test_verify.py` 8개(실패한 단계가 있어도 끝까지 돌고 exit 1). 실패 실행의 기록은 `20261015T034011Z`(summary 상태 FAIL) | `ci.yml` 실행은 NOT RUN |
 | R-12 | Interactive Lab | PASS | `tests/unit/lab.test.ts`(V-LAB L1–L7), E2E-2 fixture 2건·seed 2건(numpy fixture와 4자리 일치), E2E-10 ④ | |
 | R-13 | 연구 계보(Trace) | PASS | E2E-4 14건(fixture), `view.test.ts`(연도 순서, CITES 제외, 술어 필터), E2E-10 ② | 리뷰어 PARTIAL(술어 필터 없음) → 필터 추가 |
 | R-14 | 콘텐츠 상태·Coverage | PASS | `tests/unit/coverage.test.ts`, V-STATUS-1, E2E-7 | |
-| R-15 | 콘텐츠 공개 관문 | PASS (관문 동작). 공개할 콘텐츠는 BLOCKED (B-02) | `tools/test_public_gate.py` 6개, seedtool G022, E2E-9 10건, `check_dist.py --mode public`의 taint 검사. 실제 데이터 public 빌드는 7쪽 | 승인 0건이라 관문이 비어 있는 것이 정상이다 |
+| R-15 | 콘텐츠 공개 관문 | PASS (07 기준: public 빌드에 미승인 Wiki·Claim·AI 요약 0). 공개할 콘텐츠의 사람 승인은 기준 밖(B-02) | `tools/test_public_gate.py` 6개, seedtool G022, E2E-9 10건, `check_dist.py --mode public`의 taint 검사. 실제 데이터 public 빌드는 7쪽 | 승인 0건이라 관문이 비어 있는 것이 정상이다 |
 | R-16 | SEO·접근성·반응형 | PASS | `check_dist.py`(V-SEO, V-SEC, V-NO-CDN), E2E-7 22건, E2E-8 28건(fixture) | 검색엔진 색인은 NOT RUN(배포 뒤에만 가능). 스크린 리더로 읽어 본 확인은 없다 |
 
 R-03, R-06, R-10, R-13의 PARTIAL은 수정 뒤 PASS로 올렸다. 근거는 수정 검증(Opus 5.5 High, MERGE)과 깨끗한 환경 재실행이다. 리뷰어의 사용 흐름 전체를 수정 뒤에 처음부터 다시 걷지는 않았다. 수정 뒤에는 화면 3가지만 다시 봤다(§3.2).
