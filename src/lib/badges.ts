@@ -51,3 +51,29 @@ export const entityTypeLabels: Record<string, string> = {
   AssessmentItem: '평가 문항',
   LabExperiment: '실험실',
 };
+
+export const dimensionLabels: Record<string, string> = {
+  recognize: '알아봄',
+  explain: '설명',
+  derive: '유도',
+  implement: '구현',
+  analyze: '분석',
+};
+
+/** Entity status for display: a normal ("active") entity gets no badge (ADR-022 wording for the rest). */
+export function nodeStatusLabel(status: unknown): string {
+  return !status || status === 'active'
+    ? ''
+    : status === 'merged'
+      ? '병합됨'
+      : claimStatusLabel(status);
+}
+
+/** Claim (edge) status: `verified` only means the cited quote was found in the source (ADR-022). */
+export function edgeStatusLabel(status: unknown): string {
+  return status === 'verified' ? '인용 확인' : claimStatusLabel(status);
+}
+
+export function typeLabel(type: string): string {
+  return type === 'More' ? '더보기' : entityTypeLabels[type] || type;
+}

@@ -267,3 +267,12 @@ export function entityPath(id: string, graph = getGraph()): string {
 export function claimPath(id: string): string {
   return `claims/${id.replace(/^clm:/, '')}/`;
 }
+
+/** Human-readable text of a source: paper title and version (never the raw `src:` id). */
+export function sourceLabel(graph: GraphData, id: string): string {
+  const source = graph.sources[id];
+  const paper = graph.entities[str(source?.paper)];
+  const title = str(paper?.title) || str(paper?.name) || str(source?.name) || id;
+  const version = str(source?.version);
+  return version ? `${title} (${version})` : title;
+}

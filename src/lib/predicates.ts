@@ -17,6 +17,27 @@ export const predicateDescription: Record<string, string> = {
   COMPARED_WITH: '비교 대상으로 함께 평가했다.',
 };
 
+export const predicateLabels: Record<string, string> = {
+  INTRODUCES: '제시',
+  EXTENDS: '확장',
+  ADAPTS: '적용',
+  ADDRESSES: '문제 해결',
+  MITIGATES: '완화',
+  PREREQUISITE_OF: '선수 지식',
+  RECOMMENDED_BEFORE: '권장 선수',
+  PART_OF: '구성 요소',
+  IS_A: '한 종류',
+  CITES: '인용',
+  EVALUATED_ON: '평가',
+  TRAINED_ON: '학습',
+  IMPROVES_ON: '성능 비교',
+  COMPARED_WITH: '비교',
+};
+
+export function predicateName(predicate: string): string {
+  return predicateLabels[predicate] || predicate;
+}
+
 const template: Record<string, (subject: string, object: string, qualifiers: RecordMap) => string> =
   {
     INTRODUCES: (subject, object) => `${subject}은(는) ${object}을(를) 제시했다`,

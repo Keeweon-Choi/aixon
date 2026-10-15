@@ -96,3 +96,16 @@ test('E2E-3 a rejected claim keeps its page with the rejection reason', async ({
   await expect(page.getByTestId('claim-status')).toContainText(STATUS_PATTERN.rejected);
   await expect(page.locator('main')).toContainText(String(claim.rejected_reason));
 });
+
+test('E2E-3 the claim page shows the Korean predicate and field names for qualifiers', async ({
+  page,
+}) => {
+  const data = graph();
+  await page.goto(claimPath('clm:vit-adapts-transformer'));
+  const qualifiers = data.claim('clm:vit-adapts-transformer').qualifiers ?? {};
+  const main = await page.locator('main').innerText();
+  expect(main).not.toMatch(/field:|from_field|to_field/);
+  expect(main).toContain('적용');
+  expect(main).toContain(data.name(String(qualifiers.from_field)));
+  expect(main).toContain(data.name(String(qualifiers.to_field)));
+});

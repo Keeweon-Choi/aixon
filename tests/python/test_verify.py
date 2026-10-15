@@ -110,3 +110,12 @@ def test_unknown_step_is_rejected(project, run_tool):
     result = run_tool("verify.py", "--steps", "lint,bogus", cwd=project)
     assert result.returncode == 2
     assert "unknown step" in result.stderr
+
+
+def test_seed_dist_is_checked_after_the_seed_e2e_and_has_a_make_target():
+    """The base-path seed build gets a link check (final review M2)."""
+    makefile = (ROOT / "Makefile").read_text(encoding="utf8")
+    steps = [line.split(":")[0] for line in makefile.splitlines() if line and line[0].isalpha() and ":" in line]
+    assert "check-dist-seed" in steps
+    verify = (ROOT / "tools" / "verify.py").read_text(encoding="utf8")
+    assert verify.index('"e2e-seed"') < verify.index('"check-dist-seed"') < verify.index('"secrets"')

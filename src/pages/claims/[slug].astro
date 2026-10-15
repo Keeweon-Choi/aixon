@@ -3,7 +3,7 @@ import Base from '../../layouts/Base.astro';
 import ClaimBadges from '../../components/ClaimBadges.astro';
 import { claimStatusLabel, confidenceLabel } from '../../lib/badges';
 import { entityPath, getGraph } from '../../lib/graph';
-import { claimSentence, predicateDescription } from '../../lib/predicates';
+import { claimSentence, predicateDescription, predicateName } from '../../lib/predicates';
 import { url } from '../../lib/url';
 const graph = getGraph();
 export function getStaticPaths() {
@@ -24,7 +24,22 @@ const qualifierLabels: Record<string, string> = {
   conditions: '조건',
   value: '값',
   baseline_value: '기준값',
+  from_field: '출발 분야',
+  to_field: '도착 분야',
+  stage: '단계',
+  summary: '요약',
+  required_dimension: '요구 차원',
+  subject_value: '주체 수치',
+  object_value: '대상 수치',
+  subject_variant: '주체 변형',
+  object_variant: '대상 변형',
 };
+const qualifierValue = (key: string, value: unknown) =>
+  ['from_field', 'to_field'].includes(key) && typeof value === 'string'
+    ? name(value)
+    : typeof value === 'string'
+      ? value
+      : JSON.stringify(value);
 const sourceHref = (item: Record<string, unknown>) => {
   const source = graph.sources[String(item.source)];
   const base = String(source?.fulltext_url || source?.url || '');
@@ -48,7 +63,7 @@ const sourceHref = (item: Record<string, unknown>) => {
     </section>
     <h2>술어</h2>
     <p>
-      {String(claim.predicate)}:{' '}
+      {predicateName(String(claim.predicate))} ({String(claim.predicate)}):{' '}
       {predicateDescription[String(claim.predicate)] || '관계 정의가 아직 없습니다.'}
     </p>
     {claim.qualifiers && (
@@ -58,7 +73,7 @@ const sourceHref = (item: Record<string, unknown>) => {
           {Object.entries(claim.qualifiers).map(([key, value]) => (
             <>
               <dt>{qualifierLabels[key] || key}</dt>
-              <dd>{typeof value === 'string' ? value : JSON.stringify(value)}</dd>
+              <dd>{qualifierValue(key, value)}</dd>
             </>
           ))}
         </dl>

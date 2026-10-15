@@ -1,6 +1,7 @@
 import katex from 'katex';
 import { useMemo, useState } from 'react';
 import { entropy, sdpaStats, softmax } from '../lib/lab/softmax';
+import { url } from '../lib/url';
 
 type Item = Record<string, unknown>;
 const number = (value: number) => value.toFixed(4);
@@ -182,7 +183,7 @@ export default function SoftmaxTemperatureLab({
         {varianceClaim && (
           <blockquote lang="en">
             {String(evidence?.quote || evidence?.rationale || '')}{' '}
-            <a href={`/claims/${String(varianceClaim.id).replace(/^clm:/, '')}/`}>근거 보기</a>
+            <a href={url(`claims/${String(varianceClaim.id).replace(/^clm:/, '')}/`)}>근거 보기</a>
           </blockquote>
         )}
       </fieldset>

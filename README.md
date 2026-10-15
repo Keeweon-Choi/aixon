@@ -67,6 +67,7 @@ Astro 명령은 쓰기 가능한 설정 폴더가 필요합니다: `XDG_CONFIG_H
 | `check-dist-public` | 위 검사 + 미승인 Claim·Wiki·AI 요약이 없는지                                                  |
 | `e2e`               | Playwright, 테스트용 fixture 데이터(`dist-e2e/`, `dist-public-e2e/`), desktop + mobile        |
 | `e2e-seed`          | Playwright, 실제 시드(`dist-seed/`), `@seed` 태그 시나리오(E2E-1·2·6·7·10)                    |
+| `check-dist-seed`   | `tools/check_dist.py dist-seed --base /aixon/`: 시드 빌드의 링크·SEO 검사                   |
 | `secrets`           | `tools/scan_secrets.py`: 추적 파일과 빌드 산출물의 키·비밀 검색                               |
 
 개별 실행: `make lint test validate validate-fixtures build check-dist e2e e2e-seed secrets`, 정리: `make clean`(빌드 산출물만 지움), 서식: `make format`.
