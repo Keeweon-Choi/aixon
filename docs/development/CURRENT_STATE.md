@@ -16,27 +16,17 @@
 5. **Codex**: 명세가 확실한 구현은 `hub codex ~/wt/aixon-base <spec>`. 샌드박스에 네트워크가 없고 worktree에는 의존성이 없다(I-15) → 새 worktree마다 `cp -al ~/wt/aixon-base/node_modules <wt>/node_modules; ln -s ~/wt/aixon-base/.venv <wt>/.venv`. 결과는 반드시 직접 다시 돌려 검증한다(음성 대조 포함).
 6. 커밋 신원은 전역 git 설정을 그대로 쓴다.
 
-## 1. 현재 단계 (AUTONOMOUS_MVP_LOOP 기준) — 03:45
+## 1. 현재 단계 — 2026-10-15 12:2x
 
 | Phase | 상태 |
 |---|---|
-| 조사·설계·시드(Sprint 0) | 완료 |
-| A 독립 설계 감사 | 진행 중 — sonnet 서브에이전트, 보고서 `scratchpad/design_audit.md` |
-| B Critical/Major 수정 | 감사 결과 대기. 그사이 찾아 고친 것: I-18(pypdf), I-19(KaTeX 복원), Codex 대체 시드 병합 차단 |
-| C–G 사이트·하네스·E2E | 첫 Codex 결과는 얇은 뼈대(310줄, 그래프·공개 관문·E2E 없음) → 병합 후 3갈래로 재분배 |
-| H 회귀·CI·Clean env | 대기 |
-| I 최종 독립 리뷰 | 대기 |
+| A 설계 감사 → B 수정 | 완료(31건, `docs/08_ARCHITECTURE_REVIEW.md`) |
+| C–G 사이트·하네스·E2E | 완료. 깨끗한 환경 `make verify` 12단계 PASS (`artifacts/verification/runs/20261015T030106Z`, 커밋 85c3c39) |
+| I 최종 독립 리뷰(Opus 5.5 High) | ACCEPT WITH FIXES — Major 2(Wiki 관련 개념 방향, Lab 링크 base 경로) + R-06·R-13 부분 충족 |
+| 수정 | 진행 중: Sonnet 서브에이전트, `~/wt/aixon-fix` (`fix/final-review`) |
+| 다음 | 수정 검증(Opus 5.5 High) → 병합 → 깨끗한 환경 재검증 → `MVP_ACCEPTANCE_REPORT.md`·`TEST_MATRIX.md` → `~/aixon` 동기화 |
 
-### 진행 중인 작업 (11:30, WSL 재시작 뒤 재개)
-
-| 작업 | 담당 | 위치 | 비고 |
-|---|---|---|---|
-| H1 하네스 정리(테스트·검증기·CI) | Codex Terra `1015-112914-aixon` | `~/wt/aixon-base-1015-112914-aixon` | 명세 `specs/codex_H1_harness_align.md` |
-| F13 검증 재현성 | Codex Terra `1015-112925-aixon` | `~/wt/aixon-base-1015-112925-aixon` | 명세 `specs/codex_F13_reproducible_checks.md` |
-| E2E 통합(실제 브라우저) | Sonnet 서브에이전트 | `~/wt/aixon-e2e` (`e2e/integrate`) | 결과 = 테스트×기기×대상 표 |
-| 감사 문서화(08, ISSUE_LOG, 불일치) | Sonnet 서브에이전트 | `~/wt/aixon-docs` (`docs/audit`) | 감사 원본은 04:27 재시작으로 소실 → 오케스트레이터 기록 사용 |
-
-완료·병합: A(그래프)·B(페이지·관문)·C(하네스 일부) → `main`. 모델 배정은 `~/.local/share/hub/rules.md`(10-15 사용자 결정)를 따른다.
+모델 배정·하네스·PC 규칙은 `~/.local/share/hub/rules.md`(사용자 결정 10-15). 공개할 수 있는 저장소이므로 커밋에 Claude 표시를 넣지 않는다(B-08).
 
 ## 2. 산출물·자료 위치
 
