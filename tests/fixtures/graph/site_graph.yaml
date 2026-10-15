@@ -4,9 +4,10 @@
 # Validate with: .venv/bin/python tools/seedtool.py validate tests/fixtures/graph/site_graph.yaml
 #
 # Review coverage (the public-build gate depends on it):
-#   clm:intro-transformer  human approval by human:fixture-editor  -> published in public builds
-#   clm:intro-vit          "approval" by agent:fixture-bot          -> must NOT be published (trap)
-#   every other claim      no review                                -> must NOT be published
+#   approved by human:fixture-editor with a content hash (tests/fixtures/approve_fixtures.py, ADR-021):
+#     paper:fixture-attention-2017, model:transformer, clm:intro-transformer, wiki:transformer -> public
+#   everything else has no review -> must NOT appear in public builds
+#   (an agent-signed approval is rejected by tools/public_gate.py; see tools/test_public_gate.py)
 schema_version: 1
 graph:
   id: fixture-site
@@ -113,6 +114,8 @@ concepts:
     name: 합의 분산
     aliases:
       - variance of sum
+    key_terms:
+      - independent random variables
     summary: "(fixture) 독립 확률변수의 합의 분산은 각 분산의 합이라는 성질이다."
     summary_by: agent:fixture-bot
     dimensions:
@@ -163,11 +166,6 @@ models:
     name: Transformer
     summary: "(fixture) 어텐션만으로 시퀀스를 변환하는 모델 계열이다."
     summary_by: agent:fixture-bot
-    # The only entity whose AI summary a human approved: public builds may show it.
-    summary_review:
-      by: human:fixture-editor
-      at: '2026-10-15'
-      decision: approve
     dimensions:
       - recognize
       - explain
@@ -176,6 +174,14 @@ models:
       - field:machine-translation
     variants:
       - base
+    review:
+      by: human:fixture-editor
+      at: '2026-10-15'
+      decision: approve
+      reviewed_hash: 489677d41f62
+      note: fixture
+      checked:
+      - support
   - id: model:vit
     name: Vision Transformer
     aliases:
@@ -210,6 +216,14 @@ papers:
     venue: Fixture Conference 2017
     identifiers:
       arxiv: "0000.00001"
+    review:
+      by: human:fixture-editor
+      at: '2026-10-15'
+      decision: approve
+      reviewed_hash: fc7b63744331
+      note: fixture
+      checked:
+      - support
   - id: paper:fixture-patches-2020
     title: "Image Patches as Tokens (fixture)"
     authors:
@@ -300,7 +314,14 @@ claims:
         type: author_statement
         stance: supports
     verification: {method: fixture_manual, by: 'agent:fixture-bot', at: '2026-10-15'}
-    review: {by: 'human:fixture-editor', at: '2026-10-15', decision: approve, note: fixture}
+    review:
+      by: human:fixture-editor
+      at: '2026-10-15'
+      decision: approve
+      reviewed_hash: f20b774addee
+      note: fixture
+      checked:
+      - support
   - id: clm:intro-vit
     predicate: INTRODUCES
     subject: paper:fixture-patches-2020
@@ -315,8 +336,7 @@ claims:
         type: author_statement
         stance: supports
     verification: {method: fixture_manual, by: 'agent:fixture-bot', at: '2026-10-15'}
-    # Trap: an agent "approval" is not a human approval and must never publish this claim.
-    review: {by: 'agent:fixture-bot', at: '2026-10-15', decision: approve, note: agent self-approval must not publish}
+    review: null
   - id: clm:intro-convnet
     predicate: INTRODUCES
     subject: paper:fixture-convnet-2015
@@ -425,7 +445,7 @@ claims:
     evidence:
       - source: src:fixture:attention-2017-v1
         locator: {section: "3.2.1 footnote 4 (fixture)", paragraph: 1}
-        quote: If the components of q and k are independent with mean 0 and variance 1 then their dot product has variance d_k. (fixture)
+        quote: If the components of q and k are independent random variables with mean 0 and variance 1 then their dot product has variance d_k. (fixture)
         type: definitional_dependency
         stance: supports
     verification: {method: fixture_manual, by: 'agent:fixture-bot', at: '2026-10-15'}

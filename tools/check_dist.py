@@ -8,7 +8,9 @@ Rules (docs/CONTENT_VALIDATION_PLAN.md layer L-B):
                  sitemap-index.xml and robots.txt exist and agree with the mode
     V-MATH       no `katex-error`; every `.katex` contains MathML
     V-NO-CDN     no external <script src> / stylesheet (HTML and CSS)
-    V-PUBLIC     (--mode public) nothing that lacks a human approval is published
+    V-SEC        no inline event handlers (on*=) and no javascript: URLs
+    V-PUBLIC     (--mode public) exactly the tools/public_gate.py allow-list is published, and no prose of
+                 any other record appears anywhere (taint test)
 
 Usage:
     check_dist.py DIST --base /aixon/ --mode preview|public [--site URL]
@@ -32,8 +34,8 @@ from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote
 
-import yaml
 
+import public_gate
 from seedtool import load_graph
 
 DEFAULT_GRAPH = "data/seed/seed_graph.yaml,data/graph/atlas.yaml"
@@ -269,6 +271,13 @@ def check_page(dist: Path, page: Path, text: str, args: argparse.Namespace, repo
         report.error("V-SEO", name, f"{info.images_without_alt} <img> without an alt attribute")
     if "katex-error" in text:
         report.error("V-MATH", name, "contains katex-error")
+    if re.search(r"<[a-z][^>]*\son[a-z]+\s*=", text, re.I):
+        report.error("V-SEC", name, "inline event handler attribute (on*=)")
+    if re.search(r"(?:href|src|action|formaction)\s*=\s*[\"']?\s*javascript:", text, re.I):
+        report.error("V-SEC", name, "javascript: URL")
+    for tag, value in re.findall(r"<(img|iframe|source)\b[^>]*\s(?:src|srcset)\s*=\s*[\"']([^\"']+)", text, re.I):
+        if re.search(r"(?:^|[\s,])(?:https?:)?//", value) and not (args.site and value.startswith(args.site)):
+            report.error("V-NO-CDN", name, f"external {tag.lower()} resource: {value[:80]}")
     if info.katex_without_mathml:
         report.error("V-MATH", name, f"{info.katex_without_mathml} .katex element(s) without MathML")
     own_path = page_url_path(dist, page, args.base)
@@ -392,109 +401,112 @@ def check_robots(dist: Path, args: argparse.Namespace, report: Report) -> None:
                 report.error("V-SEO", "robots.txt", f"Sitemap URL does not start with {prefix}: {line}")
 
 
-def human_approved(record: dict, key: str = "review") -> bool:
-    """Return True when record[key] is an approval by a human."""
-    review = record.get(key) or {}
-    return review.get("decision") == "approve" and str(review.get("by", "")).startswith("human:")
-
-
-def unapproved_ai_summaries(graph: dict) -> dict[str, str]:
-    """Return {summary text: entity id} for AI written summaries without a human approval."""
-    approved_texts = set()
-    forbidden: dict[str, str] = {}
-    for ident, record in graph["entities"].items():
-        if graph["types"][ident] in ("Claim", "Source"):
-            continue
-        summary = str(record.get("summary") or "").strip()
-        if not summary:
-            continue
-        written_by_agent = str(record.get("summary_by", "")).startswith("agent:")
-        if written_by_agent and not human_approved(record, "summary_review"):
-            forbidden[summary] = ident
-        else:
-            approved_texts.add(summary)
-    return {text: ident for text, ident in forbidden.items() if text not in approved_texts and len(text) >= 6}
-
-
 def check_public(dist: Path, pages: dict[Path, str], args: argparse.Namespace, report: Report) -> None:
-    """V-PUBLIC: nothing without a human approval may be published."""
-    graph = load_graph([item.strip() for item in args.graph.split(",") if Path(item.strip()).exists()])
+    """V-PUBLIC: exactly the allow-list of tools/public_gate.py is published and nothing else leaks (ADR-021)."""
+    paths = [item.strip() for item in args.graph.split(",") if item.strip()]
+    expected = public_gate.gate(paths, args.wiki_dir)
+    if args.gate:
+        used = json.loads(Path(args.gate).read_text(encoding="utf8"))
+        for key in ("entities", "claims", "wiki", "sources"):
+            if sorted(used.get(key, [])) != expected[key]:
+                report.error("V-PUBLIC", args.gate, f"{key} differ from a fresh public_gate run (stale gate file?)")
     for page, text in pages.items():
         if DRAFT_BANNER in text:
             report.error("V-PUBLIC", page.relative_to(dist).as_posix(), f"public page contains '{DRAFT_BANNER}'")
-    check_public_claims(dist, graph, report)
-    check_public_wiki(dist, Path(args.wiki_dir), report)
-    check_public_summaries(dist, pages, graph, report)
+    check_public_pages(dist, expected, report)
+    check_public_json(dist, expected, report)
+    check_taint(dist, pages, paths, args.wiki_dir, expected, report)
 
 
-def check_public_claims(dist: Path, graph: dict, report: Report) -> None:
-    """V-PUBLIC: claim pages and graph.json edges all belong to human-approved claims."""
-    claims = graph["claims"]
-    claims_dir = dist / "claims"
-    if claims_dir.is_dir():
-        for folder in sorted(path for path in claims_dir.iterdir() if path.is_dir()):
-            claim = claims.get(f"clm:{folder.name}")
-            if claim is None or not human_approved(claim):
-                report.error("V-PUBLIC", f"claims/{folder.name}/", "claim page without a human approval in the graph")
-    graph_json = dist / "graph.json"
-    if not graph_json.is_file():
-        return
-    data = json.loads(graph_json.read_text(encoding="utf8"))
-    for edge in data.get("edges", []):
-        if edge.get("kind") != "claim":
+def emitted_ids(dist: Path) -> dict[str, str]:
+    """{record id: page folder} for every entity, field, claim and wiki page in the dist."""
+    out = {}
+    for folder in sorted(path for path in (dist / "claims").glob("*") if path.is_dir()):
+        out[f"clm:{folder.name}"] = f"claims/{folder.name}/"
+    for folder in sorted(path for path in (dist / "fields").glob("*") if path.is_dir()):
+        out[f"field:{folder.name}"] = f"fields/{folder.name}/"
+    for folder in sorted(path for path in (dist / "e").glob("*/*") if path.is_dir()):
+        out[f"{folder.parent.name}:{folder.name}"] = f"e/{folder.parent.name}/{folder.name}/"
+    for folder in sorted(path for path in (dist / "wiki").glob("*") if path.is_dir()):
+        out[f"wiki:{folder.name}"] = f"wiki/{folder.name}/"
+    return out
+
+
+def check_public_pages(dist: Path, expected: dict, report: Report) -> None:
+    """V-PUBLIC: every record page belongs to the allow-list (redirect stubs of merged ids excepted)."""
+    allowed = set(expected["entities"]) | set(expected["claims"]) | set(expected["wiki"])
+    for ident, folder in emitted_ids(dist).items():
+        if ident in allowed:
             continue
-        claim = claims.get(edge.get("id", ""))
-        if claim is None or not human_approved(claim):
-            report.error("V-PUBLIC", "graph.json", f"edge {edge.get('id')} is not a human-approved claim")
-    if data.get("build") not in (None, "public"):
-        report.error("V-PUBLIC", "graph.json", f"build is {data.get('build')!r}, expected 'public'")
+        text = (dist / folder / "index.html").read_text(encoding="utf8", errors="replace")
+        if 'http-equiv="refresh"' not in text:
+            report.error("V-PUBLIC", folder, f"{ident} is published but not in the public gate")
 
 
-def check_public_wiki(dist: Path, wiki_dir: Path, report: Report) -> None:
-    """V-PUBLIC: every emitted wiki page is a published, human-reviewed document."""
-    wiki_pages = dist / "wiki"
-    if not wiki_pages.is_dir():
-        return
-    for folder in sorted(path for path in wiki_pages.iterdir() if path.is_dir()):
-        source = wiki_dir / f"{folder.name}.mdx"
-        meta = read_frontmatter(source)
-        approved = meta.get("status") == "published" and human_approved(meta)
-        if not approved:
-            report.error("V-PUBLIC", f"wiki/{folder.name}/", f"wiki page without a published, human-reviewed {source}")
+def check_public_json(dist: Path, expected: dict, report: Report) -> None:
+    """V-PUBLIC: graph.json and node-index.json list only allow-listed nodes and claims."""
+    entities, claims = set(expected["entities"]), set(expected["claims"])
+    graph_json = dist / "graph.json"
+    if graph_json.is_file():
+        data = json.loads(graph_json.read_text(encoding="utf8"))
+        if data.get("build") not in (None, "public"):
+            report.error("V-PUBLIC", "graph.json", f"build is {data.get('build')!r}, expected 'public'")
+        for node in data.get("nodes", []):
+            if node.get("id") not in entities:
+                report.error("V-PUBLIC", "graph.json", f"node {node.get('id')} is not in the public gate")
+        for edge in data.get("edges", []):
+            if edge.get("kind") == "claim" and edge.get("id") not in claims:
+                report.error("V-PUBLIC", "graph.json", f"edge {edge.get('id')} is not in the public gate")
+            if edge.get("source") not in entities or edge.get("target") not in entities:
+                report.error("V-PUBLIC", "graph.json", f"edge {edge.get('id')} touches a non-public node")
+    index = dist / "node-index.json"
+    if index.is_file():
+        for node in json.loads(index.read_text(encoding="utf8")):
+            if node.get("id") not in entities:
+                report.error("V-PUBLIC", "node-index.json", f"{node.get('id')} is not in the public gate")
 
 
-def read_frontmatter(path: Path) -> dict:
-    """Return the YAML frontmatter of an MDX file ({} when missing or unreadable)."""
-    if not path.is_file():
-        return {}
-    match = re.match(r"\A---[ \t]*\r?\n(.*?)\r?\n---", path.read_text(encoding="utf8"), re.S)
-    if match is None:
-        return {}
-    try:
-        loaded = yaml.safe_load(match.group(1))
-    except yaml.YAMLError:
-        return {}
-    return loaded if isinstance(loaded, dict) else {}
+PROSE_KEYS = ("summary", "question", "note", "rationale", "prompt", "description", "classification_note")
+MIN_TAINT_LENGTH = 25
 
 
-def check_public_summaries(dist: Path, pages: dict[Path, str], graph: dict, report: Report) -> None:
-    """V-PUBLIC: AI summaries without a human approval never reach pages, graph.json or node-index.json."""
-    forbidden = unapproved_ai_summaries(graph)
+def prose_of(record: dict) -> set[str]:
+    """Prose strings of a record (and its evidence) that only a human approval may publish."""
+    out = {str(record.get(key)).strip() for key in PROSE_KEYS if isinstance(record.get(key), str)}
+    for evidence in record.get("evidence") or []:
+        out |= {str(evidence.get(key)).strip() for key in ("quote", "rationale") if isinstance(evidence.get(key), str)}
+    return {text for text in out if len(text) >= MIN_TAINT_LENGTH}
+
+
+def wiki_sentences(body: str) -> set[str]:
+    """Plain sentences of an MDX body (tags, math and code removed) for the taint test."""
+    body = re.sub(r"```.*?```", " ", body, flags=re.S)
+    body = re.sub(r"\$\$.*?\$\$|\$[^$\n]*\$", " ", body, flags=re.S)
+    body = re.sub(r"<[^>]+>|\*\*|`", " ", body)
+    parts = re.split(r"(?<=[.!?다요])\s+|\n+", body)
+    return {re.sub(r"\s+", " ", part).strip() for part in parts if len(part.strip()) >= MIN_TAINT_LENGTH}
+
+
+def check_taint(dist: Path, pages: dict[Path, str], paths: list[str], wiki_dir: str, expected: dict, report: Report) -> None:
+    """V-PUBLIC taint test: no prose of a record outside the gate appears anywhere in the public output."""
+    graph = load_graph(paths)
+    public = set(expected["entities"]) | set(expected["claims"]) | set(expected["sources"])
+    hidden, shown = set(), set()
+    for ident, record in graph["entities"].items():
+        (shown if ident in public else hidden).update(prose_of(record))
+    for path in sorted(Path(wiki_dir).glob("*.mdx")):
+        meta, body = public_gate.read_wiki(path)
+        (shown if meta.get("id") in expected["wiki"] else hidden).update(wiki_sentences(body))
+    forbidden = hidden - shown
     haystacks = {page.relative_to(dist).as_posix(): html.unescape(text) for page, text in pages.items()}
     for name in ("graph.json", "node-index.json"):
-        path = dist / name
-        if path.is_file():
-            haystacks[name] = path.read_text(encoding="utf8")
-    leaks = []
-    for name, text in sorted(haystacks.items()):
-        for summary, ident in forbidden.items():
-            if summary in text:
-                leaks.append((name, f"shows the unapproved AI summary of {ident}"))
-                break
-    for name, message in leaks[:MAX_LISTED_FINDINGS]:
-        report.error("V-PUBLIC", name, message)
+        if (dist / name).is_file():
+            haystacks[name] = (dist / name).read_text(encoding="utf8")
+    leaks = [(name, text) for name, hay in sorted(haystacks.items()) for text in forbidden if text in hay]
+    for name, text in leaks[:MAX_LISTED_FINDINGS]:
+        report.error("V-PUBLIC", name, f"shows text of a non-public record: {text[:60]}…")
     if len(leaks) > MAX_LISTED_FINDINGS:
-        report.error("V-PUBLIC", "(many)", f"{len(leaks) - MAX_LISTED_FINDINGS} more files show unapproved AI summaries")
+        report.error("V-PUBLIC", "(many)", f"{len(leaks) - MAX_LISTED_FINDINGS} more leaks")
 
 
 def collect_pages(dist: Path) -> dict[Path, str]:
@@ -517,6 +529,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--site", default=os.getenv("AIXON_SITE"), help="site origin, e.g. https://user.github.io")
     parser.add_argument("--graph", default=os.getenv("AIXON_GRAPH", DEFAULT_GRAPH), help="graph YAML files (public mode)")
     parser.add_argument("--wiki-dir", default=os.getenv("AIXON_WIKI_DIR", DEFAULT_WIKI_DIR), help="wiki MDX folder (public mode)")
+    parser.add_argument("--gate", help="public-gate.json the build used (public mode): must match a fresh gate run")
     parser.add_argument("--json", action="store_true", help="print a JSON report instead of text")
     return parser
 

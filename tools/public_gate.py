@@ -27,7 +27,7 @@ import seedtool as st  # noqa: E402
 
 DEFAULT_GRAPH = "data/seed/seed_graph.yaml,data/graph/atlas.yaml"
 PUBLIC_CLAIM_STATUS = {"verified", "disputed"}
-ENTITY_TYPES = st.WIKI_TYPES | {"Paper"}
+ENTITY_TYPES = {typ for typ, _ in st.SECTIONS.values()} - {"Claim", "Source"}  # same set the site loader gates
 FRONTMATTER = re.compile(r"^---\s*\n(.*?)\n---\s*\n(.*)$", re.S)
 
 
