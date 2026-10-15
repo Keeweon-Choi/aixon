@@ -17,10 +17,12 @@
 | 03:2x | KaTeX 복원(`@astrojs/markdown-remark` 7.3.1, katex 0.16.47 정렬), 대표 SDPA Wiki 투입, `<Lab id>` 래퍼, prettier | 실제 데이터 638쪽 빌드, katex-error 0, lint·typecheck 0 오류 |
 | 03:40 | 남은 사이트 작업을 A(그래프, Codex)·B(페이지·Lab·공개 관문, Codex)·C(하네스, sonnet 서브에이전트)로 재분배, 공통 규칙·선택자 약속 | 진행 중 |
 | 03:5x | 시드 요약 70개 교체·문제 이름 한국어화(I-21), golden 테스트 해시 무시(I-22) | G 0, 인용 121/121, `pytest tools` 60, 음성 대조 실패 확인 |
+| 04:27–10:37 | Windows Update가 WSL을 종료(작업 중단, `/tmp` scratchpad 소실 — 감사 보고서 원본 포함) | hub가 Codex 작업 재개 |
+| 10:5x–11:2x | 감사 반영 마무리(대표 Wiki 검증 블록), A·B·C 병합, 공개 관문을 Makefile·check_dist에 연결(오염 검사 음성 대조 확인) | 단위 20, 빌드 632쪽 |
+| 11:2x–11:5x | 모델 배정 규칙(사용자 10-15) 적용: H1·F13(Codex Terra), E2E 통합·문서(Sonnet), 검증(Opus 5.5 High) | F13 MERGE, H1·E2E FIX FIRST → 수정 후 병합 |
+| 11:57–12:02 | 깨끗한 환경 검증(새 clone + `npm ci` + 새 venv + `make verify`) 2회: 1회차 12단계 PASS 뒤 증거 복사에서 중단(I-36) → 수정 → 2회차 PASS | `artifacts/verification/runs/20261015T030106Z` |
 
-## 마지막 테스트 결과
+## 마지막 테스트 결과 (12:02, 커밋 85c3c39, 깨끗한 환경)
 
-- `pytest tools`: 60 passed (seedtool 58 + 식별자 검증 2, 오케스트레이터 실행, 03:5x 재확인)
-- `seedtool validate`(seed + atlas): G 오류 0, W 경고 정보성
-- `seedtool quotes`: 121/121
-- 사이트(main, 03:3x): `make lint` 0 오류, `make typecheck` 0 오류, `make validate` 0 오류, preview 빌드 638쪽 성공, `make test` **FAIL**(vitest 2건 — 대체 시드 기준 테스트, 작업 B가 다시 씀)
+- `make verify` 12단계 PASS: lint, typecheck, test(vitest 21 · pytest 200), validate, validate-fixtures, build(632쪽), check-dist, build-public(7쪽, 승인 0건), check-dist-public, e2e(fixture 108/108), e2e-seed(42 통과 + 4 fixme: P2), secrets
+- 증거: `artifacts/verification/runs/20261015T030106Z/summary.json` (git dirty=false)
