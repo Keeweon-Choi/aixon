@@ -795,7 +795,7 @@ def _read_text(data: bytes, url: str, content_type: str):
     parser = _TextHTML(); parser.feed(data.decode("utf-8", "replace")); return "".join(parser.parts), None
 
 
-def check_quotes(graph: dict, cache_dir: str | Path | None = None, offline=False) -> list[dict]:
+def check_quotes(graph: dict, cache_dir: str | Path | None = None, offline=False, read_digests: dict[str, str] | None = None) -> list[dict]:
     cache = Path(cache_dir or "data/cache/fulltext"); rows = []
     for cid, claim in sorted(graph["claims"].items()):
         for index, ev in enumerate(claim.get("evidence", []) or []):
@@ -818,6 +818,8 @@ def check_quotes(graph: dict, cache_dir: str | Path | None = None, offline=False
             except Exception as exc:  # noqa: BLE001 - reported per evidence row as fetch_error
                 rows.append({**base, "status": "fetch_error", "detail": str(exc)}); continue
             digest = hashlib.sha256(data).hexdigest()
+            if read_digests is not None:
+                read_digests[sid] = digest
             if source.get("content_sha256") and source["content_sha256"] != digest:
                 rows.append({**base, "status": "source_changed", "detail": f"expected {source['content_sha256']}, got {digest}"})
             text, error = _read_text(data, url, content_type)
@@ -835,7 +837,7 @@ def _read_learner(path):
 def main(argv=None):
     parser = argparse.ArgumentParser(prog="seedtool.py"); sub = parser.add_subparsers(dest="command", required=True)
     p = sub.add_parser("validate"); p.add_argument("graph", nargs="+"); p.add_argument("--json", action="store_true")
-    p = sub.add_parser("quotes"); p.add_argument("graph", nargs="+"); p.add_argument("--cache"); p.add_argument("--offline", action="store_true")
+    p = sub.add_parser("quotes"); p.add_argument("graph", nargs="+"); p.add_argument("--cache"); p.add_argument("--offline", action="store_true"); p.add_argument("--pin", action="store_true")
     p = sub.add_parser("mastery"); p.add_argument("graph", nargs="+"); p.add_argument("--learner", required=True)
     p = sub.add_parser("plan"); p.add_argument("graph", nargs="+"); p.add_argument("--objective", required=True); p.add_argument("--learner", required=True); p.add_argument("--include-recommended", action="store_true"); p.add_argument("--no-diagnostics-first", action="store_true"); p.add_argument("--prefer", action="append", default=[]); p.add_argument("--time-budget", type=int)
     args = parser.parse_args(argv); graph = load_graph(args.graph)
@@ -844,7 +846,26 @@ def main(argv=None):
         print(_dump(payload) if args.json else "\n".join(f"{x.code} {x.ref}: {x.message}" for x in issues))
         return 1 if any(x.code.startswith("G") for x in issues) else 0
     if args.command == "quotes":
-        rows = check_quotes(graph, args.cache, args.offline); print(_dump(rows)); return 1 if any(x["status"] != "found" for x in rows) else 0
+        read_digests: dict[str, str] = {}
+        rows = check_quotes(graph, args.cache, args.offline, read_digests)
+        if args.pin:
+            from tools.yamlrec import edit_file, set_field
+
+            pending = set(read_digests)
+            for path in _graph_paths(args.graph):
+                document = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+                ids = {source.get("id") for source in document.get("sources", []) or [] if isinstance(source, dict)}
+                updates = {source: digest for source, digest in read_digests.items() if source in ids}
+                if updates:
+                    def pin(lines, updates=updates):
+                        for source, digest in updates.items():
+                            lines = set_field(lines, source, "content_sha256", digest)
+                        return lines
+                    edit_file(str(path), pin)
+                    pending.difference_update(updates)
+            if pending:
+                raise ValueError(f"sources not found in graph files: {', '.join(sorted(pending))}")
+        print(_dump(rows)); return 1 if any(x["status"] != "found" for x in rows) else 0
     learner = _read_learner(args.learner)
     if args.command == "mastery":
         payload = {f"{u}@{d}": x for (u, d), x in compute_mastery(graph, learner).items()}; print(_dump(payload)); return 0

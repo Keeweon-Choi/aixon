@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
 from pathlib import Path
 
@@ -13,6 +14,7 @@ from tools.seedtool import (
     compute_mastery,
     graph_version,
     load_graph,
+    main,
     plan,
     validate,
 )
@@ -319,6 +321,45 @@ def test_quote_hyphenated_line_breaks(tmp_path):
 def test_quote_citation_marker_inside_inline_tags(tmp_path): assert check_quotes(qgraph(tmp_path, '<p>We employ a residual connection <cite>[<a href="#b11">11</a>]</cite> around each; co<span>operate</span>.</p>', "We employ a residual connection [11] around each; cooperate."), tmp_path / "cache")[0]["status"] == "found"
 def test_quote_offline_cache_miss(tmp_path): assert check_quotes(qgraph(tmp_path, "<p>Unused.</p>", "Unused."), tmp_path / "empty", offline=True)[0]["status"] == "no_text"
 def test_quote_source_changed_and_quote_result(tmp_path): assert [x["status"] for x in check_quotes(qgraph(tmp_path, "<p>Still here.</p>", "Still here.", "0" * 64), tmp_path / "cache")] == ["source_changed", "found"]
+
+
+def test_quotes_pin_is_reproducible_and_preserves_other_yaml_lines(tmp_path, capsys):
+    url = "https://example.invalid/quote.html"
+    graph = tmp_path / "graph.yaml"
+    before = """schema_version: 1
+sources:
+- id: src:test:quote
+  name: A quote source # unchanged comment
+  kind: web_page
+  fulltext_url: https://example.invalid/quote.html
+  retrieved_at: '2026-01-01'
+claims:
+- id: clm:quote
+  predicate: PART_OF
+  subject: concept:part
+  object: concept:whole
+  evidence:
+  - source: src:test:quote
+    quote: Exact source text.
+"""
+    graph.write_text(before, encoding="utf-8")
+    cache = tmp_path / "cache"; cache.mkdir()
+    stem = hashlib.sha256(url.encode()).hexdigest()[:16] + ".html"
+    (cache / stem).write_bytes(b"<p>Exact source text.</p>")
+
+    assert main(["quotes", "--offline", "--cache", str(cache), "--pin", str(graph)]) == 0
+    digest = hashlib.sha256(b"<p>Exact source text.</p>").hexdigest()
+    pinned = graph.read_text(encoding="utf-8")
+    assert pinned.replace(f"  content_sha256: {digest}\n", "") == before
+    capsys.readouterr()
+    assert main(["quotes", "--offline", "--cache", str(cache), "--pin", str(graph)]) == 0
+    assert graph.read_text(encoding="utf-8") == pinned
+    capsys.readouterr()
+
+    (cache / stem).write_bytes(b"<p>Changed source text.</p>")
+    assert main(["quotes", "--offline", "--cache", str(cache), str(graph)]) == 1
+    rows = json.loads(capsys.readouterr().out)
+    assert [row["status"] for row in rows] == ["source_changed", "not_found"]
 
 
 def test_t18_p15_seed_if_present():
