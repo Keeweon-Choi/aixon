@@ -14,7 +14,8 @@ export interface CoverageRow {
   reviewedClaims: number;
 }
 
-function rowFor(graph: GraphData, fieldId: string): CoverageRow {
+/** Coverage of a field and all its descendant fields. */
+export function rowFor(graph: GraphData, fieldId: string): CoverageRow {
   const children: Record<string, string[]> = {};
   for (const [child, parents] of Object.entries(graph.parents)) {
     for (const parent of parents) (children[parent] ||= []).push(child);

@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import { hasMachineCitation, reviewLabel } from '../lib/badges';
+import { rowFor } from '../lib/coverage';
 import { entityPath, getGraph } from '../lib/graph';
 import { url } from '../lib/url';
 const graph = getGraph();
@@ -32,7 +33,7 @@ const wikiStatus = Object.values(graph.wikis).reduce<Record<string, number>>((co
         {topFields.map((field) => (
           <li>
             <a href={url(entityPath(String(field.id), graph))}>{String(field.name)}</a> ·{' '}
-            {graph.memberships[String(field.id)]?.length || 0}개 노드
+            {rowFor(graph, String(field.id)).entities}개 노드
           </li>
         ))}
       </ul>
