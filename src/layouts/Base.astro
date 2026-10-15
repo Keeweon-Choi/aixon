@@ -1,6 +1,7 @@
 ---
 import 'katex/dist/katex.min.css';
 import '../styles/global.css';
+import { getGraph } from '../lib/graph';
 import { url } from '../lib/url';
 interface Props {
   title: string;
@@ -8,6 +9,7 @@ interface Props {
 }
 const { title, description } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
+const graph = getGraph();
 ---
 
 <!doctype html>
@@ -16,50 +18,104 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>{title}</title>
-    <meta name="description" content={description} />
+    <meta name="description" content={description.slice(0, 160)} />
     <link rel="canonical" href={canonical} />
     <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
+    <meta property="og:description" content={description.slice(0, 160)} />
+    <slot name="head" />
   </head>
   <body>
+    <a class="skip-link" href="#main">
+      본문으로 건너뛰기
+    </a>
     <header>
       <a class="brand" href={url('')}>
         AIXON
       </a>
-      <nav>
+      <nav aria-label="주 탐색">
         <a href={url('atlas/')}>아틀라스</a>
+        <a href={url('trace/')}>연구 계보</a>
         <a href={url('coverage/')}>커버리지</a>
+        <a href={url('search/')}>검색</a>
         <a href={url('about/')}>방법론</a>
       </nav>
       <label class="quick">
-        빠른 검색 <input id="quick-search" autocomplete="off" placeholder="개념 검색" />
-        <output id="quick-results"></output>
+        빠른 검색{' '}
+        <input
+          id="quick-search"
+          role="combobox"
+          aria-expanded="false"
+          aria-controls="quick-results"
+          aria-autocomplete="list"
+          autocomplete="off"
+          placeholder="개념 검색"
+        />
       </label>
+      <div id="quick-results" role="listbox" aria-label="빠른 검색 결과"></div>
     </header>
-    <main data-pagefind-body>
+    <main id="main" data-pagefind-body>
       <slot />
     </main>
-    <footer>AIXON · 정적 Knowledge Atlas</footer>
+    <footer>
+      AIXON · {graph.build} 빌드 · 데이터 기준일 {new Date().toISOString().slice(0, 10)}
+    </footer>
     <script>
+      import { searchNodes } from '../lib/search';
       import { url } from '../lib/url';
       const input = document.querySelector<HTMLInputElement>('#quick-search');
-      const output = document.querySelector<HTMLOutputElement>('#quick-results');
-      let index: Array<{ name: string; id: string; aliases?: string[]; url: string }> = [];
+      const output = document.querySelector<HTMLDivElement>('#quick-results');
+      let index: Array<{ id: string; name: string; aliases: string[]; type: string; url: string }> =
+        [];
+      let active = -1;
+      const render = () => {
+        if (!input || !output) return;
+        const results = searchNodes(index, input.value);
+        output.replaceChildren();
+        active = -1;
+        input.setAttribute('aria-expanded', String(results.length > 0));
+        if (!input.value.trim()) return;
+        if (!results.length) {
+          output.textContent = '결과 없음';
+          return;
+        }
+        results.forEach((node, index) => {
+          const link = document.createElement('a');
+          link.href = node.url;
+          link.dataset.nodeId = node.id;
+          link.id = `quick-result-${index}`;
+          link.setAttribute('role', 'option');
+          link.textContent = `${node.name} · ${node.type}`;
+          output.append(link);
+        });
+      };
       fetch(url('node-index.json'))
-        .then((r) => (r.ok ? r.json() : []))
-        .then((x: typeof index) => (index = x));
-      input?.addEventListener('input', () => {
-        const q = input.value.toLowerCase().trim();
-        if (output)
-          output.innerHTML = q
-            ? index
-                .filter((n) =>
-                  [n.name, n.id, ...(n.aliases || [])].join(' ').toLowerCase().includes(q),
-                )
-                .slice(0, 8)
-                .map((n) => `<a href="${n.url}">${n.name}</a>`)
-                .join('') || '결과 없음'
-            : '';
+        .then((response) => (response.ok ? response.json() : []))
+        .then((value) => {
+          index = value;
+        });
+      input?.addEventListener('input', render);
+      input?.addEventListener('keydown', (event) => {
+        const links = output
+          ? Array.from(output.querySelectorAll<HTMLAnchorElement>('a[data-node-id]'))
+          : [];
+        if (event.key === 'Escape') {
+          input.value = '';
+          render();
+          input.focus();
+          return;
+        }
+        if (!links.length) return;
+        if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+          event.preventDefault();
+          active = (active + (event.key === 'ArrowDown' ? 1 : links.length - 1)) % links.length;
+          input.setAttribute('aria-activedescendant', links[active].id);
+          links[active].focus();
+          return;
+        }
+        if (event.key === 'Enter' && active >= 0) {
+          event.preventDefault();
+          links[active].click();
+        }
       });
     </script>
   </body>

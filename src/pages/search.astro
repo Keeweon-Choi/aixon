@@ -1,16 +1,26 @@
 ---
 import Base from '../layouts/Base.astro';
-import { url } from '../lib/url';
 ---
 
 <Base title="검색 | AIXON" description="AIXON 전체 검색">
   <h1>검색</h1>
   <div id="search"></div>
+  <p id="search-note">검색 색인을 불러오는 중입니다.</p>
   <script>
     import { url } from '../lib/url';
-    import(url('pagefind/pagefind-ui.js')).then(
-      ({ PagefindUI }) =>
-        new PagefindUI({ element: '#search', showSubResults: true, baseUrl: url('') }),
-    );
+    const note = document.querySelector('#search-note');
+    const css = document.createElement('link');
+    css.rel = 'stylesheet';
+    css.href = url('pagefind/pagefind-ui.css');
+    document.head.append(css);
+    import(url('pagefind/pagefind-ui.js'))
+      .then(({ PagefindUI }) => {
+        new PagefindUI({ element: '#search', showSubResults: true, baseUrl: url('') });
+        if (note) note.textContent = '';
+      })
+      .catch(() => {
+        if (note)
+          note.textContent = '검색 색인이 아직 없습니다. 빌드 후 Pagefind 색인을 생성하세요.';
+      });
   </script>
 </Base>

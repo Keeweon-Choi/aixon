@@ -1,61 +1,120 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { getGraph, entityPath } from '../../lib/graph';
-import { url } from '../../lib/url';
+import ClaimBadges from '../../components/ClaimBadges.astro';
+import { claimStatusLabel, confidenceLabel } from '../../lib/badges';
+import { entityPath, getGraph } from '../../lib/graph';
 import { claimSentence, predicateDescription } from '../../lib/predicates';
-const g = getGraph();
+import { url } from '../../lib/url';
+const graph = getGraph();
 export function getStaticPaths() {
-  const graph = getGraph();
-  return Object.entries(graph.entities)
-    .filter(([id]) => graph.types[id] === 'Claim')
-    .map(([id, claim]) => ({ params: { slug: id.replace('clm:', '') }, props: { claim } }));
+  const current = getGraph();
+  return Object.entries(current.emittedClaims).map(([id, claim]) => ({
+    params: { slug: id.replace(/^clm:/, '') },
+    props: { claim },
+  }));
 }
-const claim: any = (Astro.props as any).claim;
-const name = (id: string) => String(g.entities[id]?.name || g.entities[id]?.title || id);
+const { claim } = Astro.props;
+const name = (id: string) => String(graph.entities[id]?.name || graph.entities[id]?.title || id);
+const sentence = claimSentence(claim, name);
 const evidence = Array.isArray(claim.evidence) ? claim.evidence : [];
+const qualifierLabels: Record<string, string> = {
+  for_dimension: '학습 차원',
+  benchmark: '벤치마크',
+  metric: '지표',
+  conditions: '조건',
+  value: '값',
+  baseline_value: '기준값',
+};
+const sourceHref = (item: Record<string, unknown>) => {
+  const source = graph.sources[String(item.source)];
+  const base = String(source?.fulltext_url || source?.url || '');
+  const fragment = String(item.quote || item.rationale || '')
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 8)
+    .join(' ');
+  return base ? `${base}#:~:text=${encodeURIComponent(fragment)}` : '';
+};
 ---
 
-<Base title={`근거: ${claim.id} | AIXON`} description={claimSentence(claim, name)}>
+<Base title={`${sentence} | AIXON`} description={sentence}>
   <article>
-    <h1>Claim: {claim.id}</h1>
-    <p>{claimSentence(claim, name)}</p>
-    <p>
-      <span class="badge">{claim.status}</span> · {claim.verification ? '검증됨' : '검증 대기'} ·{' '}
-      {claim.review?.decision === 'approve' ? '사람 검토 승인' : '사람 검토 대기'} · 신뢰도:{' '}
-      {claim.confidence}
-    </p>
+    <h1>{sentence}</h1>
+    <section data-testid="claim-status">
+      <p>
+        {claimStatusLabel(claim.status)} · 신뢰도: {confidenceLabel(claim.confidence)}
+      </p>
+      <ClaimBadges claim={claim} publicBuild={graph.build === 'public'} />
+    </section>
     <h2>술어</h2>
     <p>
-      {claim.predicate}: {predicateDescription[claim.predicate] || '관계 정의'}
+      {String(claim.predicate)}:{' '}
+      {predicateDescription[String(claim.predicate)] || '관계 정의가 아직 없습니다.'}
     </p>
-    <h2>근거</h2>
-    {evidence.map((e: any) => (
+    {claim.qualifiers && (
       <section>
-        <h3>{e.stance === 'contradicts' ? '반대 근거' : '근거'}</h3>
-        <blockquote>{e.quote || e.rationale}</blockquote>
-        <p>
-          위치:{' '}
-          {Object.entries(e.locator || {})
-            .map(([k, v]) => `${k} ${v}`)
-            .join(', ') || '미지정'}
-        </p>
-        {e.source && (
-          <a
-            href={`${g.sources[e.source]?.fulltext_url || g.sources[e.source]?.url}#:~:text=${encodeURIComponent(
-              String(e.quote || '')
-                .split(/\s+/)
-                .slice(0, 8)
-                .join(' '),
-            )}`}
-          >
-            원문 열기
-          </a>
-        )}
+        <h2>한정 조건</h2>
+        <dl>
+          {Object.entries(claim.qualifiers).map(([key, value]) => (
+            <>
+              <dt>{qualifierLabels[key] || key}</dt>
+              <dd>{typeof value === 'string' ? value : JSON.stringify(value)}</dd>
+            </>
+          ))}
+        </dl>
       </section>
-    ))}
+    )}
+    {['rejected', 'deprecated'].includes(String(claim.status)) && (
+      <p class="banner">
+        {claimStatusLabel(claim.status)} ·{' '}
+        {String(
+          claim.reason || claim.deprecation_reason || claim.note || '사유가 기록되지 않았습니다.',
+        )}
+      </p>
+    )}
+    {claim.note && <p>큐레이터 메모: {String(claim.note)}</p>}
+    <section data-testid="evidence">
+      <h2>근거</h2>
+      {evidence.map((item) => {
+        const source = graph.sources[String(item.source)];
+        const href = sourceHref(item);
+        return (
+          <section data-stance={String(item.stance || 'supports')}>
+            <h3>
+              {item.stance === 'contradicts'
+                ? '반대 근거'
+                : item.stance === 'qualifies'
+                  ? '조건부 근거'
+                  : '지지 근거'}
+            </h3>
+            <blockquote lang="en">{String(item.quote || item.rationale || '')}</blockquote>
+            <p data-testid="locator">
+              위치:{' '}
+              {item.locator
+                ? Object.entries(item.locator)
+                    .map(([key, value]) => `${key} ${value}`)
+                    .join(', ')
+                : '미지정'}
+            </p>
+            <p>근거 유형: {String(item.type || item.evidence_type || '미지정')}</p>
+            {source && (
+              <p>
+                {String(source.title || source.name || item.source)}{' '}
+                {source.version && `· ${source.version}`} {source.year && `· ${source.year}`}
+              </p>
+            )}
+            {href && (
+              <a data-testid="source-link" rel="noopener noreferrer" href={href}>
+                원문에서 보기
+              </a>
+            )}
+          </section>
+        );
+      })}
+    </section>
     <p>
-      <a href={url(entityPath(claim.subject, g))}>주체 보기</a> ·{' '}
-      <a href={url(entityPath(claim.object, g))}>대상 보기</a>
+      <a href={url(entityPath(String(claim.subject), graph))}>주체 보기</a> ·{' '}
+      <a href={url(entityPath(String(claim.object), graph))}>대상 보기</a>
     </p>
   </article>
 </Base>
