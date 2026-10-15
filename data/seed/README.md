@@ -11,18 +11,18 @@ AIXON의 정확성 기준이 되는 데이터다. 스키마는 [docs/03_DATA_MOD
 | `expected_plan_e2e.json` | 위 학습자로 `lo:vit-attention-math`를 계획한 정답. 계획기 출력과 별개로 손으로 유도해 맞춤 |
 | `lab_fixtures/softmax_temperature.json` | Softmax Temperature Lab 기준값. `tools/gen_lab_fixtures.py`(numpy)가 생성 |
 
-넓은 분야 지도는 [`../graph/atlas.yaml`](../graph/atlas.yaml)(분야 96, 논문 54편)이다. 지도는 시드와 함께 읽어 하나의 그래프로 검증한다.
+넓은 분야 지도는 [`../graph/atlas.yaml`](../graph/atlas.yaml)(분야 92, 논문 54편)이다. 지도는 시드와 함께 읽어 하나의 그래프로 검증한다.
 
 ## Claim 상태 (2026-10-15)
 
 | 상태 | 수 | 의미 |
 |---|---|---|
-| verified | 100 | 인용 원문이 지정한 버전의 논문에 실제로 있음(121/121 대조) |
+| verified | 95 | 인용 원문이 지정한 버전의 논문에 실제로 있음(근거 132건 대조, 원문 `content_sha256` 고정) |
 | disputed | 1 | `clm:bn-mitigates-ics` — 원 논문 주장과 반대 근거(Santurkar et al. 2018)를 함께 둔다 |
-| proposed | 3 | 근거가 아직 부족한 후보. 공개 그래프·선수 계산에 쓰지 않는다 |
+| proposed | 8 | 근거가 아직 부족한 후보(설계 감사로 선수 관계 5건을 내림). 공개 그래프·선수 계산에 쓰지 않는다 |
 | rejected | 1 | `vgg-extends-alexnet` — 검토에서 기각. 다시 제안되지 않도록 남긴다 |
 
-**verified는 "사람이 공개 승인했다"는 뜻이 아니다.** 인용이 원문과 일치함을 기계로 확인했다는 뜻이다. 공개 승인은 Claim의 `review` 필드로 따로 관리한다(ADR-017).
+**verified는 "사람이 공개 승인했다"는 뜻이 아니다.** 인용이 원문과 일치함을 기계로 확인했다는 뜻이다. 공개 승인은 사람이 `tools/review.py`로 기록하는 `review`(내용 해시 포함)로 따로 관리한다(ADR-021, ADR-022).
 
 ## 검증
 

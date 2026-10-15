@@ -36,12 +36,12 @@
 
 | Sprint | 목표 | 완료 조건(모두 자동 검증 가능) | 상태(2026-10-15 03:0x) |
 |---|---|---|---|
-| 0 | 조사·설계·검증된 시드 | 조사 10건, 설계 문서, seedtool 60 테스트 통과, 시드 G 0·인용 121/121, 지도 arXiv 54/54, E2E golden 계획 | **완료** |
-| 1 | 사이트 기반 | Astro 설정, 그래프 로더(vitest), Entity·Field·Claim·Coverage·About·404 페이지, `make lint/typecheck/test` 통과 | 진행 중(Codex) |
-| 2 | Wiki | Content Collection 스키마, 컴포넌트, 대표 문서, `validate_content.py` V-* 통과, KaTeX 오류 0 | 진행 중 |
-| 3 | Island·검색 | Atlas·Trace·Lab island, 노드 검색, Pagefind, vitest L1–L7 | 진행 중 |
-| 4 | E2E·배포 준비 | Playwright E2E-1…9 통과(desktop·mobile), public 빌드 관문, `check_dist` 통과, `pages.yml`, `make verify` 녹색, 실제 시드로 E2E-1·2·6·7 재실행 | 대기 |
-| 5 | 독립 최종 리뷰·인수 | 리뷰어 지적 Critical/Major 0, `MVP_ACCEPTANCE_REPORT.md` | 대기 |
+| 0 | 조사·설계·검증된 시드 | 조사 10건, 설계 문서, seedtool 60 테스트 통과, 시드 G 0·인용 121/121(감사 뒤 132/132), 지도 arXiv 54/54, E2E golden 계획 | **완료** |
+| 1 | 사이트 기반 | Astro 설정, 그래프 로더(vitest), Entity·Field·Claim·Coverage·About·404 페이지, `make lint/typecheck/test` 통과 | **완료** |
+| 2 | Wiki | Content Collection 스키마, 컴포넌트, 대표 문서, `validate_content.py` V-* 통과, KaTeX 오류 0 | **완료** |
+| 3 | Island·검색 | Atlas·Trace·Lab island, 노드 검색, Pagefind, vitest L1–L7 | **완료** |
+| 4 | E2E·배포 준비 | Playwright E2E-1…9 통과(desktop·mobile), public 빌드 관문, `check_dist` 통과, `pages.yml`, `make verify` 녹색, 실제 시드로 E2E-1·2·6·7 재실행 | **완료**(깨끗한 환경 `make verify` 12단계 PASS, 2026-10-15 12:02. 실배포는 NOT RUN) |
+| 5 | 독립 최종 리뷰·인수 | 리뷰어 지적 Critical/Major 0, `MVP_ACCEPTANCE_REPORT.md` | 진행 중(최종 리뷰 Major 2건 수정 중) |
 
 ## 4. 열린 질문 (사용자 결정 필요)
 
