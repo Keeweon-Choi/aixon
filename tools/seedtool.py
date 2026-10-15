@@ -849,6 +849,11 @@ def main(argv=None):
         read_digests: dict[str, str] = {}
         rows = check_quotes(graph, args.cache, args.offline, read_digests)
         if args.pin:
+            # Pin only sources whose every quote was found: a changed source must be reviewed, not re-pinned.
+            unverified = {row["source"] for row in rows if row["status"] != "found"}
+            if unverified:
+                print(f"not pinned (quotes not all found): {', '.join(sorted(unverified))}", file=sys.stderr)
+            read_digests = {source: digest for source, digest in read_digests.items() if source not in unverified}
             try:
                 from tools.yamlrec import edit_file, set_field
             except ModuleNotFoundError:

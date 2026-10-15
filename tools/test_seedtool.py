@@ -360,6 +360,9 @@ claims:
     assert main(["quotes", "--offline", "--cache", str(cache), str(graph)]) == 1
     rows = json.loads(capsys.readouterr().out)
     assert [row["status"] for row in rows] == ["source_changed", "not_found"]
+    # --pin must not silently accept the changed source: the stored digest stays and the run fails
+    assert main(["quotes", "--offline", "--cache", str(cache), "--pin", str(graph)]) == 1
+    assert graph.read_text(encoding="utf-8") == pinned
 
 
 def test_t18_p15_seed_if_present():
