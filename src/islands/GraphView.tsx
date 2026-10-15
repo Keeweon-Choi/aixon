@@ -210,6 +210,7 @@ export default function GraphView({
     data?.nodes.find((node) => node.id === selected);
   const trace =
     mode === 'trace' ? traceLayout(data || { nodes: [], edges: [] }, { showCites }) : undefined;
+  const fieldName = (id: string) => data?.nodes.find((node) => node.id === id)?.name || id;
   const allTypes = data ? [...new Set(data.nodes.map((node) => node.type))].sort() : [];
 
   return (
@@ -338,7 +339,10 @@ export default function GraphView({
           <p className="badge">{selectedNode.status || 'active'}</p>
           <p>{selectedNode.summary || '준비 중'}</p>
           <p>도입 연도: {selectedNode.year || '연도 미상'}</p>
-          {selectedNode.paperTitles?.length && (
+          {!!selectedNode.fields?.length && (
+            <p>분야: {selectedNode.fields.map(fieldName).join(', ')}</p>
+          )}
+          {!!selectedNode.paperTitles?.length && (
             <p>소개 논문: {selectedNode.paperTitles.join(', ')}</p>
           )}
           {selectedNode.url && (
