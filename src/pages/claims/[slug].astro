@@ -68,7 +68,11 @@ const sourceHref = (item: Record<string, unknown>) => {
       <p class="banner">
         {claimStatusLabel(claim.status)} ·{' '}
         {String(
-          claim.reason || claim.deprecation_reason || claim.note || '사유가 기록되지 않았습니다.',
+          claim.rejected_reason ||
+            claim.reason ||
+            claim.deprecation_reason ||
+            claim.note ||
+            '사유가 기록되지 않았습니다.',
         )}
       </p>
     )}
