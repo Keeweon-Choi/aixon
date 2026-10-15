@@ -108,7 +108,7 @@ def papers_from_yaml(paths: list[Path]) -> tuple[list[dict], list[dict]]:
             if not isinstance(arxiv, str):
                 bad.append({"paper": rec.get("id"), "arxiv": str(arxiv), "status": "invalid_id_type", "yaml_title": rec.get("title", ""), "detail": "arXiv id must be a quoted string"})
                 continue
-            papers.append({"id": rec.get("id"), "arxiv": arxiv, "title": rec.get("title", ""), "earliest_public_date": str(rec.get("earliest_public_date", "")), "path": str(path)})
+            papers.append({"id": rec.get("id"), "arxiv": arxiv, "title": rec.get("title", ""), "earliest_public_date": str(rec.get("earliest_public_date", "")), "metadata_checked": rec.get("metadata_checked"), "path": str(path)})
     return papers, bad
 
 
@@ -190,25 +190,55 @@ def fetch_entries(identifiers: list[str], cache: Path, offline: bool) -> tuple[d
     return entries, errors
 
 
+def _apply_metadata_updates(path: Path, updates: dict[str, dict | None]) -> None:
+    """Write only changed paper metadata fields through the byte-preserving YAML editor."""
+    try:
+        from tools.yamlrec import delete_field, edit_file, set_field
+    except ModuleNotFoundError:
+        from yamlrec import delete_field, edit_file, set_field
+
+    def edit(lines):
+        for paper, metadata in updates.items():
+            lines = delete_field(lines, paper, "metadata_checked") if metadata is None else set_field(lines, paper, "metadata_checked", metadata)
+        return lines
+
+    edit_file(str(path), edit)
+
+
 def write_checked(papers: Iterable[dict], rows: Iterable[dict], today: str) -> None:
-    """Set only inline metadata_checked mappings for arXiv title matches."""
+    """Set ``metadata_checked.arxiv`` for title matches while preserving other check dates."""
     matched = {row["paper"] for row in rows if row["status"] == "match"}
-    by_path: dict[Path, list[dict]] = {}
+    by_path: dict[Path, dict[str, dict]] = {}
     for paper in papers:
-        if paper["id"] in matched and "metadata_line" in paper:
-            by_path.setdefault(paper["path"], []).append(paper)
+        if paper["id"] not in matched:
+            continue
+        metadata = dict(paper.get("metadata_checked") or {})
+        metadata["arxiv"] = today
+        by_path.setdefault(Path(paper["path"]), {})[paper["id"]] = metadata
     for path, updates in by_path.items():
-        lines = updates[0]["lines"][:]
-        for paper in sorted(updates, key=lambda item: item["metadata_line"], reverse=True):
-            index = paper["metadata_line"]
-            line = lines[index]
-            match = re.match(r"^(\s*metadata_checked:\s*)\{(.*?)\}(\s*(?:#.*)?\n?)$", line)
-            if not match:
+        _apply_metadata_updates(path, updates)
+
+
+def drop_stale_stamps(paths: Iterable[Path]) -> int:
+    """Remove arXiv check dates from papers which do not have an arXiv identifier."""
+    import yaml
+
+    removed = 0
+    for path in paths:
+        document = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        updates: dict[str, dict | None] = {}
+        for paper in document.get("papers", []) or []:
+            identifiers = paper.get("identifiers") or {}
+            metadata = paper.get("metadata_checked") or {}
+            if identifiers.get("arxiv") or "arxiv" not in metadata:
                 continue
-            values = [value.strip() for value in match.group(2).split(",") if value.strip() and not value.strip().startswith("arxiv:")]
-            values.append(f"arxiv: {today}")
-            lines[index] = f"{match.group(1)}{{{', '.join(values)}}}{match.group(3)}"
-        path.write_text("".join(lines), encoding="utf-8")
+            kept = dict(metadata)
+            del kept["arxiv"]
+            updates[paper["id"]] = kept or None
+            removed += 1
+        if updates:
+            _apply_metadata_updates(path, updates)
+    return removed
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -218,8 +248,15 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--offline", action="store_true")
     parser.add_argument("--json", action="store_true")
     parser.add_argument("--write-checked", action="store_true")
+    parser.add_argument("--drop-stale-stamps", action="store_true")
     args = parser.parse_args(argv)
-    papers, bad_type = papers_from_yaml(_paths(args.graph))
+    paths = _paths(args.graph)
+    if args.drop_stale_stamps or args.write_checked:
+        removed = drop_stale_stamps(paths)
+        if not args.write_checked:
+            print(f"removed_stale_arxiv_stamps {removed}")
+            return 0
+    papers, bad_type = papers_from_yaml(paths)
     identifiers = sorted({paper["arxiv"].split("v", 1)[0] for paper in papers})
     entries, errors = fetch_entries(identifiers, Path(args.cache), args.offline)
     rows = compare_papers(papers, entries, errors) + bad_type
