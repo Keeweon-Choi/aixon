@@ -679,7 +679,6 @@ papers:
     - W2108598243
     - W4239072543
   metadata_checked:
-    arxiv: '2026-10-15'
     openalex: '2026-10-15'
   fields:
   - field:computer-vision
@@ -698,7 +697,6 @@ papers:
     - W2163605009
     - W3147600416
   metadata_checked:
-    arxiv: '2026-10-15'
     openalex: '2026-10-15'
   fields:
   - field:image-classification
@@ -2410,6 +2408,7 @@ sources:
   url: https://www.image-net.org/static_files/papers/imagenet_cvpr09.pdf
   fulltext_url: https://www.image-net.org/static_files/papers/imagenet_cvpr09.pdf
   retrieved_at: '2026-10-15'
+  content_sha256: 9875ae02d26ad1c77554bcd6921610189d86c2609d542de0fa43e34b0990f3b3
 - id: src:pdf:krizhevsky2012-alexnet
   name: AlexNet PDF
   kind: paper_version
@@ -2417,6 +2416,7 @@ sources:
   url: https://proceedings.neurips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf
   fulltext_url: https://proceedings.neurips.cc/paper_files/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf
   retrieved_at: '2026-10-15'
+  content_sha256: 90137160c57217953d5f61857e64ca58e85f06e1b13b4f475c918b1b582b9771
 - id: src:arxiv:1409.1556v6
   name: arXiv 1409.1556v6
   kind: paper_version
@@ -2425,6 +2425,7 @@ sources:
   fulltext_url: https://arxiv.org/html/1409.1556v6
   version: 1409.1556v6
   retrieved_at: '2026-10-15'
+  content_sha256: d9e46f07a5a7ee2a22395ba0492a0d657cf428be9baa5080330452ac309fa6c6
 - id: src:arxiv:1502.03167v3
   name: arXiv 1502.03167v3
   kind: paper_version
@@ -2433,6 +2434,7 @@ sources:
   fulltext_url: https://arxiv.org/html/1502.03167v3
   version: 1502.03167v3
   retrieved_at: '2026-10-15'
+  content_sha256: a955a36befccc404f91eae4fd3c905e32bff15c0475fe8d4dab32ed98bddcba5
 - id: src:arxiv:1805.11604v5
   name: arXiv 1805.11604v5
   kind: paper_version
@@ -2441,6 +2443,7 @@ sources:
   fulltext_url: https://arxiv.org/html/1805.11604v5
   version: 1805.11604v5
   retrieved_at: '2026-10-15'
+  content_sha256: ac0d041a6338e04f1ebc3a85718d96049cc8207c2be8d12eadf4698eebe5ef17
 - id: src:arxiv:1512.03385v1
   name: arXiv 1512.03385v1
   kind: paper_version
@@ -2449,6 +2452,7 @@ sources:
   fulltext_url: https://arxiv.org/html/1512.03385v1
   version: 1512.03385v1
   retrieved_at: '2026-10-15'
+  content_sha256: 4bfe1eda302fa981e62efb8b8891c928fe450623775251bf57cedcd5b971ef90
 - id: src:arxiv:1409.0473v7
   name: arXiv 1409.0473v7
   kind: paper_version
@@ -2457,6 +2461,7 @@ sources:
   fulltext_url: https://arxiv.org/html/1409.0473v7
   version: 1409.0473v7
   retrieved_at: '2026-10-15'
+  content_sha256: 495bf11cf1d6053a2a1314f208010597b56efb2557e9e7408845b28eb646b741
 - id: src:arxiv:1607.06450v1
   name: arXiv 1607.06450v1
   kind: paper_version
@@ -2465,6 +2470,7 @@ sources:
   fulltext_url: https://arxiv.org/html/1607.06450v1
   version: 1607.06450v1
   retrieved_at: '2026-10-15'
+  content_sha256: 0c8078c546b53e781f6ce513255ec3ebfeec57a466d0d53373e9eb4abdd6a391
 - id: src:arxiv:1706.03762v7
   name: arXiv 1706.03762v7
   kind: paper_version
@@ -2473,6 +2479,7 @@ sources:
   fulltext_url: https://arxiv.org/html/1706.03762v7
   version: 1706.03762v7
   retrieved_at: '2026-10-15'
+  content_sha256: fe1288e9c6f8322156429ab44bf5ced203155f8ecc7ea9fe6cfd125872c72a3b
 - id: src:arxiv:1810.04805v2
   name: arXiv 1810.04805v2
   kind: paper_version
@@ -2481,6 +2488,7 @@ sources:
   fulltext_url: https://arxiv.org/html/1810.04805v2
   version: 1810.04805v2
   retrieved_at: '2026-10-15'
+  content_sha256: 132175f3436252c09af7d093258764a3c4dbd16be2be2e3c4369d9b01ba2bfa5
 - id: src:arxiv:1912.11370v3
   name: arXiv 1912.11370v3
   kind: paper_version
@@ -2489,6 +2497,7 @@ sources:
   fulltext_url: https://arxiv.org/html/1912.11370v3
   version: 1912.11370v3
   retrieved_at: '2026-10-15'
+  content_sha256: e803550f56d864b5f5239628b5a5ceca9f267b0545c24d5b4af96d4301631b85
 - id: src:arxiv:2010.11929v2
   name: arXiv 2010.11929v2
   kind: paper_version
@@ -2497,6 +2506,7 @@ sources:
   fulltext_url: https://arxiv.org/html/2010.11929v2
   version: 2010.11929v2
   retrieved_at: '2026-10-15'
+  content_sha256: 709184b1f6f5be852b85adad72d14c9999d55bee635d77db88e5497cbd888a8e
 - id: src:arxiv:2012.12877v2
   name: arXiv 2012.12877v2
   kind: paper_version
@@ -2505,6 +2515,7 @@ sources:
   fulltext_url: https://arxiv.org/html/2012.12877v2
   version: 2012.12877v2
   retrieved_at: '2026-10-15'
+  content_sha256: 2fb696bf77da8cac2c32c91a594f804c5dbc876ca7eb90798f20737b4ce4a984
 - id: src:arxiv:2103.14030v2
   name: arXiv 2103.14030v2
   kind: paper_version
@@ -2513,6 +2524,7 @@ sources:
   fulltext_url: https://arxiv.org/html/2103.14030v2
   version: 2103.14030v2
   retrieved_at: '2026-10-15'
+  content_sha256: 0af9b806a1e6ab1872c0843f70b071967f92b2a9c21f6c59a2446bfb530c0262
 - id: src:arxiv:1503.02531v1
   name: arXiv 1503.02531v1
   kind: paper_version
@@ -2521,6 +2533,7 @@ sources:
   fulltext_url: https://arxiv.org/html/1503.02531v1
   version: 1503.02531v1
   retrieved_at: '2026-10-15'
+  content_sha256: 377ff8455af5015e7afce0fce0e6482fa359aa2d31f77ac0f05031fbe3d7e937
 claims:
 - id: clm:intro-imagenet
   predicate: INTRODUCES
