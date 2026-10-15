@@ -1,0 +1,1679 @@
+release: first-release
+reviewer: agent:opus55-clm-ent-1015
+model: claude-opus-5-5
+start: claim-first
+reviewed_at: '2026-10-15'
+items:
+- id: concept:attention-mechanism
+  reviewed_hash: 0527334fba60
+  decision: approve
+  checks:
+  - field: name
+    text: Attention 메커니즘
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely.
+    - url: https://www.ultralytics.com/ko/glossary/attention-mechanism
+      tier: C
+      passage: 어텐션 메커니즘은 쿼리, 키, 값을 사용해 관련성에 따라 입력 특징에 가중치를 부여합니다.
+    note: The English term "attention mechanism" is used by the primary paper; the mixed Korean label matches Korean usage (어텐션 메커니즘).
+  - field: summary
+    text: 관련도 점수로 가중합을 만드는 신경망 구성 방식이다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: The output is computed as a weighted sum of the values, where the weight assigned to each value is computed by a compatibility function of the query with the corresponding key.
+    - url: https://d2l.ai/chapter_attention-mechanisms-and-transformers/queries-keys-values.html
+      tier: B
+      passage: By design, the attention mechanism provides a differentiable means of control by which a neural network can select elements from a set and to construct an associated weighted sum over representations.
+    note: compatibility function = 관련도 점수. D2L (textbook) treats it as a differentiable network mechanism.
+  - field: summary
+    text: 출력의 각 위치가 입력의 여러 위치를 서로 다른 비중으로 참고하도록
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1409.0473v7
+      tier: A
+      passage: We can understand the approach of taking a weighted sum of all the annotations as computing an expected annotation, where the expectation is over possible alignments.
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: Attention mechanisms have become an integral part of compelling sequence modeling and transduction models in various tasks, allowing modeling of dependencies without regard to their distance in the input or output sequences
+    note: Each target position takes its own weighted sum over all source annotations (Bahdanau §3.1).
+  - field: aliases
+    text: attention mechanism
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: The best performing models also connect the encoder and decoder through an attention mechanism.
+    note: ''
+  - field: aliases
+    text: attention / 어텐션
+    verdict: supported
+    sources:
+    - url: https://ko.wikipedia.org/wiki/%EC%96%B4%ED%85%90%EC%85%98_%28%EA%B8%B0%EA%B3%84_%ED%95%99%EC%8A%B5%29
+      tier: C
+      passage: 기계 학습에서 어텐션(attention)은 시퀀스의 각 구성 요소가 해당 시퀀스의 다른 구성 요소에 대해 가지는 중요도를 결정하는 기법이다.
+    - url: https://www.ultralytics.com/ko/glossary/attention-mechanism
+      tier: C
+      passage: 어텐션 메커니즘은 쿼리, 키, 값을 사용해 관련성에 따라 입력 특징에 가중치를 부여합니다.
+    note: ''
+  - field: aliases
+    text: 어텐션 메커니즘
+    verdict: supported
+    sources:
+    - url: https://ko.wikipedia.org/wiki/%EC%96%B4%ED%85%90%EC%85%98_%28%EA%B8%B0%EA%B3%84_%ED%95%99%EC%8A%B5%29
+      tier: C
+      passage: 그래프 구조 데이터에 어텐션 메커니즘을 적용함.
+    - url: https://www.ultralytics.com/ko/glossary/attention-mechanism
+      tier: C
+      passage: 어텐션 메커니즘은 쿼리, 키, 값을 사용해 관련성에 따라 입력 특징에 가중치를 부여합니다.
+    note: ''
+  - field: classification
+    text: 'fields: field:deep-learning (딥러닝)'
+    verdict: supported
+    sources:
+    - url: https://d2l.ai/chapter_attention-mechanisms-and-transformers/queries-keys-values.html
+      tier: B
+      passage: By design, the attention mechanism provides a differentiable means of control by which a neural network can select elements from a set and to construct an associated weighted sum over representations.
+    note: Attention is a core chapter of the deep learning textbook Dive into Deep Learning (Ch. 11 Attention Mechanisms and Transformers).
+  unchecked: []
+  fix: ''
+- id: method:additive-attention
+  reviewed_hash: 84e3940a7fb5
+  decision: approve
+  checks:
+  - field: name
+    text: Additive Attention
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: Additive attention computes the compatibility function using a feed-forward network with a single hidden layer.
+    note: ''
+  - field: summary
+    text: query와 key를 작은 피드포워드 신경망에 함께 넣어 점수를 계산하는 attention
+    verdict: supported
+    sources:
+    - url: https://d2l.ai/chapter_attention-mechanisms-and-transformers/attention-scoring-functions.html
+      tier: B
+      passage: the query and key are concatenated and fed into an MLP with a single hidden layer.
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: Additive attention computes the compatibility function using a feed-forward network with a single hidden layer.
+    note: In Bahdanau the roles are the previous decoder state and an encoder annotation; D2L maps them to query and key.
+  - field: summary
+    text: Bahdanau 등의 신경망 기계 번역 논문에서 제안되었다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1409.0473v7
+      tier: A
+      passage: as a feedforward neural network which is jointly trained with all the other components of the proposed system.
+    - url: https://d2l.ai/chapter_attention-mechanisms-and-transformers/bahdanau-attention.html
+      tier: B
+      passage: Inspired by the idea of learning to align, Bahdanau et al. (2014) proposed a differentiable attention model without the unidirectional alignment limitation.
+    note: The name "additive attention" is later terminology (e.g. Vaswani et al. 2017); the summary does not claim Bahdanau used the name.
+  - field: aliases
+    text: Bahdanau attention
+    verdict: supported
+    sources:
+    - url: https://d2l.ai/chapter_attention-mechanisms-and-transformers/bahdanau-attention.html
+      tier: B
+      passage: this Bahdanau attention mechanism has arguably turned into one of the most influential ideas of the past decade in deep learning
+    - url: https://en.wikipedia.org/wiki/Attention_(machine_learning)
+      tier: C
+      passage: also referred to as additive attention
+    note: ''
+  - field: aliases
+    text: additive attention
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: While the two are similar in theoretical complexity, dot-product attention is much faster and more space-efficient in practice, since it can be implemented using highly optimized matrix multiplication code.
+    - url: https://d2l.ai/chapter_attention-mechanisms-and-transformers/attention-scoring-functions.html
+      tier: B
+      passage: the additive attention scoring function (Bahdanau et al., 2014) is given by
+    note: ''
+  - field: classification
+    text: 'fields: field:machine-translation (기계 번역)'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/abs/1409.0473v7
+      tier: A
+      passage: Neural machine translation is a recently proposed approach to machine translation.
+    note: ''
+  - field: classification
+    text: 'fields: field:deep-learning (딥러닝)'
+    verdict: supported
+    sources:
+    - url: https://d2l.ai/chapter_attention-mechanisms-and-transformers/bahdanau-attention.html
+      tier: B
+      passage: this Bahdanau attention mechanism has arguably turned into one of the most influential ideas of the past decade in deep learning
+    note: ''
+  unchecked: []
+  fix: ''
+- id: method:multi-head-attention
+  reviewed_hash: 7ff50f3c04b9
+  decision: approve
+  checks:
+  - field: name
+    text: Multi-Head Attention
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: Multi-head attention allows the model to jointly attend to information from different representation subspaces at different positions.
+    note: ''
+  - field: summary
+    text: attention을 서로 다른 선형 투영 공간에서 여러 개 나란히 계산한 뒤 이어 붙이고 학습된 행렬로 한 번 더 투영해
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: On each of these projected versions of queries, keys and values we then perform the attention function in parallel
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: These are concatenated and once again projected, resulting in the final values, as depicted in Figure 2.
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: Where the projections are parameter matrices
+    - url: https://d2l.ai/chapter_attention-mechanisms-and-transformers/multihead-attention.html
+      tier: B
+      passage: attention-pooling outputs are concatenated and transformed with another learned linear projection to produce the final output.
+    note: 'Round 2: the summary now includes the learned output projection (W^O, a parameter matrix per §3.2.2).'
+  - field: summary
+    text: 여러 종류의 관계를 동시에 보도록 한 방법이다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: Multi-head attention allows the model to jointly attend to information from different representation subspaces at different positions.
+    - url: https://d2l.ai/chapter_attention-mechanisms-and-transformers/multihead-attention.html
+      tier: B
+      passage: our model to combine knowledge from different behaviors of the same attention mechanism, such as capturing dependencies of various ranges
+    note: ''
+  - field: aliases
+    text: multi-head attention
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: Multi-head attention allows the model to jointly attend to information from different representation subspaces at different positions.
+    note: ''
+  - field: aliases
+    text: MHA
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2305.13245v3
+      tier: B
+      passage: First, we show that language model checkpoints with multi-head attention (MHA) can be uptrained
+    note: Follow-up paper (GQA, Ainslie et al. 2023).
+  - field: aliases
+    text: 멀티헤드 어텐션
+    verdict: supported
+    sources:
+    - url: https://www.ultralytics.com/ko/glossary/attention-mechanism
+      tier: C
+      passage: 멀티헤드 어텐션은 각기 다른 저차원 투영을 사용해 이러한 연산을 여러 개 병렬로 실행한 다음 결과를 연결합니다.
+    - url: https://ko.wikipedia.org/wiki/%ED%8A%B8%EB%9E%9C%EC%8A%A4%ED%8F%AC%EB%A8%B8_%28%EA%B8%B0%EA%B3%84_%ED%95%99%EC%8A%B5%29
+      tier: C
+      passage: 멀티헤드 어텐션
+    note: ''
+  - field: classification
+    text: 'fields: field:deep-learning (딥러닝)'
+    verdict: supported
+    sources:
+    - url: https://d2l.ai/chapter_attention-mechanisms-and-transformers/multihead-attention.html
+      tier: B
+      passage: Thus, it may be beneficial to allow our attention mechanism to jointly use different representation subspaces of queries, keys, and values.
+    note: Section of the deep learning textbook D2L.
+  unchecked: []
+  fix: ''
+- id: method:scaled-dot-product-attention
+  reviewed_hash: baeb486b2395
+  decision: approve
+  checks:
+  - field: name
+    text: Scaled Dot-Product Attention
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: We call our particular attention "Scaled Dot-Product Attention" (Figure 2).
+    note: ''
+  - field: summary
+    text: query와 key의 내적을 √d_k로 나눈 뒤 softmax로 가중치를 구해 value를 섞는 attention 연산
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: We compute the dot products of the query with all keys
+    - url: https://d2l.ai/chapter_attention-mechanisms-and-transformers/attention-scoring-functions.html
+      tier: B
+      passage: regardless of vector length, we use the scaled dot product attention scoring function.
+    note: Full sentence in §3.2.1 continues "divide each by sqrt(d_k), and apply a softmax function to obtain the weights on the values" (the divisor is math, so the passage stops before it).
+  - field: summary
+    text: Transformer의 기본 부품이다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: On each of these projected versions of queries, keys and values we then perform the attention function in parallel
+    note: Multi-head attention (used in every Transformer layer) runs scaled dot-product attention per head.
+  - field: formula
+    text: \mathrm{Attention}(Q,K,V)=\mathrm{softmax}\left(\frac{QK^{\top}}{\sqrt{d_k}}\right)V
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: 'We compute the matrix of outputs as:'
+    note: 'Eq. (1) alttext in the v7 HTML: \mathrm{Attention}(Q,K,V)=\mathrm{softmax}(\frac{QK^{T}}{\sqrt{d_{k}}})V. Identical up to transpose notation (T vs \top).'
+  - field: formula
+    text: formula re-derived numerically
+    verdict: computed
+    sources: []
+    note: 'numpy: Q(3x4),K(5x4),V(5x2) random; A=softmax(Q@K.T/sqrt(4))@V vs explicit per-query loop sum_j exp(q_i.k_j/2)/sum_l exp(q_i.k_l/2) * v_j -> np.allclose = True; rows of softmax(QK^T/sqrt(d_k)) sum to 1 -> True. Variance check: Var(q.k) for iid N(0,1) components = 4.0 (d_k=4), 64.49 (d_k=64), 508.16 (d_k=512), i.e. about d_k, consistent with footnote 4.'
+  - field: aliases
+    text: scaled dot-product attention
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: We call our particular attention "Scaled Dot-Product Attention" (Figure 2).
+    note: ''
+  - field: aliases
+    text: SDPA
+    verdict: supported
+    sources:
+    - url: https://docs.pytorch.org/tutorials/intermediate/scaled_dot_product_attention_tutorial.html
+      tier: C
+      passage: At a high level, this PyTorch function calculates the scaled dot product attention (SDPA) between query, key, and value according to the definition found in the paper Attention is all you need.
+    - url: https://huggingface.co/docs/transformers/v4.57.3/ko/model_doc/bert
+      tier: C
+      passage: Scaled Dot Product Attention(SDPA) 사용하기
+    note: ''
+  - field: classification
+    text: 'fields: field:deep-learning (딥러닝)'
+    verdict: supported
+    sources:
+    - url: https://d2l.ai/chapter_attention-mechanisms-and-transformers/attention-scoring-functions.html
+      tier: B
+      passage: regardless of vector length, we use the scaled dot product attention scoring function.
+    note: Section of the deep learning textbook D2L.
+  unchecked: []
+  fix: ''
+- id: method:shifted-window-attention
+  reviewed_hash: eee77ca83220
+  decision: approve
+  checks:
+  - field: name
+    text: Shifted Window Attention
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2103.14030v2
+      tier: A
+      passage: Shifted Window based Self-Attention
+    - url: https://lightly.ai/blog/swin-transformer
+      tier: C
+      passage: Swin Transformer is a Vision Transformer with a shifted window attention mechanism, enabling efficient scaling to high-resolution images.
+    note: Section 3.2 title of the Swin paper.
+  - field: summary
+    text: 이미지를 겹치지 않는 창으로 나눠 창 안에서만 self-attention을 계산하고
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2103.14030v2
+      tier: A
+      passage: For efficient modeling, we propose to compute self-attention within local windows. The windows are arranged to evenly partition the image in a non-overlapping manner.
+    note: ''
+  - field: summary
+    text: 연속한 두 블록에서 일반 창과 옮긴 창을 번갈아 써서
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2103.14030v2
+      tier: A
+      passage: To introduce cross-window connections while maintaining the efficient computation of non-overlapping windows, we propose a shifted window partitioning approach which alternates between two partitioning configurations in consecutive Swin Transformer blocks.
+    note: ''
+  - field: summary
+    text: 창 크기의 절반만큼 옮긴 창
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2103.14030v2
+      tier: A
+      passage: Then, the next module adopts a windowing configuration that is shifted from that of the preceding layer, by displacing the windows by
+    note: The displacement is given in math in the v2 HTML, alttext (\lfloor\frac{M}{2}\rfloor,\lfloor\frac{M}{2}\rfloor) with windows of size M x M, i.e. half the window size (rounded down).
+  - field: summary
+    text: 창 사이를 연결하는 방법이다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2103.14030v2
+      tier: A
+      passage: The shifted window partitioning approach introduces connections between neighboring non-overlapping windows in the previous layer
+    note: ''
+  - field: aliases
+    text: shifted window attention
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2103.14030v2
+      tier: A
+      passage: Shifted Window based Self-Attention
+    - url: https://lightly.ai/blog/swin-transformer
+      tier: C
+      passage: Swin Transformer is a Vision Transformer with a shifted window attention mechanism, enabling efficient scaling to high-resolution images.
+    note: ''
+  - field: aliases
+    text: shifted windows
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/abs/2103.14030v2
+      tier: A
+      passage: 'Swin Transformer: Hierarchical Vision Transformer using Shifted Windows'
+    note: ''
+  - field: classification
+    text: 'fields: field:vision-transformers (비전 트랜스포머)'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2103.14030v2
+      tier: A
+      passage: This paper presents a new vision Transformer, called Swin Transformer, that capably serves as a general-purpose backbone for computer vision.
+    note: ''
+  - field: classification
+    text: 'fields: field:efficient-transformers (효율적 트랜스포머)'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2103.14030v2
+      tier: A
+      passage: The shifted windowing scheme brings greater efficiency by limiting self-attention computation to non-overlapping local windows while also allowing for cross-window connection.
+    note: ''
+  unchecked: []
+  fix: ''
+- id: method:transformer-encoder-layer
+  reviewed_hash: 038413779a67
+  decision: approve
+  checks:
+  - field: name
+    text: Transformer 인코더 층
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: In addition to the two sub-layers in each encoder layer, the decoder inserts a third sub-layer, which performs multi-head attention over the output of the encoder stack.
+    note: ''
+  - field: summary
+    text: multi-head self-attention과 위치별 피드포워드 네트워크를 담은 블록
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: Each layer has two sub-layers. The first is a multi-head self-attention mechanism, and the second is a simple, position-wise fully connected feed-forward network.
+    note: ''
+  - field: summary
+    text: 잔차 연결과 층 정규화로 감싼
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: Similar to the encoder, we employ residual connections around each of the sub-layers, followed by layer normalization.
+    - url: https://arxiv.org/html/2010.11929v2
+      tier: A
+      passage: Layernorm (LN) is applied before every block, and residual connections after every block
+    note: Original Transformer applies LN after each residual add, ViT before each sub-block; the summary does not state the order, so both fit.
+  - field: summary
+    text: Transformer 인코더·BERT·ViT가 이 블록을 쌓아 만든다
+    verdict: supported
+    sources:
+    - url: https://d2l.ai/chapter_attention-mechanisms-and-transformers/transformer.html
+      tier: B
+      passage: At a high level, the Transformer encoder is a stack of multiple identical layers, where each layer has two sublayers
+    - url: https://arxiv.org/html/1810.04805v2
+      tier: A
+      passage: BERT’s model architecture is a multi-layer bidirectional Transformer encoder based on the original implementation described in Vaswani et al. (2017) and released in the tensor2tensor library.
+    - url: https://arxiv.org/html/2010.11929v2
+      tier: A
+      passage: The Transformer encoder (Vaswani et al., 2017) consists of alternating layers of multiheaded self-attention (MSA, see Appendix A) and MLP blocks (Eq. 2, 3).
+    note: ''
+  - field: aliases
+    text: Transformer encoder layer
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: In addition to the two sub-layers in each encoder layer, the decoder inserts a third sub-layer, which performs multi-head attention over the output of the encoder stack.
+    note: ''
+  - field: aliases
+    text: Transformer block
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1810.04805v2
+      tier: A
+      passage: In this work, we denote the number of layers (i.e., Transformer blocks) as
+    note: ''
+  - field: classification
+    text: 'fields: field:deep-learning (딥러닝)'
+    verdict: supported
+    sources:
+    - url: https://d2l.ai/chapter_attention-mechanisms-and-transformers/transformer.html
+      tier: B
+      passage: At a high level, the Transformer encoder is a stack of multiple identical layers, where each layer has two sublayers
+    note: Section of the deep learning textbook D2L.
+  unchecked: []
+  fix: ''
+- id: model:bert
+  reviewed_hash: 7da10bbb02f6
+  decision: approve
+  checks:
+  - field: name
+    text: BERT
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1810.04805v2
+      tier: A
+      passage: We introduce a new language representation model called BERT, which stands for Bidirectional Encoder Representations from Transformers.
+    note: ''
+  - field: summary
+    text: 양방향 Transformer 인코더
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1810.04805v2
+      tier: A
+      passage: BERT’s model architecture is a multi-layer bidirectional Transformer encoder based on the original implementation described in Vaswani et al. (2017) and released in the tensor2tensor library.
+    note: ''
+  - field: summary
+    text: 마스크 언어 모델과 다음 문장 예측으로 사전학습
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1810.04805v2
+      tier: A
+      passage: BERT alleviates the previously mentioned unidirectionality constraint by using a “masked language model” (MLM) pre-training objective, inspired by the Cloze task Taylor (1953).
+    - url: https://arxiv.org/html/1810.04805v2
+      tier: A
+      passage: In order to train a model that understands sentence relationships, we pre-train for a binarized next sentence prediction task that can be trivially generated from any monolingual corpus.
+    note: ''
+  - field: summary
+    text: 여러 언어 과제에 미세조정하는 모델
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1810.04805v2
+      tier: A
+      passage: For fine-tuning, the BERT model is first initialized with the pre-trained parameters, and all of the parameters are fine-tuned using labeled data from the downstream tasks.
+    - url: https://arxiv.org/abs/1810.04805v2
+      tier: A
+      passage: It obtains new state-of-the-art results on eleven natural language processing tasks
+    note: ''
+  - field: variants
+    text: BERT-Base, BERT-Large
+    verdict: supported
+    sources:
+    - url: https://raw.githubusercontent.com/google-research/bert/master/README.md
+      tier: A
+      passage: We have shown that the standard BERT recipe (including model architecture and training objective) is effective on a wide range of model sizes, beyond BERT-Base and BERT-Large.
+    - url: https://arxiv.org/html/1810.04805v2
+      tier: A
+      passage: 'We primarily report results on two model sizes:'
+    note: Paper writes BERT with subscript BASE / LARGE (L=12,H=768,A=12,110M and L=24,H=1024,A=16,340M); official repository spells BERT-Base / BERT-Large.
+  - field: classification
+    text: 'fields: field:language-modeling (언어 모델링)'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1810.04805v2
+      tier: A
+      passage: BERT alleviates the previously mentioned unidirectionality constraint by using a “masked language model” (MLM) pre-training objective, inspired by the Cloze task Taylor (1953).
+    - url: https://huggingface.co/docs/transformers/tasks/language_modeling
+      tier: C
+      passage: There are two types of language modeling, causal and masked.
+    note: ''
+  unchecked: []
+  fix: ''
+- id: model:swin
+  reviewed_hash: 48112c5b449a
+  decision: approve
+  checks:
+  - field: name
+    text: Swin Transformer
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/abs/2103.14030v2
+      tier: A
+      passage: 'Swin Transformer: Hierarchical Vision Transformer using Shifted Windows'
+    note: ''
+  - field: summary
+    text: 창 단위 attention과 창 이동, 계층적 특징 맵
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2103.14030v2
+      tier: A
+      passage: To address these differences, we propose a hierarchical Transformer whose representation is computed with Shifted windows.
+    - url: https://arxiv.org/html/2103.14030v2
+      tier: A
+      passage: To overcome these issues, we propose a general-purpose Transformer backbone, called Swin Transformer, which constructs hierarchical feature maps and has linear computational complexity to image size.
+    note: ''
+  - field: summary
+    text: 이미지 크기에 선형인 계산량을 가지는
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2103.14030v2
+      tier: A
+      passage: This hierarchical architecture has the flexibility to model at various scales and has linear computational complexity with respect to image size.
+    note: 'Paper §3.2: linear when the window size M is fixed (default 7); the summary follows the abstract wording.'
+  - field: summary
+    text: linear vs quadratic cost (Swin Eq. 1-2) recomputed
+    verdict: computed
+    sources: []
+    note: 'Python: Omega(MSA)=4hwC^2+2(hw)^2C, Omega(W-MSA)=4hwC^2+2M^2hwC with C=96, M=7. hw=3136 -> MSA 2003828736, W-MSA 145108992; hw=12544 (4x tokens) -> MSA 30673993728 (15.3x), W-MSA 580435968 (4.0x). Window cost grows linearly in hw.'
+  - field: summary
+    text: 비전 Transformer다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2103.14030v2
+      tier: A
+      passage: This paper presents a new vision Transformer, called Swin Transformer, that capably serves as a general-purpose backbone for computer vision.
+    note: ''
+  - field: variants
+    text: Swin-T, Swin-S, Swin-B, Swin-L
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2103.14030v2
+      tier: A
+      passage: We build our base model, called Swin-B,
+    - url: https://arxiv.org/html/2103.14030v2
+      tier: A
+      passage: We also introduce Swin-T, Swin-S and Swin-L, which are versions of about
+    note: ''
+  - field: aliases
+    text: Swin
+    verdict: supported
+    sources:
+    - url: https://raw.githubusercontent.com/microsoft/Swin-Transformer/main/README.md
+      tier: A
+      passage: we cross link third-party repositories which use Swin and report results
+    note: Official repository of the authors.
+  - field: classification
+    text: 'fields: field:vision-transformers (비전 트랜스포머)'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2103.14030v2
+      tier: A
+      passage: This paper presents a new vision Transformer, called Swin Transformer, that capably serves as a general-purpose backbone for computer vision.
+    note: ''
+  unchecked: []
+  fix: ''
+- id: model:transformer
+  reviewed_hash: 1b924c0e3294
+  decision: approve
+  checks:
+  - field: name
+    text: Transformer
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely.
+    note: ''
+  - field: summary
+    text: 순환과 합성곱 없이 attention만으로 만든
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely.
+    note: ''
+  - field: summary
+    text: 인코더–디코더 시퀀스 변환(sequence transduction) 모델
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: In this work, we presented the Transformer, the first sequence transduction model based entirely on attention, replacing the recurrent layers most commonly used in encoder-decoder architectures with multi-headed self-attention.
+    note: ''
+  - field: summary
+    text: WMT 2014 영어–독일어·영어–프랑스어 번역과 English constituency parsing에서 평가되었다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: Our model achieves 28.4 BLEU on the WMT 2014 English-to-German translation task
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: On the WMT 2014 English-to-French translation task, our model establishes a new single-model state-of-the-art BLEU score of 41.8
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: To evaluate if the Transformer can generalize to other tasks we performed experiments on English constituency parsing.
+    note: Round 2 wording states only what was evaluated; no intent claim.
+  - field: variants
+    text: base, big
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: For our base models using the hyperparameters described throughout the paper, each training step took about 0.4 seconds.
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: The big models were trained for 300,000 steps (3.5 days).
+    note: ''
+  - field: aliases
+    text: 트랜스포머
+    verdict: supported
+    sources:
+    - url: https://ko.wikipedia.org/wiki/%ED%8A%B8%EB%9E%9C%EC%8A%A4%ED%8F%AC%EB%A8%B8_%28%EA%B8%B0%EA%B3%84_%ED%95%99%EC%8A%B5%29
+      tier: C
+      passage: 트랜스포머는 이후 텍스트 이외의 자료로도 확장되었다.
+    - url: https://www.ultralytics.com/ko/glossary/attention-mechanism
+      tier: C
+      passage: 2017년 트랜스포머는 어텐션을 기반으로 전체 아키텍처를 구성했습니다.
+    note: ''
+  - field: classification
+    text: 'fields: field:machine-translation (기계 번역)'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train.
+    note: ''
+  - field: classification
+    text: 'fields: field:deep-learning (딥러닝)'
+    verdict: supported
+    sources:
+    - url: https://d2l.ai/chapter_attention-mechanisms-and-transformers/transformer.html
+      tier: B
+      passage: At a high level, the Transformer encoder is a stack of multiple identical layers, where each layer has two sublayers
+    note: Chapter of the deep learning textbook D2L.
+  unchecked: []
+  fix: ''
+- id: model:vit
+  reviewed_hash: 307cb2176af7
+  decision: approve
+  checks:
+  - field: name
+    text: Vision Transformer
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2010.11929v2
+      tier: A
+      passage: Vision Transformer (ViT) attains excellent results compared to state-of-the-art convolutional networks while requiring substantially fewer computational resources to train.
+    note: ''
+  - field: summary
+    text: 이미지를 고정 크기 패치의 시퀀스로 바꿔 표준 Transformer 인코더로 처리
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2010.11929v2
+      tier: A
+      passage: We split an image into fixed-size patches, linearly embed each of them, add position embeddings, and feed the resulting sequence of vectors to a standard Transformer encoder.
+    - url: https://arxiv.org/html/2010.11929v2
+      tier: A
+      passage: To do so, we split an image into patches and provide the sequence of linear embeddings of these patches as an input to a Transformer.
+    note: First passage is the Figure 1 caption (HTML text, not image text); second is body text of §1.
+  - field: summary
+    text: '(예: 16×16)'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/abs/2010.11929v2
+      tier: A
+      passage: 'An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale'
+    note: ViT-B/16 and ViT-L/16 use 16x16 patches (model name suffix = patch size, §4.1).
+  - field: summary
+    text: 이미지 분류 모델이다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2010.11929v2
+      tier: A
+      passage: We show that this reliance on CNNs is not necessary and a pure transformer applied directly to sequences of image patches can perform very well on image classification tasks.
+    - url: https://arxiv.org/html/2010.11929v2
+      tier: A
+      passage: We train the model on image classification in supervised fashion.
+    note: ''
+  - field: variants
+    text: ViT-B/16, ViT-L/16, ViT-H/14
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2010.11929v2
+      tier: A
+      passage: We first compare our largest models – ViT-H/14 and ViT-L/16 – to state-of-the-art CNNs from the literature.
+    - url: https://arxiv.org/html/2010.11929v2
+      tier: A
+      passage: With self-supervised pre-training, our smaller ViT-B/16 model achieves 79.9% accuracy on ImageNet, a significant improvement of 2% to training from scratch, but still 4% behind supervised pre-training.
+    note: ''
+  - field: aliases
+    text: ViT
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2010.11929v2
+      tier: A
+      passage: Vision Transformer (ViT) attains excellent results compared to state-of-the-art convolutional networks while requiring substantially fewer computational resources to train.
+    note: ''
+  - field: aliases
+    text: 비전 트랜스포머 모델
+    verdict: supported
+    sources:
+    - url: https://ko.wikipedia.org/wiki/%EC%BB%B4%ED%93%A8%ED%84%B0_%EB%B9%84%EC%A0%84
+      tier: C
+      passage: 오픈 소스 비전 트랜스포머 모델
+    - url: https://www.ultralytics.com/ko/glossary/attention-mechanism
+      tier: C
+      passage: 어텐션은 현재 대규모 언어 모델, 비전 트랜스포머
+    note: Korean term 비전 트랜스포머 (+ 모델) used on two different sites.
+  - field: classification
+    text: 'fields: field:vision-transformers (비전 트랜스포머)'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2010.11929v2
+      tier: A
+      passage: Inspired by the Transformer scaling successes in NLP, we experiment with applying a standard Transformer directly to images, with the fewest possible modifications.
+    note: ViT is the model that the field description (image -> patch sequence -> Transformer self-attention) describes.
+  - field: classification
+    text: 'fields: field:image-classification (이미지 분류)'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2010.11929v2
+      tier: A
+      passage: We train the model on image classification in supervised fashion.
+    note: ''
+  unchecked: []
+  fix: ''
+- id: paper:bahdanau2014-attention
+  reviewed_hash: a83e0fa1c109
+  decision: approve
+  checks:
+  - field: metadata
+    text: 'title: Neural Machine Translation by Jointly Learning to Align and Translate'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/abs/1409.0473v7
+      tier: A
+      passage: Neural Machine Translation by Jointly Learning to Align and Translate
+    note: ''
+  - field: metadata
+    text: 'authors: Dzmitry Bahdanau, Kyunghyun Cho, Yoshua Bengio'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/abs/1409.0473v7
+      tier: A
+      passage: Dzmitry Bahdanau, Kyunghyun Cho, Yoshua Bengio
+    note: ''
+  - field: metadata
+    text: 'earliest_public_date: 2014-09-01'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/abs/1409.0473v7
+      tier: A
+      passage: Submitted on 1 Sep 2014 (v1), last revised 19 May 2016 (this version, v7)
+    note: ''
+  - field: metadata
+    text: 'venue: ICLR 2015 (oral presentation)'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/abs/1409.0473v7
+      tier: A
+      passage: Accepted at ICLR 2015 as oral presentation
+    note: Author-supplied arXiv comment.
+  - field: metadata
+    text: 'identifiers: arxiv 1409.0473, arxiv_doi 10.48550/arXiv.1409.0473'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/abs/1409.0473v7
+      tier: A
+      passage: https://doi.org/10.48550/arXiv.1409.0473
+    note: ''
+  - field: metadata
+    text: 'identifiers: openalex W2133564696'
+    verdict: supported
+    sources:
+    - url: https://api.openalex.org/works/W2133564696
+      tier: A
+      passage: Neural Machine Translation by Jointly Learning to Align and Translate
+    note: OpenAlex is the registry of this identifier; the record resolves to this title, authors Bahdanau/Cho/Bengio, DOI 10.48550/arxiv.1409.0473.
+  - field: classification
+    text: 'fields: field:machine-translation (기계 번역)'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/abs/1409.0473v7
+      tier: A
+      passage: Neural machine translation is a recently proposed approach to machine translation.
+    note: ''
+  unchecked: []
+  fix: ''
+- id: paper:liu2021-swin
+  reviewed_hash: 754ed3d85f94
+  decision: approve
+  checks:
+  - field: metadata
+    text: 'title: Swin Transformer: Hierarchical Vision Transformer using Shifted Windows'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/abs/2103.14030v2
+      tier: A
+      passage: 'Swin Transformer: Hierarchical Vision Transformer using Shifted Windows'
+    note: ''
+  - field: metadata
+    text: 'authors: Ze Liu, Yutong Lin, Yue Cao, Han Hu, Yixuan Wei, Zheng Zhang, Stephen Lin, Baining Guo'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/abs/2103.14030v2
+      tier: A
+      passage: Ze Liu, Yutong Lin, Yue Cao, Han Hu, Yixuan Wei, Zheng Zhang, Stephen Lin, Baining Guo
+    note: ''
+  - field: metadata
+    text: 'earliest_public_date: 2021-03-25'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/abs/2103.14030v2
+      tier: A
+      passage: Submitted on 25 Mar 2021 (v1), last revised 17 Aug 2021 (this version, v2)
+    note: ''
+  - field: metadata
+    text: 'venue: ICCV 2021'
+    verdict: supported
+    sources:
+    - url: https://openaccess.thecvf.com/content/ICCV2021/html/Liu_Swin_Transformer_Hierarchical_Vision_Transformer_Using_Shifted_Windows_ICCV_2021_paper.html
+      tier: A
+      passage: Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV), 2021
+    note: CVF open-access proceedings page.
+  - field: metadata
+    text: 'identifiers: doi 10.1109/ICCV48922.2021.00986'
+    verdict: supported
+    sources:
+    - url: https://api.crossref.org/works/10.1109/ICCV48922.2021.00986
+      tier: A
+      passage: 'Swin Transformer: Hierarchical Vision Transformer using Shifted Windows'
+    - url: https://api.crossref.org/works/10.1109/ICCV48922.2021.00986
+      tier: A
+      passage: International Conference on Computer Vision (ICCV)
+    note: 'Crossref (DOI registration agency) record for this DOI: title, 8 authors as in the record, container 2021 IEEE/CVF ICCV.'
+  - field: metadata
+    text: 'identifiers: arxiv 2103.14030, arxiv_doi 10.48550/arXiv.2103.14030'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/abs/2103.14030v2
+      tier: A
+      passage: https://doi.org/10.48550/arXiv.2103.14030
+    note: ''
+  - field: metadata
+    text: 'identifiers: openalex W3138516171'
+    verdict: supported
+    sources:
+    - url: https://api.openalex.org/works/W3138516171
+      tier: A
+      passage: 'Swin Transformer: Hierarchical Vision Transformer using Shifted Windows'
+    note: OpenAlex registry record; DOI 10.1109/iccv48922.2021.00986, year 2021, source ICCV.
+  - field: classification
+    text: 'fields: field:vision-transformers (비전 트랜스포머)'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2103.14030v2
+      tier: A
+      passage: This paper presents a new vision Transformer, called Swin Transformer, that capably serves as a general-purpose backbone for computer vision.
+    note: ''
+  unchecked: []
+  fix: ''
+- id: paper:vaswani2017-transformer
+  reviewed_hash: 1aaa1bc96f41
+  decision: approve
+  checks:
+  - field: metadata
+    text: 'title: Attention Is All You Need'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/abs/1706.03762v7
+      tier: A
+      passage: Title:Attention Is All You Need
+    note: ''
+  - field: metadata
+    text: 'authors: Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Łukasz Kaiser, Illia Polosukhin'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/abs/1706.03762v7
+      tier: A
+      passage: Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz Kaiser, Illia Polosukhin
+    - url: https://papers.nips.cc/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html
+      tier: A
+      passage: Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N Gomez, Łukasz Kaiser, Illia Polosukhin
+    note: arXiv metadata spells Lukasz; the paper PDF/HTML and NeurIPS proceedings spell Łukasz, as in the record.
+  - field: metadata
+    text: 'earliest_public_date: 2017-06-12'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/abs/1706.03762v7
+      tier: A
+      passage: Submitted on 12 Jun 2017 (v1), last revised 2 Aug 2023 (this version, v7)
+    note: ''
+  - field: metadata
+    text: 'venue: NIPS 2017 (now NeurIPS): Advances in Neural Information Processing Systems 30'
+    verdict: supported
+    sources:
+    - url: https://papers.nips.cc/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html
+      tier: A
+      passage: Advances in Neural Information Processing Systems 30 (NIPS 2017)
+    note: Page is the NeurIPS Proceedings site.
+  - field: metadata
+    text: 'venue: pp. 5998–6008'
+    verdict: supported
+    sources:
+    - url: https://papers.nips.cc/paper_files/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Metadata.json
+      tier: A
+      passage: '"page_first": 5998, "page_last": 6008'
+    note: Official proceedings metadata file (the proceedings BibTeX has an empty pages field).
+  - field: metadata
+    text: 'identifiers: arxiv 1706.03762, arxiv_doi 10.48550/arXiv.1706.03762'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/abs/1706.03762v7
+      tier: A
+      passage: https://doi.org/10.48550/arXiv.1706.03762
+    note: ''
+  - field: metadata
+    text: 'identifiers: openalex W2626778328'
+    verdict: supported
+    sources:
+    - url: https://api.openalex.org/works/W2626778328
+      tier: A
+      passage: Attention Is All You Need
+    note: 'OpenAlex registry record resolves to this title and the 8 authors, biblio volume 30 pp. 5998-6008. Caveat: on 2026-10-15 OpenAlex shows doi 10.65215/2q58a426 and publication_year 2025 for this work (OpenAlex-side data drift); the ID itself identifies the paper.'
+  - field: classification
+    text: 'fields: field:machine-translation (기계 번역)'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train.
+    note: ''
+  - field: classification
+    text: 'fields: field:deep-learning (딥러닝)'
+    verdict: supported
+    sources:
+    - url: https://d2l.ai/chapter_attention-mechanisms-and-transformers/transformer.html
+      tier: B
+      passage: At a high level, the Transformer encoder is a stack of multiple identical layers, where each layer has two sublayers
+    note: The Transformer is a chapter of the deep learning textbook D2L.
+  unchecked: []
+  fix: ''
+- id: problem:quadratic-attention-cost-high-resolution
+  reviewed_hash: 072f6b869f7f
+  decision: approve
+  checks:
+  - field: name
+    text: 고해상도에서 attention의 이차 비용
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2103.14030v2
+      tier: A
+      passage: There exist many vision tasks such as semantic segmentation that require dense prediction at the pixel level, and this would be intractable for Transformer on high-resolution images, as the computational complexity of its self-attention is quadratic to image size.
+    note: ''
+  - field: summary
+    text: 전역 self-attention의 계산량이 토큰 수의 제곱에 비례
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2103.14030v2
+      tier: A
+      passage: The global computation leads to quadratic complexity with respect to the number of tokens, making it unsuitable for many vision problems requiring an immense set of tokens for dense prediction or to represent a high-resolution image.
+    note: ''
+  - field: summary
+    text: quadratic growth recomputed
+    verdict: computed
+    sources: []
+    note: 'Python with Swin Eq. (1) Omega(MSA)=4hwC^2+2(hw)^2C, C=96: hw=3136 -> 2003828736; hw=12544 (4x tokens) -> 30673993728 (15.3x; the (hw)^2 term alone grows 16x).'
+  - field: summary
+    text: 고해상도 이미지나 밀집 예측 과제에서 비용이 너무 커지는 문제다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2103.14030v2
+      tier: A
+      passage: There exist many vision tasks such as semantic segmentation that require dense prediction at the pixel level, and this would be intractable for Transformer on high-resolution images, as the computational complexity of its self-attention is quadratic to image size.
+    note: ''
+  - field: question
+    text: 고해상도 이미지에서 attention 계산량을 이미지 크기에 선형으로 줄일 수 있는가?
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2103.14030v2
+      tier: A
+      passage: To overcome these issues, we propose a general-purpose Transformer backbone, called Swin Transformer, which constructs hierarchical feature maps and has linear computational complexity to image size.
+    note: The question is the one Swin answers; phrased as an open question, no false presupposition.
+  - field: aliases
+    text: quadratic attention cost
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2009.06732v3
+      tier: B
+      passage: A well-known concern with self-attention is the quadratic time and memory complexity, which can hinder model scalability in many settings.
+    note: 'Survey (Tay et al., Efficient Transformers: A Survey).'
+  - field: classification
+    text: 'fields: field:vision-transformers (비전 트랜스포머)'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2103.14030v2
+      tier: A
+      passage: The global computation leads to quadratic complexity with respect to the number of tokens, making it unsuitable for many vision problems requiring an immense set of tokens for dense prediction or to represent a high-resolution image.
+    note: ''
+  - field: classification
+    text: 'fields: field:efficient-transformers (효율적 트랜스포머)'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2009.06732v3
+      tier: B
+      passage: Efficient self-attention models are crucial in applications that model long sequences. For example, documents, images, and videos are all often composed of a relatively large number of pixels or tokens.
+    note: ''
+  unchecked: []
+  fix: ''
+- id: problem:sequential-computation-in-rnns
+  reviewed_hash: f74bfe01289a
+  decision: approve
+  checks:
+  - field: name
+    text: RNN의 순차 계산
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: The fundamental constraint of sequential computation, however, remains.
+    note: ''
+  - field: summary
+    text: 순환 신경망은 시간 단계마다 이전 상태가 필요해
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: Recurrent models typically factor computation along the symbol positions of the input and output sequences.
+    - url: https://en.wikipedia.org/wiki/Recurrent_neural_network
+      tier: C
+      passage: The fundamental building block of RNN is the recurrent unit, which maintains a hidden state—a form of memory that is updated at each time step based on the current input and the previous hidden state.
+    note: 'Vaswani §1 continues: hidden states are generated as a function of the previous hidden state and the input for each position (math symbols omitted from passage).'
+  - field: summary
+    text: 한 학습 예제 안에서 병렬 계산이 어렵다는 문제다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: This inherently sequential nature precludes parallelization within training examples, which becomes critical at longer sequence lengths, as memory constraints limit batching across examples.
+    note: ''
+  - field: question
+    text: 순서대로 계산하지 않고도 시퀀스를 모델링할 수 있는가?
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: In this work we propose the Transformer, a model architecture eschewing recurrence and instead relying entirely on an attention mechanism to draw global dependencies between input and output.
+    note: ''
+  - field: aliases
+    text: sequential computation
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: The fundamental constraint of sequential computation, however, remains.
+    note: ''
+  - field: classification
+    text: 'fields: field:natural-language-processing (자연어 처리)'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: neural networks in particular, have been firmly established as state of the art approaches in sequence modeling and transduction problems such as language modeling and machine translation
+    note: Context of the problem in the source is NLP sequence tasks.
+  unchecked: []
+  fix: ''
+- id: field:artificial-intelligence
+  reviewed_hash: d2afe7d82b28
+  decision: approve
+  checks:
+  - field: name
+    text: 인공지능
+    verdict: supported
+    sources:
+    - url: https://ko.wikipedia.org/wiki/%EC%9D%B8%EA%B3%B5%EC%A7%80%EB%8A%A5
+      tier: C
+      passage: '인공지능(영어: artificial intelligence, AI)은 컴퓨터가 학습, 추론, 지각, 언어 처리, 문제 해결, 계획과 의사 결정처럼 지능과 관련된 일을'
+    - url: https://www.ibm.com/kr-ko/think/topics/artificial-intelligence
+      tier: C
+      passage: 인공 지능(AI)은 컴퓨터와 기계가 인간의 학습, 이해, 문제 해결, 의사 결정, 창의성 및 자율성을 시뮬레이션할 수 있도록 하는 기술입니다.
+    note: ''
+  - field: summary
+    text: 지각·추론·학습·언어 같은 지적 능력을 계산으로 구현하는 방법을 연구하는 분야다
+    verdict: supported
+    sources:
+    - url: https://en.wikipedia.org/wiki/Artificial_intelligence
+      tier: C
+      passage: Artificial intelligence (AI) is the capability of computational systems to perform tasks typically associated with human intelligence, such as learning, reasoning, problem-solving, perception, and decision-making.
+    - url: https://ko.wikipedia.org/wiki/%EC%9D%B8%EA%B3%B5%EC%A7%80%EB%8A%A5
+      tier: C
+      passage: '인공지능(영어: artificial intelligence, AI)은 컴퓨터가 학습, 추론, 지각, 언어 처리, 문제 해결, 계획과 의사 결정처럼 지능과 관련된 일을'
+    - url: https://www.ibm.com/think/topics/artificial-intelligence
+      tier: C
+      passage: Artificial intelligence (AI) is technology that enables computers and machines to simulate human learning, comprehension, problem solving, decision making, creativity and autonomy.
+    note: 'Field-of-research sense: English Wikipedia continues "It is a field of research in engineering, mathematics, and computer science". Wikipedia ko/en count as the same site family; IBM is the independent second site.'
+  unchecked: []
+  fix: ''
+- id: field:computer-vision
+  reviewed_hash: d7a831313663
+  decision: approve
+  checks:
+  - field: name
+    text: 컴퓨터 비전
+    verdict: supported
+    sources:
+    - url: https://ko.wikipedia.org/wiki/%EC%BB%B4%ED%93%A8%ED%84%B0_%EB%B9%84%EC%A0%84
+      tier: C
+      passage: 컴퓨터 비전(computer vision) 작업에는 이미지 취득, 처리, 분석 및 디지털 이미지 이해
+    - url: https://www.ultralytics.com/ko/glossary/attention-mechanism
+      tier: C
+      passage: 스포츠 분야의 컴퓨터 비전
+    note: ''
+  - field: summary
+    text: 이미지와 영상에서 정보를 인식하고 이해하는 방법을 연구하는 분야다
+    verdict: supported
+    sources:
+    - url: https://en.wikipedia.org/wiki/Computer_vision
+      tier: C
+      passage: Computer vision is an interdisciplinary field that deals with how computers can be made to gain high-level understanding from digital images or videos.
+    - url: https://www.ibm.com/think/topics/computer-vision
+      tier: C
+      passage: Computer vision is a subfield of artificial intelligence (AI) that equips machines with the ability to process, analyze and interpret visual inputs such as images and videos.
+    note: ''
+  - field: summary
+    text: 물체·장면·움직임 같은 정보
+    verdict: supported
+    sources:
+    - url: https://en.wikipedia.org/wiki/Computer_vision
+      tier: C
+      passage: Subdisciplines of computer vision include scene reconstruction, object detection, event detection, activity recognition, video tracking, object recognition, 3D pose estimation, learning, indexing, motion estimation, visual servoing, 3D scene modeling, and image restoration.
+    - url: https://www.ibm.com/think/topics/computer-vision
+      tier: C
+      passage: Image recognition is all about identifying actions, objects, people, places and writing in digital images or videos.
+    note: ''
+  - field: classification
+    text: 'parents: field:artificial-intelligence'
+    verdict: supported
+    sources:
+    - url: https://www.ibm.com/think/topics/computer-vision
+      tier: C
+      passage: Computer vision is a subfield of artificial intelligence (AI) that equips machines with the ability to process, analyze and interpret visual inputs such as images and videos.
+    - url: https://en.wikipedia.org/wiki/Artificial_intelligence
+      tier: C
+      passage: Computer vision is the ability to analyse visual input.
+    note: Wikipedia AI article treats computer vision under machine perception, a subproblem of AI.
+  unchecked: []
+  fix: ''
+- id: field:deep-learning
+  reviewed_hash: 552bc8c70ab5
+  decision: approve
+  checks:
+  - field: name
+    text: 딥러닝
+    verdict: supported
+    sources:
+    - url: https://ko.wikipedia.org/wiki/%EB%94%A5_%EB%9F%AC%EB%8B%9D
+      tier: C
+      passage: '심층 학습(深層學習) 또는 딥 러닝(영어: deep structured learning, deep learning 또는 hierarchical learning)은'
+    - url: https://www.ibm.com/kr-ko/think/topics/deep-learning
+      tier: C
+      passage: 딥 러닝은 다층 신경망으로 구동되는 머신 러닝의 하위 집합으로, 인간의 뇌 구조에서 영감을 받아 설계되었습니다.
+    note: Spacing variant 딥러닝 / 딥 러닝.
+  - field: summary
+    text: 여러 층으로 쌓은 신경망으로 데이터의 표현을 단계적으로 학습하는 기계학습 방법
+    verdict: supported
+    sources:
+    - url: https://en.wikipedia.org/wiki/Deep_learning
+      tier: C
+      passage: Fundamentally, deep learning refers to a class of machine learning algorithms in which a hierarchy of layers is used to transform input data into a progressively more abstract and composite representation.
+    - url: https://www.ibm.com/think/topics/deep-learning
+      tier: C
+      passage: The presence of multiple hidden layers allows a deep learning model to learn complex hierarchical features of data
+    note: ''
+  - field: classification
+    text: 'parents: field:machine-learning'
+    verdict: supported
+    sources:
+    - url: https://en.wikipedia.org/wiki/Machine_learning
+      tier: C
+      passage: Deep learning is a subset of machine learning, which is itself a subset of artificial intelligence.
+    - url: https://www.ibm.com/think/topics/deep-learning
+      tier: C
+      passage: Deep learning is a subset of machine learning driven by multilayered neural networks whose design is inspired by the structure of the human brain.
+    note: ''
+  unchecked: []
+  fix: ''
+- id: field:efficient-transformers
+  reviewed_hash: c9cdbf805250
+  decision: approve
+  checks:
+  - field: name
+    text: Efficient Transformers
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/abs/2009.06732v3
+      tier: B
+      passage: 'Efficient Transformers: A Survey'
+    - url: https://arxiv.org/html/2009.06732v3
+      tier: B
+      passage: We propose a taxonomy of efficient Transformer models, characterizing them by their technical innovation and primary use case.
+    note: Survey title and taxonomy (Tay et al.).
+  - field: summary
+    text: Efficient Transformers는 긴 입력에서 어텐션 계산 비용을 낮추는 구조를 연구하는 분야이다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2009.06732v3
+      tier: B
+      passage: Efficient self-attention models are crucial in applications that model long sequences.
+    - url: https://arxiv.org/html/2009.06732v3
+      tier: B
+      passage: We are primarily interested in modeling advances and architectural innovations that improve the general efficiency of Transformers, including but not limited to tackling the quadratic complexity issue of the self-attention mechanism or reducing the computation costs by means such as pooling and/or sparsity.
+    note: The survey scope is somewhat broader (general efficiency incl. memory), but the summary states the core focus correctly.
+  - field: classification
+    text: 'parents: field:deep-learning'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2009.06732v3
+      tier: B
+      passage: In the field of natural language processing for example, Transformers have become an indispensable staple in the modern deep learning stack.
+    note: ''
+  - field: classification
+    text: 'parents: field:ml-systems-efficient-inference'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2009.06732v3
+      tier: B
+      passage: A well-known concern with self-attention is the quadratic time and memory complexity, which can hinder model scalability in many settings.
+    - url: https://mlsys.org/Conferences/2026/CallForPapers
+      tier: B
+      passage: Efficient model training, inference, and serving
+    note: Efficient Transformers target compute/memory efficiency, which falls under the parent field's scope (MLSys topic list). Reasonable, though the survey frames itself as modeling/architecture work.
+  unchecked: []
+  fix: ''
+- id: field:image-classification
+  reviewed_hash: 1918a2e74bbd
+  decision: approve
+  checks:
+  - field: name
+    text: 이미지 분류
+    verdict: supported
+    sources:
+    - url: https://www.ibm.com/kr-ko/think/topics/image-classification
+      tier: C
+      passage: 이미지 분류는 이미지를 카테고리화하거나 미리 정의된 카테고리로 분류하는 프로세스입니다.
+    - url: https://ko.wikipedia.org/wiki/%EC%BB%B4%ED%93%A8%ED%84%B0_%EB%B9%84%EC%A0%84
+      tier: C
+      passage: 얼굴 탐지, 이미지 분류, 객체 탐지와 같은
+    note: ''
+  - field: summary
+    text: 이미지 한 장 전체에 미리 정한 범주 중 하나를 붙이는 과제다
+    verdict: supported
+    sources:
+    - url: https://cs231n.github.io/classification/
+      tier: B
+      passage: In this section we will introduce the Image Classification problem, which is the task of assigning an input image one label from a fixed set of categories.
+    note: Stanford CS231n course notes. Describes the standard single-label setting.
+  - field: classification
+    text: 'parents: field:computer-vision'
+    verdict: supported
+    sources:
+    - url: https://cs231n.github.io/classification/
+      tier: B
+      passage: This is one of the core problems in Computer Vision that, despite its simplicity, has a large variety of practical applications.
+    note: ''
+  unchecked: []
+  fix: ''
+- id: field:language-modeling
+  reviewed_hash: 1cb173641a0b
+  decision: approve
+  checks:
+  - field: name
+    text: 언어 모델링
+    verdict: supported
+    sources:
+    - url: https://huggingface.co/docs/transformers/ko/tasks/language_modeling
+      tier: C
+      passage: 인과 언어 모델링
+    - url: https://ko.wikipedia.org/wiki/%EC%96%B8%EC%96%B4_%EB%AA%A8%EB%8D%B8
+      tier: C
+      passage: 언어 모델링 개선의
+    note: ''
+  - field: aliases
+    text: Language Modeling
+    verdict: supported
+    sources:
+    - url: https://huggingface.co/docs/transformers/tasks/language_modeling
+      tier: C
+      passage: There are two types of language modeling, causal and masked.
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: neural networks in particular, have been firmly established as state of the art approaches in sequence modeling and transduction problems such as language modeling and machine translation
+    note: ''
+  - field: aliases
+    text: LM
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1810.04805v2
+      tier: A
+      passage: A bidirectional model which is trained using the “masked LM” (MLM) but without the “next sentence prediction” (NSP) task.
+    note: ''
+  - field: summary
+    text: 텍스트의 확률 구조를 학습하는 분야
+    verdict: supported
+    sources:
+    - url: https://d2l.ai/chapter_recurrent-neural-networks/language-model.html
+      tier: B
+      passage: Language models estimate the joint probability of a text sequence.
+    note: ''
+  - field: summary
+    text: 앞 문맥으로 다음 토큰을 예측하는 자기회귀 방식
+    verdict: supported
+    sources:
+    - url: https://huggingface.co/docs/transformers/tasks/language_modeling
+      tier: C
+      passage: Causal language modeling predicts the next token in a sequence of tokens, and the model can only attend to tokens on
+    - url: https://en.wikipedia.org/wiki/Language_model
+      tier: C
+      passage: Generative pre-trained transformers (GPTs) are a type of LLM that is pre-trained to predict the next word.
+    note: ''
+  - field: summary
+    text: 가려진 토큰을 양쪽 문맥으로 예측하는 마스크 언어 모델 방식을 포함한다
+    verdict: supported
+    sources:
+    - url: https://huggingface.co/docs/transformers/tasks/masked_language_modeling
+      tier: C
+      passage: Masked language modeling predicts a masked token in a sequence, and the model can attend to tokens bidirectionally.
+    - url: https://arxiv.org/html/1810.04805v2
+      tier: A
+      passage: BERT alleviates the previously mentioned unidirectionality constraint by using a “masked language model” (MLM) pre-training objective, inspired by the Cloze task Taylor (1953).
+    note: Consistent with model:bert summary (마스크 언어 모델).
+  - field: classification
+    text: 'parents: field:natural-language-processing'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: neural networks in particular, have been firmly established as state of the art approaches in sequence modeling and transduction problems such as language modeling and machine translation
+    - url: https://en.wikipedia.org/wiki/Natural_language_processing
+      tier: C
+      passage: can achieve state-of-the-art results in many natural language tasks, e.g., in language modeling
+    note: ''
+  unchecked: []
+  fix: ''
+- id: field:machine-learning
+  reviewed_hash: 503cbed2a309
+  decision: approve
+  checks:
+  - field: name
+    text: 기계학습
+    verdict: supported
+    sources:
+    - url: https://ko.wikipedia.org/wiki/%EA%B8%B0%EA%B3%84_%ED%95%99%EC%8A%B5
+      tier: C
+      passage: '기계 학습(機械學習) 또는 머신 러닝(영어: machine learning)은 데이터나 경험을 바탕으로'
+    - url: https://plms.postech.ac.kr/local/ubion/course/syllabusV.php?id=13815
+      tier: B
+      passage: 2025년도 2학기 기계학습 (CSED515-01) 강의계획서
+    note: University course (POSTECH) uses 기계학습.
+  - field: summary
+    text: 명시적인 규칙 대신 데이터에서 패턴을 학습해 예측이나 결정을 하는 알고리즘을 연구하는
+    verdict: supported
+    sources:
+    - url: https://en.wikipedia.org/wiki/Machine_learning
+      tier: C
+      passage: Machine learning (ML) is a field of study in artificial intelligence concerned with the development and study of statistical algorithms that can learn from data and generalize to unseen data, and thus perform tasks without being explicitly programmed.
+    - url: https://www.ibm.com/think/topics/machine-learning
+      tier: C
+      passage: This pattern recognition ability enables machine learning models to make decisions or predictions without explicit, hard-coded instructions.
+    note: ''
+  - field: summary
+    text: 인공지능의 한 분야다
+    verdict: supported
+    sources:
+    - url: https://en.wikipedia.org/wiki/Machine_learning
+      tier: C
+      passage: Machine learning (ML) is a field of study in artificial intelligence concerned with the development and study of statistical algorithms that can learn from data and generalize to unseen data, and thus perform tasks without being explicitly programmed.
+    - url: https://www.ibm.com/think/topics/machine-learning
+      tier: C
+      passage: Machine learning is the subset of artificial intelligence (AI) focused on algorithms that can “learn” the patterns of training data and, subsequently, make accurate inferences about new data.
+    note: ''
+  - field: classification
+    text: 'parents: field:artificial-intelligence'
+    verdict: supported
+    sources:
+    - url: https://en.wikipedia.org/wiki/Machine_learning
+      tier: C
+      passage: Deep learning is a subset of machine learning, which is itself a subset of artificial intelligence.
+    - url: https://www.ibm.com/think/topics/machine-learning
+      tier: C
+      passage: Machine learning is the subset of artificial intelligence (AI) focused on algorithms that can “learn” the patterns of training data and, subsequently, make accurate inferences about new data.
+    note: ''
+  unchecked: []
+  fix: ''
+- id: field:machine-translation
+  reviewed_hash: 64fd86af742e
+  decision: approve
+  checks:
+  - field: name
+    text: 기계 번역
+    verdict: supported
+    sources:
+    - url: https://ko.wikipedia.org/wiki/%EA%B8%B0%EA%B3%84_%EB%B2%88%EC%97%AD
+      tier: C
+      passage: '기계 번역(機械飜譯, 영어: machine translation, MT'
+    - url: https://www.ibm.com/kr-ko/think/topics/machine-translation
+      tier: C
+      passage: 기계 번역은 여러 언어에 걸쳐 텍스트를 매핑하는 자연어 처리(NLP) 작업입니다.
+    note: ''
+  - field: summary
+    text: 한 언어의 문장을 다른 언어의 같은 뜻 문장으로 자동 번역하는 과제다
+    verdict: supported
+    sources:
+    - url: https://en.wikipedia.org/wiki/Machine_translation
+      tier: C
+      passage: Machine translation is the use of computational techniques to translate text or speech from one language to another, including the contextual, idiomatic, and pragmatic nuances of both languages.
+    - url: https://www.ibm.com/think/topics/machine-translation
+      tier: C
+      passage: Machine translation is a natural language processing (NLP) task for mapping text across languages.
+    note: ''
+  - field: classification
+    text: 'parents: field:natural-language-processing'
+    verdict: supported
+    sources:
+    - url: https://www.ibm.com/think/topics/machine-translation
+      tier: C
+      passage: Machine translation is a natural language processing (NLP) task for mapping text across languages.
+    - url: https://en.wikipedia.org/wiki/Artificial_intelligence
+      tier: C
+      passage: Specific problems include speech recognition, speech synthesis, machine translation, information extraction, information retrieval, and question answering.
+    note: Wikipedia sentence is in the Natural language processing subsection of the AI article.
+  unchecked: []
+  fix: ''
+- id: field:ml-systems-efficient-inference
+  reviewed_hash: 8f7a7505f510
+  decision: approve
+  checks:
+  - field: name
+    text: ML Systems and Efficient Inference
+    verdict: supported
+    sources:
+    - url: https://mlsys.org/Conferences/2026/CallForPapers
+      tier: B
+      passage: also solicits papers that describe the design and implementation of large-scale ML systems in industry.
+    - url: https://hanlab.mit.edu/courses/2024-fall-65940
+      tier: B
+      passage: 'Chapter I: Efficient Inference'
+    - url: https://mlsys.org/Conferences/2026/CallForPapers
+      tier: B
+      passage: Efficient model training, inference, and serving
+    note: 'Composite label of two sourced area names (ML systems: MLSys CFP; Efficient Inference: MIT 6.5940), both in the aliases; MLSys lists efficient inference as one of its topics, so joining them is accurate.'
+  - field: aliases
+    text: ML Systems
+    verdict: supported
+    sources:
+    - url: https://mlsys.org/Conferences/2026/CallForPapers
+      tier: B
+      passage: also solicits papers that describe the design and implementation of large-scale ML systems in industry.
+    note: MLSys conference call for papers.
+  - field: aliases
+    text: Efficient Inference
+    verdict: supported
+    sources:
+    - url: https://hanlab.mit.edu/courses/2024-fall-65940
+      tier: B
+      passage: 'Chapter I: Efficient Inference'
+    note: MIT 6.5940 course page.
+  - field: summary
+    text: ML Systems and Efficient Inference는 모델 학습과 배포의 계산 및 메모리 효율을 연구하는 분야이다
+    verdict: supported
+    sources:
+    - url: https://mlsys.org/Conferences/2026/CallForPapers
+      tier: B
+      passage: Efficient model training, inference, and serving
+    - url: https://dlsyscourse.org/
+      tier: B
+      passage: Analyze and optimize the computational and memory efficiency of deep learning operations on both CPU and GPU architectures
+    note: CMU Deep Learning Systems course page.
+  - field: classification
+    text: 'parents: field:machine-learning'
+    verdict: supported
+    sources:
+    - url: https://mlsys.org/Conferences/2026/CallForPapers
+      tier: B
+      passage: Authors are encouraged to submit previously unpublished research at the intersection of machine learning and computer systems.
+    note: The field sits at the intersection of ML and systems; ML as the single parent is acceptable for this taxonomy.
+  unchecked: []
+  fix: ''
+- id: field:natural-language-processing
+  reviewed_hash: 109a86d9ffc5
+  decision: approve
+  checks:
+  - field: name
+    text: 자연어 처리
+    verdict: supported
+    sources:
+    - url: https://ko.wikipedia.org/wiki/%EC%9E%90%EC%97%B0%EC%96%B4_%EC%B2%98%EB%A6%AC
+      tier: C
+      passage: NLP는 컴퓨터 과학의 하위 분야이며 인공지능과 밀접하게 연관되어 있다.
+    - url: https://www.ibm.com/kr-ko/think/topics/natural-language-processing
+      tier: C
+      passage: 자연어 처리(NLP)는 머신 러닝을 사용하여 컴퓨터가 인간의 언어를 이해하고 소통하도록 돕는 인공 지능(AI)의 하위 분야입니다.
+    note: ''
+  - field: summary
+    text: 사람의 언어로 된 텍스트와 음성을 컴퓨터가 이해하고 생성하도록 하는 방법을 연구하는 분야다
+    verdict: supported
+    sources:
+    - url: https://www.ibm.com/think/topics/natural-language-processing
+      tier: C
+      passage: NLP enables computers and digital devices to recognize, understand and generate text and speech by combining computational linguistics, the rule-based modeling of human language together with statistical modeling, machine learning and deep learning.
+    - url: https://en.wikipedia.org/wiki/Natural_language_processing
+      tier: C
+      passage: 'Major processing tasks in an NLP system include: speech recognition, text classification, natural language understanding, and natural language generation.'
+    note: ''
+  - field: classification
+    text: 'parents: field:artificial-intelligence'
+    verdict: supported
+    sources:
+    - url: https://www.ibm.com/think/topics/natural-language-processing
+      tier: C
+      passage: Natural language processing (NLP) is a subfield of computer science and artificial intelligence (AI) that uses machine learning to enable computers to understand and communicate with human language.
+    - url: https://en.wikipedia.org/wiki/Natural_language_processing
+      tier: C
+      passage: NLP is a subfield of computer science and is closely associated with artificial intelligence.
+    note: ''
+  unchecked: []
+  fix: ''
+- id: field:vision-transformers
+  reviewed_hash: 2bf61d894410
+  decision: approve
+  checks:
+  - field: name
+    text: 비전 트랜스포머
+    verdict: supported
+    sources:
+    - url: https://ko.wikipedia.org/wiki/%EB%B9%84%EC%A0%84_%ED%8A%B8%EB%9E%9C%EC%8A%A4%ED%8F%AC%EB%A8%B8
+      tier: C
+      passage: 비전 트랜스포머(Vision transformer, ViT)는 컴퓨터 비전을 위해 설계된 트랜스포머이다.
+    - url: https://www.ultralytics.com/ko/glossary/attention-mechanism
+      tier: C
+      passage: 어텐션은 현재 대규모 언어 모델, 비전 트랜스포머
+    note: ''
+  - field: summary
+    text: 이미지를 패치 시퀀스로 바꿔 Transformer의 self-attention으로 처리하는 비전 모델 계열을 다룬다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2010.11929v2
+      tier: A
+      passage: We show that this reliance on CNNs is not necessary and a pure transformer applied directly to sequences of image patches can perform very well on image classification tasks.
+    - url: https://en.wikipedia.org/wiki/Vision_transformer
+      tier: C
+      passage: A ViT decomposes an input image into a series of patches (rather than text into tokens), serializes each patch into a vector
+    note: ''
+  - field: classification
+    text: 'parents: field:computer-vision'
+    verdict: supported
+    sources:
+    - url: https://en.wikipedia.org/wiki/Vision_transformer
+      tier: C
+      passage: A vision transformer (ViT) is a transformer designed for computer vision.
+    - url: https://arxiv.org/html/2103.14030v2
+      tier: A
+      passage: This paper presents a new vision Transformer, called Swin Transformer, that capably serves as a general-purpose backbone for computer vision.
+    note: ''
+  - field: classification
+    text: 'parents: field:deep-learning'
+    verdict: supported
+    sources:
+    - url: https://d2l.ai/chapter_attention-mechanisms-and-transformers/vision-transformer.html
+      tier: B
+      passage: vision Transformers (ViTs) extract patches from images and feed them into a Transformer encoder to obtain a global representation
+    note: Vision Transformers are a section of the deep learning textbook D2L (11.8 Transformers for Vision).
+  unchecked: []
+  fix: ''
+- id: lab:softmax-temperature
+  reviewed_hash: 27d7d3b26c2b
+  decision: approve
+  checks:
+  - field: name
+    text: Softmax Temperature & Scaled Dot-Product Lab
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1503.02531v1
+      tier: B
+      passage: is to raise the temperature of the final softmax until the cumbersome model produces a suitably soft set of targets.
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: We call our particular attention "Scaled Dot-Product Attention" (Figure 2).
+    note: Both named concepts exist under these names; the lab parameters (T, d_k, n_keys) match them.
+  - field: parameters
+    text: T 0.05–5, step 0.001, default 1, log scale; d_k choices [1,4,16,64,256,512,1024] default 64; n_keys fixed 8; seed 0–4294967295 step 1 default 42
+    verdict: computed
+    sources: []
+    note: 'Verified against src/islands/SoftmaxTemperatureLab.tsx and src/lib/lab/softmax.ts. T: range slider min=log(0.05), max=log(5), step="0.001" in log space, value=log(temperature), onChange exp(); number input min 0.05 max 5; useState(1) -> default 1, log scale (node: log(0.05)=-2.9957, log(5)=1.6094, exp back = 0.0500/5.0000). d_k: <select> options [1,4,16,64,256,512,1024], useState(64). n_keys: no control; sdpaStats(dk, 8, 1000, scaled, seed) hard-codes 8. seed: useState(42), number input with Number(v)||0; mulberry32 applies seed>>>0, so the effective seed is a uint32 0..4294967295 (node: 4294967296>>>0=0, -1>>>0=4294967295); step 1 because >>>0 truncates fractions. Note: the seed input itself has no min/max attributes; out-of-range values wrap rather than being rejected, which is consistent with the stated effective range.'
+  - field: demonstrates
+    text: concept:softmax, concept:softmax-temperature (explain)
+    verdict: computed
+    sources: []
+    note: 'numpy softmax(z/T): z=[2,1,0] max prob T=1 -> 0.6652, T=0.1 -> 0.99995; z=[2,0], T=2 -> 0.7311 (= e^1/(e^1+1)). Lower T sharpens toward argmax, higher T flattens, which the T slider shows. Round 2: lib softmax(z,T) gives 0.6652, 0.99995, 0.7311 for the same inputs.'
+  - field: demonstrates
+    text: softmax temperature behaviour (source)
+    verdict: supported
+    sources:
+    - url: https://en.wikipedia.org/wiki/Softmax_function
+      tier: C
+      passage: A higher temperature results in a more uniform output distribution (i.e. with higher entropy; it is "more random"), while a lower temperature results in a sharper output distribution, usually with one value dominating.
+    - url: https://arxiv.org/html/1503.02531v1
+      tier: B
+      passage: is to raise the temperature of the final softmax until the cumbersome model produces a suitably soft set of targets.
+    note: ''
+  - field: demonstrates
+    text: concept:variance-of-sum (explain)
+    verdict: computed
+    sources: []
+    note: 'numpy, 20000 samples of iid N(0,1) q,k: Var(q.k) = 4.0 (d_k=4), 64.49 (d_k=64), 508.16 (d_k=512), i.e. about d_k as the sum of d_k independent unit-variance products; std at d_k=64 about 8.'
+  - field: demonstrates
+    text: method:scaled-dot-product-attention (derive)
+    verdict: computed
+    sources: []
+    note: 'numpy, 1000 samples, 8 keys: mean max softmax weight unscaled 0.534 (d_k=4), 0.875 (64), 0.952 (512); scaled by 1/sqrt(d_k): 0.349, 0.363, 0.357. Reproduces the saturation the scaling prevents (packet values 0.525 -> 0.955 with seed 42 agree within sampling noise). Round 2: ran the real src/lib/lab/softmax.ts sdpaStats with seed 42, 1000 samples, 8 keys (node --experimental-strip-types): unscaled mean max 0.525 (d_k=4), 0.872 (64), 0.955 (512); scaled 0.341, 0.361, 0.365; Jacobian Frobenius unscaled 0.341 -> 0.063, scaled 0.360-0.366. Matches the stated lab values.'
+  - field: demonstrates
+    text: scaling rationale (source)
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: the dot products grow large in magnitude, pushing the softmax function into regions where it has extremely small gradients
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: To illustrate why the dot products get large, assume that the components of
+    note: Original sentence is hedged ("We suspect that for large values of d_k ..."); the lab demonstrates the effect numerically, it does not claim more.
+  unchecked: []
+  fix: ''

@@ -1,0 +1,445 @@
+release: first-release
+reviewer: agent:opus55-clm-clm-1015
+model: claude-opus-5-5
+start: claim-first
+reviewed_at: 2026-10-15
+items:
+  - id: clm:intro-sdpa
+    reviewed_hash: 1484d068a3a5
+    decision: approve
+    checks:
+      - field: relation
+        text: "Attention Is All You Need (arXiv 1706.03762) 논문이 Scaled Dot-Product Attention을 제시한다"
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/1706.03762v7
+            tier: A
+            passage: 'We call our particular attention "Scaled Dot-Product Attention" (Figure 2).'
+        note: "Claim-first: WebSearch first, then I read §3.2.1 of v7. The paper defines the mechanism, names it, and gives it as Eq. (1). It also says unscaled dot-product attention already existed ('Dot-product attention is identical to our algorithm, except for the scaling factor'), so the new part is the scaling and the name. INTRODUCES ('the paper presents a method') still holds. Direction is paper -> method."
+      - field: evidence[0]
+        text: 'We call our particular attention "Scaled Dot-Product Attention" (Figure 2).'
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/1706.03762v7
+            tier: A
+            passage: 'We call our particular attention "Scaled Dot-Product Attention" (Figure 2).'
+        note: "Verbatim in §3.2.1, paragraph 1 of the v7 HTML. The sha256 of the fetched HTML matches the packet's content_sha256 (fe1288e9...). It is an author statement that names the paper's own attention, so it supports INTRODUCES."
+    unchecked: []
+    fix: ""
+
+  - id: clm:sdpa-is-a-attention
+    reviewed_hash: f44280ccc951
+    decision: approve
+    checks:
+      - field: relation
+        text: "Scaled Dot-Product Attention은 Attention 메커니즘의 한 종류다"
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/1706.03762v7
+            tier: A
+            passage: 'An attention function can be described as mapping a query and a set of key-value pairs to an output, where the query, keys, values, and output are all vectors.'
+          - url: https://arxiv.org/html/1706.03762v7
+            tier: A
+            passage: 'We call our particular attention "Scaled Dot-Product Attention" (Figure 2).'
+        note: "§3.2 defines attention functions in general. §3.2.1 then presents SDPA as 'our particular attention', and the paper names additive attention as the other common attention function. So SDPA is one kind of the general concept, and the IS_A direction (specific -> general) is right."
+      - field: evidence[0]
+        text: 'An attention function can be described as mapping a query and a set of key-value pairs to an output, where the query, keys, values, and output are all vectors.'
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/1706.03762v7
+            tier: A
+            passage: 'An attention function can be described as mapping a query and a set of key-value pairs to an output, where the query, keys, values, and output are all vectors.'
+        note: "Verbatim in §3.2, paragraph 1 of v7. It defines the general concept (the object of the claim)."
+      - field: evidence[1]
+        text: 'We call our particular attention "Scaled Dot-Product Attention" (Figure 2).'
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/1706.03762v7
+            tier: A
+            passage: 'We call our particular attention "Scaled Dot-Product Attention" (Figure 2).'
+        note: "Verbatim in §3.2.1 of v7. 'our particular attention' marks SDPA as one instance of the attention function defined just above it."
+    unchecked: []
+    fix: ""
+
+  - id: clm:scaled-dot-product-attention-part-of-multi-head-attention
+    reviewed_hash: a2b3d602402a
+    decision: approve
+    checks:
+      - field: relation
+        text: "Scaled Dot-Product Attention은 Multi-Head Attention을 이루는 구성 요소다"
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/1706.03762v7
+            tier: A
+            passage: '(left) Scaled Dot-Product Attention. (right) Multi-Head Attention consists of several attention layers running in parallel.'
+          - url: https://arxiv.org/html/1706.03762v7
+            tier: A
+            passage: 'On each of these projected versions of queries, keys and values we then perform the attention function in parallel, yielding'
+        note: "In §3.2.2, each head runs 'the attention function' (the SDPA of §3.2.1) on projected Q, K, V. Figure 2 (right) draws the SDPA block inside Multi-Head Attention, h times. So SDPA is a component of MHA, and the PART_OF direction (part -> whole) is right."
+      - field: evidence[0]
+        text: '(left) Scaled Dot-Product Attention. (right) Multi-Head Attention consists of several attention layers running in parallel.'
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/1706.03762v7
+            tier: A
+            passage: '(left) Scaled Dot-Product Attention. (right) Multi-Head Attention consists of several attention layers running in parallel.'
+        note: "This is the verbatim caption of Figure 2 in v7. Read alone, the caption does not say that the 'several attention layers' are SDPA. In context it does: the figure's right panel contains the Scaled Dot-Product Attention block, and §3.2.2 applies the §3.2.1 attention function."
+      - field: evidence[1]
+        text: 'On each of these projected versions of queries, keys and values we then perform the attention function in parallel, yielding'
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/1706.03762v7
+            tier: A
+            passage: 'On each of these projected versions of queries, keys and values we then perform the attention function in parallel, yielding'
+        note: "Verbatim prefix of the §3.2.2 sentence. The quote stops before an inline math term (d_v-dimensional output values), and the sentence goes on to say the outputs are concatenated and projected. It supports PART_OF in context. Presentation only, not a blocker: the quote ends on 'yielding', so a reader sees an unfinished sentence."
+    unchecked: []
+    fix: ""
+
+  - id: clm:multi-head-attention-part-of-transformer-encoder-layer
+    reviewed_hash: 58182b57a329
+    decision: approve
+    checks:
+      - field: relation
+        text: "Multi-Head Attention은 Transformer 인코더 층을 이루는 구성 요소다"
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/1706.03762v7
+            tier: A
+            passage: 'Each layer has two sub-layers. The first is a multi-head self-attention mechanism, and the second is a simple, position-wise fully connected feed-forward network.'
+        note: "§3.1 (Encoder). Each encoder layer's first sub-layer is multi-head self-attention. The PART_OF direction (MHA -> encoder layer) is right."
+      - field: evidence[0]
+        text: 'Each layer has two sub-layers. The first is a multi-head self-attention mechanism, and the second is a simple, position-wise fully connected feed-forward network.'
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/1706.03762v7
+            tier: A
+            passage: 'Each layer has two sub-layers. The first is a multi-head self-attention mechanism, and the second is a simple, position-wise fully connected feed-forward network.'
+        note: "Verbatim in the v7 §3.1 Encoder paragraph. The sentence before it, 'The encoder is composed of a stack of identical layers', shows that 'Each layer' means an encoder layer."
+    unchecked: []
+    fix: ""
+
+  - id: clm:transformer-encoder-layer-part-of-bert
+    reviewed_hash: 89580a18c6ce
+    decision: approve
+    checks:
+      - field: relation
+        text: "Transformer 인코더 층은 BERT를 이루는 구성 요소다"
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/1810.04805v2
+            tier: A
+            passage: 'BERT’s model architecture is a multi-layer bidirectional Transformer encoder based on the original implementation described in Vaswani et al. (2017) and released in the tensor2tensor library.'
+        note: "BERT v2 §3 Model Architecture. BERT is a multi-layer Transformer encoder, and the paper says 'we denote the number of layers (i.e., Transformer blocks) as L'. The implementation is 'almost identical to the original'. So stacked encoder layers make up BERT, and the PART_OF direction is right."
+      - field: evidence[0]
+        text: 'BERT’s model architecture is a multi-layer bidirectional Transformer encoder based on the original implementation described in Vaswani et al. (2017) and released in the tensor2tensor library.'
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/1810.04805v2
+            tier: A
+            passage: 'BERT’s model architecture is a multi-layer bidirectional Transformer encoder based on the original implementation described in Vaswani et al. (2017) and released in the tensor2tensor library.'
+        note: "Verbatim in v2 §3, ending just before footnote marker 1. The fetched HTML's sha256 matches the packet (132175f3...)."
+    unchecked: []
+    fix: ""
+
+  - id: clm:transformer-encoder-layer-part-of-vit
+    reviewed_hash: 5693bdeb1131
+    decision: approve
+    checks:
+      - field: relation
+        text: "Transformer 인코더 층은 Vision Transformer를 이루는 구성 요소다"
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/2010.11929v2
+            tier: A
+            passage: 'The Transformer encoder (Vaswani et al., 2017) consists of alternating layers of multiheaded self-attention (MSA, see Appendix A) and MLP blocks (Eq. 2, 3).'
+          - url: https://arxiv.org/html/2010.11929v2
+            tier: A
+            passage: 'Instead, we interpret an image as a sequence of patches and process it by a standard Transformer encoder as used in NLP.'
+        note: "ViT feeds the embedded patch sequence to 'a standard Transformer encoder' (Fig. 1 caption, §3.1, conclusion). The PART_OF direction is right. Nuance, not a contradiction: ViT puts LayerNorm before every block, not after each sub-layer as in Vaswani et al. ('Layernorm (LN) is applied before every block, and residual connections after every block'), and it uses GELU in the MLP. The authors still call it the Transformer encoder of Vaswani et al., so the relation holds at the level the entity summary describes."
+      - field: evidence[0]
+        text: 'The Transformer encoder (Vaswani et al., 2017) consists of alternating layers of multiheaded self-attention (MSA, see Appendix A) and MLP blocks (Eq. 2, 3).'
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/2010.11929v2
+            tier: A
+            passage: 'The Transformer encoder (Vaswani et al., 2017) consists of alternating layers of multiheaded self-attention (MSA, see Appendix A) and MLP blocks (Eq. 2, 3).'
+        note: "Verbatim in v2 §3.1. The fetched HTML's sha256 matches the packet (709184b1...). In context, this encoder is the core of the ViT model described in §3.1."
+    unchecked: []
+    fix: ""
+
+  - id: clm:transformer-addresses-sequential
+    reviewed_hash: a23252b197b5
+    decision: approve
+    checks:
+      - field: relation
+        text: "Transformer는 RNN의 순차 계산(한 학습 예제 안에서 병렬화가 막히는 문제)을 해결 대상으로 삼는다"
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/1706.03762v7
+            tier: A
+            passage: 'The fundamental constraint of sequential computation, however, remains.'
+          - url: https://arxiv.org/html/1706.03762v7
+            tier: A
+            passage: 'The Transformer allows for significantly more parallelization and can reach a new state of the art in translation quality after being trained for as little as twelve hours on eight P100 GPUs.'
+        note: "The Introduction, paragraphs 2-4, states the problem: recurrence 'precludes parallelization within training examples', and 'the fundamental constraint of sequential computation ... remains'. The next paragraph proposes the Transformer, which drops recurrence, and claims more parallelization. The paper treats this problem as its target, so ADDRESSES holds. Direction is model -> problem."
+      - field: evidence[0]
+        text: 'In this work we propose the Transformer, a model architecture eschewing recurrence and instead relying entirely on an attention mechanism to draw global dependencies between input and output.'
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/1706.03762v7
+            tier: A
+            passage: 'In this work we propose the Transformer, a model architecture eschewing recurrence and instead relying entirely on an attention mechanism to draw global dependencies between input and output.'
+        note: "Verbatim in v7 Introduction, paragraph 4. It comes right after the paragraph on the remaining sequential-computation constraint, and the next sentence claims more parallelization. Read in that context, the proposal is a response to the problem."
+      - field: evidence[1]
+        text: 'This inherently sequential nature precludes parallelization within training examples, which becomes critical at longer sequence lengths, as memory constraints limit batching across examples.'
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/1706.03762v7
+            tier: A
+            passage: 'This inherently sequential nature precludes parallelization within training examples, which becomes critical at longer sequence lengths, as memory constraints limit batching across examples.'
+        note: "Verbatim in v7 Introduction, paragraph 2. It is the paper's own statement of the problem, and it matches the entity summary of problem:sequential-computation-in-rnns, including the 'within training examples' qualifier."
+    unchecked: []
+    fix: ""
+
+  - id: clm:transformer-mitigates-sequential
+    reviewed_hash: 318fcd9afb24
+    decision: approve
+    checks:
+      - field: relation
+        text: "Transformer는 RNN의 순차 계산 문제의 영향을 완화한다"
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/1706.03762v7
+            tier: A
+            passage: 'As noted in Table 1, a self-attention layer connects all positions with a constant number of sequentially executed operations'
+          - url: https://arxiv.org/html/1706.03762v7
+            tier: A
+            passage: 'The Transformer allows for significantly more parallelization and can reach a new state of the art in translation quality after being trained for as little as twelve hours on eight P100 GPUs.'
+        note: "Table 1 and §4 give self-attention O(1) sequential operations, against O(n) for recurrent layers. The Introduction says the Transformer allows significantly more parallelization. 'Mitigates' is the right strength, not 'eliminates': the decoder still generates autoregressively, and the conclusion says 'Making generation less sequential is another research goals of ours.' Direction is model -> problem. This claim is consistent with clm:transformer-addresses-sequential."
+      - field: evidence[0]
+        text: 'As noted in Table 1, a self-attention layer connects all positions with a constant number of sequentially executed operations, whereas a recurrent layer requires'
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/1706.03762v7
+            tier: A
+            passage: 'As noted in Table 1, a self-attention layer connects all positions with a constant number of sequentially executed operations'
+        note: "This is a verbatim prefix of the §4 (Why Self-Attention) sentence in v7. The sentence goes on with an inline math term, O(n) sequential operations, which the quote leaves out. Even truncated, the quote supports the claim: a constant number of sequential operations per layer, against a recurrent layer. Presentation only, not a blocker: the quote ends on 'requires', so a reader sees an unfinished sentence."
+    unchecked: []
+    fix: ""
+
+  - id: clm:intro-additive-attention
+    reviewed_hash: 6d46a79928cb
+    decision: approve
+    checks:
+      - field: relation
+        text: "Bahdanau 등 'Neural Machine Translation by Jointly Learning to Align and Translate' 논문이 Additive Attention을 제시한다"
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/1409.0473v7
+            tier: A
+            passage: 'as a feedforward neural network which is jointly trained with all the other components of the proposed system.'
+          - url: https://arxiv.org/html/1706.03762v7
+            tier: A
+            passage: 'Additive attention computes the compatibility function using a feed-forward network with a single hidden layer.'
+        note: "Bahdanau v7 §3.1 parametrizes the alignment (score) model as a feedforward network. Appendix A.1.2 says it uses 'a single-layer multilayer perceptron'. Bahdanau never uses the name 'additive attention'. The name comes later: Vaswani et al. (§3.2.1) write 'additive attention [2]', where reference [2] is Bahdanau, Cho, Bengio, 'Neural machine translation by jointly learning to align and translate', abs/1409.0473, and describe it as a feed-forward network with a single hidden layer. So the paper INTRODUCES the method now called additive attention. Direction is paper -> method."
+      - field: evidence[0]
+        text: 'In order to address this issue, we introduce an extension to the encoder–decoder model which learns to align and translate jointly.'
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/1409.0473v7
+            tier: A
+            passage: 'In order to address this issue, we introduce an extension to the encoder–decoder model which learns to align and translate jointly.'
+        note: "Verbatim in v7 Introduction, paragraph 4. The fetched HTML's sha256 matches the packet (495bf11c...). The next sentences describe soft-searching source positions, which is the attention mechanism, and §3.1 gives its feedforward score function. The quote supports INTRODUCES in context, but on its own it does not show that the scoring is additive. Optional strengthening: add the §3.1 sentence 'We parametrize the alignment model as a feedforward neural network ...' as a second evidence."
+    unchecked: []
+    fix: ""
+
+  - id: clm:vit-adapts-transformer
+    reviewed_hash: af3acc8c5d8c
+    decision: approve
+    checks:
+      - field: relation
+        text: "Vision Transformer는 자연어 처리의 Transformer 설계를 컴퓨터 비전에 적용한다 (from_field: NLP, to_field: CV)"
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/2010.11929v2
+            tier: A
+            passage: 'Inspired by the Transformer scaling successes in NLP, we experiment with applying a standard Transformer directly to images, with the fewest possible modifications.'
+          - url: https://arxiv.org/html/2010.11929v2
+            tier: A
+            passage: 'Instead, we interpret an image as a sequence of patches and process it by a standard Transformer encoder as used in NLP.'
+        note: "Both qualifiers check out: the source field is NLP ('Transformer scaling successes in NLP', 'as used in NLP') and the target field is images and vision (image recognition). Direction (ViT adapts Transformer) is right."
+      - field: evidence[0]
+        text: 'Inspired by the Transformer scaling successes in NLP, we experiment with applying a standard Transformer directly to images, with the fewest possible modifications.'
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/2010.11929v2
+            tier: A
+            passage: 'Inspired by the Transformer scaling successes in NLP, we experiment with applying a standard Transformer directly to images, with the fewest possible modifications.'
+        note: "Verbatim in v2 Introduction, paragraph 3. It names both fields and the act of applying the design."
+      - field: evidence[1]
+        text: 'In model design we follow the original Transformer (Vaswani et al., 2017) as closely as possible.'
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/2010.11929v2
+            tier: A
+            passage: 'In model design we follow the original Transformer (Vaswani et al., 2017) as closely as possible.'
+        note: "Verbatim in v2 §3 Method, paragraph 1. It supports the claim that the design comes from the original Transformer."
+    unchecked: []
+    fix: ""
+
+  - id: clm:swin-mitigates-quadratic
+    reviewed_hash: 815792d707fc
+    decision: approve
+    checks:
+      - field: relation
+        text: "Swin Transformer는 고해상도에서 attention의 이차 비용 문제의 영향을 완화한다"
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/2103.14030v2
+            tier: A
+            passage: 'The global computation leads to quadratic complexity with respect to the number of tokens, making it unsuitable for many vision problems requiring an immense set of tokens for dense prediction or to represent a high-resolution image.'
+          - url: https://arxiv.org/html/2103.14030v2
+            tier: A
+            passage: 'This hierarchical architecture has the flexibility to model at various scales and has linear computational complexity with respect to image size.'
+        note: "The paper states the problem itself (§3.2: global self-attention is quadratic and unsuitable for high-resolution and dense prediction). It claims linear complexity in image size by computing attention inside fixed-size local windows; §3.2 says it is linear when the window size M is fixed, M = 7 by default. That matches 'mitigates'. Direction is model -> problem."
+      - field: evidence[0]
+        text: 'The linear computational complexity is achieved by computing self-attention locally within non-overlapping windows that partition an image (outlined in red). The number of patches in each window is fixed, and thus the complexity becomes linear to image size.'
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/2103.14030v2
+            tier: A
+            passage: 'The linear computational complexity is achieved by computing self-attention locally within non-overlapping windows that partition an image (outlined in red). The number of patches in each window is fixed, and thus the complexity becomes linear to image size.'
+        note: "Verbatim in v2 Introduction, paragraph 3. The fetched HTML's sha256 matches the packet (0af9b806...). The condition (a fixed number of patches per window) is kept in the quote."
+    unchecked: []
+    fix: ""
+
+  - id: clm:intro-shifted-window
+    reviewed_hash: f10e4ecf4504
+    decision: approve
+    checks:
+      - field: relation
+        text: "Swin Transformer 논문이 Shifted Window Attention을 제시한다"
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/2103.14030v2
+            tier: A
+            passage: 'To introduce cross-window connections while maintaining the efficient computation of non-overlapping windows, we propose a shifted window partitioning approach which alternates between two partitioning configurations in consecutive Swin Transformer blocks.'
+        note: "This is an explicit 'we propose' in v2 §3.2. Per §5, the method alternates regular and shifted windows in consecutive blocks, and the related entity summary says the same. The claim makes no 'first' statement, so none needs checking. Direction is paper -> method."
+      - field: evidence[0]
+        text: 'To introduce cross-window connections while maintaining the efficient computation of non-overlapping windows, we propose a shifted window partitioning approach which alternates between two partitioning configurations in consecutive Swin Transformer blocks.'
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/2103.14030v2
+            tier: A
+            passage: 'To introduce cross-window connections while maintaining the efficient computation of non-overlapping windows, we propose a shifted window partitioning approach which alternates between two partitioning configurations in consecutive Swin Transformer blocks.'
+        note: "Verbatim in v2 §3.2, under 'Shifted window partitioning in successive blocks'."
+    unchecked: []
+    fix: ""
+
+  - id: ai:lab-softmax-temp-01
+    reviewed_hash: 2a8329962e66
+    decision: approve
+    checks:
+      - field: prompt
+        text: "z = [2, 1, 0]에서 T를 1에서 0.1로 낮추면 가장 큰 확률은?"
+        verdict: computed
+        sources: []
+        note: "The prompt is well posed: the logits and both temperatures are given, and the scenario matches (logits [2,1,0], T_from 1, T_to 0.1). Own code: def sm(z,T): z=np.asarray(z,float)/T; e=np.exp(z-z.max()); return e/e.sum(). Result: sm([2,1,0],1).max()=0.6652409557748218, sm([2,1,0],0.1).max()=0.999954600070331."
+      - field: answer
+        text: "0 (커진다)"
+        verdict: computed
+        sources: []
+        note: "0.66524 -> 0.99995, so the largest probability increases. Choices are indexed from 0: src/islands/SoftmaxTemperatureLab.tsx compares the radio value String(index) with Number(item.answer). So 0 means '커진다', which is correct."
+      - field: choices
+        text: "커진다 / 작아진다 / 그대로다"
+        verdict: computed
+        sources: []
+        note: "Exactly one choice is correct. '작아진다' and '그대로다' are clearly wrong, since the value rises by 0.335. The repo reference (tools/gen_lab_fixtures.py, data/seed/lab_fixtures/softmax_temperature.json) gives the same numbers: p=[0.66524,0.24473,0.09003] at T=1 and [0.9999546,4.54e-05,2.06e-09] at T=0.1."
+      - field: rationale
+        text: "0.665 → 0.99995: 온도를 낮추면 분포가 argmax로 몰린다"
+        verdict: computed
+        sources: []
+        note: "The rounding is correct: 0.66524 -> 0.665 and 0.9999546 -> 0.99995. The general statement follows from p_j/p_max = exp((z_j - z_max)/T), which goes to 0 as T -> 0+ for every j that is not the unique maximum. Here the ratios are exp(-10) and exp(-20) at T=0.1. So the distribution concentrates on the argmax, and the rationale matches the answer."
+    unchecked: []
+    fix: ""
+
+  - id: ai:lab-softmax-temp-02
+    reviewed_hash: 08febb51ac94
+    decision: approve
+    checks:
+      - field: prompt
+        text: "z = [2, 0], T = 2일 때 첫 번째 확률은?"
+        verdict: computed
+        sources: []
+        note: "The prompt is well posed and matches the scenario (logits [2,0], T 2). Own code: sm([2,0],2)[0] = 0.7310585786300049, equal to e/(e+1)."
+      - field: answer
+        text: "0.731"
+        verdict: computed
+        sources: []
+        note: "0.7310586 rounds to 0.731. The repo fixture gives p=[0.7310585786300049, 0.2689414213699951] for z=[2,0], T=2.0."
+      - field: tolerance
+        text: "0.005"
+        verdict: computed
+        sources: []
+        note: "The accepted range is [0.726, 0.736], which covers 3-decimal rounding of the exact value. It rejects the typical mistakes: ignoring T gives e^2/(e^2+1)=0.8808; multiplying by T instead of dividing gives 0.9820 (in the fixture as T=0.5); taking 1/2 for the 'second' softmax gives 0.5. The tolerance is justified."
+      - field: rationale
+        text: "e¹/(e¹+1) ≈ 0.731"
+        verdict: computed
+        sources: []
+        note: "z/T = [1, 0], so p_1 = e^1/(e^1+e^0) = e/(e+1) = 0.73106. The rationale is correct and matches the answer."
+    unchecked: []
+    fix: ""
+
+  - id: ai:lab-sdpa-01
+    reviewed_hash: d4dcfe67c198
+    decision: approve
+    checks:
+      - field: prompt
+        text: "scaling 없이 d_k를 4에서 512로 키우면 평균 최대 attention 가중치는?"
+        verdict: computed
+        sources: []
+        note: "Scenario: scaled=false, d_k 4 -> 512, n_keys=8, with the lab's standard-normal q and K. Own implementation, written before I opened the repo: q~N(0,I_dk), K~N(0,I) of shape (8,dk), s=K@q with no scaling, w=softmax(s), then the mean of max(w) over samples. numpy default_rng(42) with N=1000 gives d_k=4: 0.5215 and d_k=512: 0.9612; a shared rng gives 0.5215 and 0.9505. Large-N estimate (rng 0, N=100000 and 20000): 0.5276 and 0.9554. Scaled control: 0.342 and 0.363, so the drift appears only without scaling."
+      - field: answer
+        text: "0 (1에 가까워진다(포화))"
+        verdict: computed
+        sources: []
+        note: "The mean max weight rises from about 0.52 to about 0.95-0.96, toward 1. As d_k grows, the gaps between unscaled logits grow like sqrt(d_k), so softmax tends to one-hot. Index 0 is correct under the 0-based convention."
+      - field: choices
+        text: "1에 가까워진다(포화) / 0에 가까워진다 / 변하지 않는다"
+        verdict: computed
+        sources: []
+        note: "Exactly one choice is correct. '0에 가까워진다' is impossible: the max of 8 softmax weights is at least 1/8. '변하지 않는다' is contradicted by 0.52 -> 0.95, a change far larger than sampling noise."
+      - field: rationale
+        text: "0.525 → 0.955 (seed 42, 표본 1,000)"
+        verdict: computed
+        sources: []
+        note: "I reran the repo reference (tools/gen_lab_fixtures.py with the mulberry32 PRNG and Box-Muller): sdpa_stats(4,8,1000,False,42) mean_max_weight = 0.5251293262758547 and sdpa_stats(512,8,1000,False,42) = 0.9548003867423023. They round to 0.525 and 0.955, and match the fixture JSON. My independent numpy estimates (0.528 and 0.955 at large N) agree to about the 3rd decimal. The exact seed-42 values depend on the lab PRNG, as stated."
+    unchecked: []
+    fix: ""
+
+  - id: ai:lab-sdpa-02
+    reviewed_hash: adb35e295077
+    decision: approve
+    checks:
+      - field: prompt
+        text: "q, k의 성분이 서로 독립이고 평균 0, 분산 1이다. d_k = 64일 때 q·k의 표준편차는?"
+        verdict: computed
+        sources: []
+        note: "The prompt is well posed. The assumptions (independent components, mean 0, variance 1) are stated, and they are enough for the result. Var(q·k) = sum_i Var(q_i k_i) = sum_i E[q_i^2] E[k_i^2] = d_k = 64, so the standard deviation is 8. These are the same assumptions as the Vaswani et al. §3.2.1 footnote."
+      - field: answer
+        text: "8"
+        verdict: computed
+        sources: []
+        note: "Analytic value sqrt(64) = 8. Own simulation: numpy default_rng(42), 10000 samples of q,k ~ N(0,I_64), d=(q*k).sum(1). Result: var=64.919 (ddof=1: 64.926), std=8.057."
+      - field: tolerance
+        text: "0.5"
+        verdict: computed
+        sources: []
+        note: "The accepted range is [7.5, 8.5]. It covers the analytic 8 and the sample estimates (8.04 from the reference, 8.06 from mine). It rejects the typical mistakes: answering the variance 64, answering 1 (assuming the dot product keeps unit variance), or answering 4 = sqrt(16). The tolerance is justified."
+      - field: rationale
+        text: "√64 = 8 (seed 42, 표본 10,000에서 Var 64.65)"
+        verdict: computed
+        sources: []
+        note: "I reran the repo reference: sdpa_stats(64,1,10000,False,42)['var_qk'] = 64.6547053674679 (population variance, mulberry32 seed 42). It rounds to 64.65 and matches the fixture's variance_check. My numpy run with a different PRNG gives 64.92, which is consistent."
+    unchecked: []
+    fix: ""

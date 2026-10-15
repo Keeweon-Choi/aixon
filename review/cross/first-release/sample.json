@@ -1,0 +1,7 @@
+[
+  "field:artificial-intelligence",
+  "clm:transformer-addresses-sequential",
+  "method:transformer-encoder-layer",
+  "method:scaled-dot-product-attention",
+  "clm:intro-shifted-window"
+]

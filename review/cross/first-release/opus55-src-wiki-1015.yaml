@@ -1,0 +1,879 @@
+release: first-release
+reviewer: agent:opus55-src-wiki-1015
+model: claude-opus-5-5
+start: source-first
+reviewed_at: '2026-10-15'
+items:
+- id: wiki:scaled-dot-product-attention
+  reviewed_hash: f7d4d6f07706
+  decision: approve
+  checks:
+  - field: para:1
+    text: <Section id="overview" ...> 구획 태그
+    verdict: no-claim
+    sources: []
+    note: JSX section opener, no factual content
+  - field: para:2
+    text: '블로그 글 "Transformer: A Novel Neural Network Architecture for Language Understanding"은 Jakob Uszkoreit가 2017년에 썼다'
+    verdict: supported
+    sources:
+    - url: https://research.google/blog/transformer-a-novel-neural-network-architecture-for-language-understanding/
+      tier: A
+      passage: Posted by Jakob Uszkoreit, Software Engineer, Natural Language Understanding
+    - url: https://research.google/blog/transformer-a-novel-neural-network-architecture-for-language-understanding/
+      tier: A
+      passage: August 31, 2017
+    note: Title, author, date match the Google Research blog page (official author-institution post by a Transformer co-author -> tier A).
+  - field: para:2
+    text: 블로그가 "I arrived at the bank after crossing the river" 문장을 예로 들고, bank가 강둑임을 정하려면 river를 봐야 한다
+    verdict: analogy-sourced
+    sources:
+    - url: https://research.google/blog/transformer-a-novel-neural-network-architecture-for-language-understanding/
+      tier: A
+      passage: In the earlier example “I arrived at the bank after crossing the river”, to determine that the word “bank” refers to the shore of a river and not a financial institution, the Transformer can learn to immediately attend to the word “river” and make this decision in a single step.
+    note: Example is taken from the human-written blog post and attributed in the text. Korean gloss of the sentence is faithful.
+  - field: para:2
+    text: Transformer가 bank의 다음 표현을 계산할 때 문장의 다른 모든 단어와 비교해 단어마다 attention 점수를 매긴다
+    verdict: supported
+    sources:
+    - url: https://research.google/blog/transformer-a-novel-neural-network-architecture-for-language-understanding/
+      tier: A
+      passage: More specifically, to compute the next representation for a given word - “bank” for example - the Transformer compares it to every other word in the sentence.
+    note: ''
+  - field: para:2
+    text: 이 점수가 다른 단어들이 bank의 새 표현에 얼마나 기여할지 정한다
+    verdict: supported
+    sources:
+    - url: https://research.google/blog/transformer-a-novel-neural-network-architecture-for-language-understanding/
+      tier: A
+      passage: These attention scores determine how much each of the other words should contribute to the next representation of “bank”.
+    note: ''
+  - field: para:2
+    text: Scaled Dot-Product Attention은 Transformer에서 이 점수와 비율을 계산하는 연산이다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: We compute the dot products of the query with all keys, divide each by
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: and apply a softmax function to obtain the weights on the values.
+    note: 'Paper 3.2.1: SDPA computes the scores (dot products) and the weights (softmax). Acceptable bridge from the blog description.'
+  - field: para:3
+    text: 각 토큰은 query·key·value 세 역할의 벡터를 가진다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: In a self-attention layer all of the keys, values and queries come from the same place, in this case, the output of the previous layer in the encoder.
+    note: True for self-attention (the setting of the bank example). In encoder-decoder attention the queries come from the decoder and keys/values from the encoder; para 13 later covers n != m, so acceptable.
+  - field: para:5
+    text: query와 각 key의 점수를 매기고, 점수를 확률처럼 바꾼 뒤(softmax), 그 비율대로 value를 섞는다; 결과는 value의 가중합
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: The output is computed as a weighted sum of the values, where the weight assigned to each value is computed by a compatibility function of the query with the corresponding key.
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: and apply a softmax function to obtain the weights on the values.
+    note: ''
+  - field: para:5
+    text: Transformer 논문은 attention 함수를 query와 key-value 쌍들을 출력으로 대응시키는 함수라고 설명한다 (clm:sdpa-is-a-attention)
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: An attention function can be described as mapping a query and a set of key-value pairs to an output, where the query, keys, values, and output are all vectors.
+    note: Translation faithful; matches the evidence quote of clm:sdpa-is-a-attention.
+  - field: para:7
+    text: 점수 = query·key, 가중치 = softmax(점수 / sqrt(d_k)), 출력 = 가중치로 섞은 value; d_k는 query·key 벡터 차원
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: The input consists of queries and keys of dimension
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: We compute the dot products of the query with all keys, divide each by
+    note: Matches Eq. (1) and the definition of d_k in 3.2.1.
+  - field: para:8
+    text: </Section>
+    verdict: no-claim
+    sources: []
+    note: closing tag
+  - field: para:9
+    text: <Section id="why" ...>
+    verdict: no-claim
+    sources: []
+    note: section opener
+  - field: para:11
+    text: </Section>
+    verdict: no-claim
+    sources: []
+    note: closing tag
+  - field: para:12
+    text: <Section id="mechanism" ...>
+    verdict: no-claim
+    sources: []
+    note: section opener
+  - field: para:13
+    text: Q (n x d_k), K (m x d_k), V (m x d_v)로 query·key·value를 행으로 쌓는다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: In practice, we compute the attention function on a set of queries simultaneously, packed together into a matrix
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: The keys and values are also packed together into matrices
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: The input consists of queries and keys of dimension
+    note: Shapes consistent with 3.2.1 (keys/queries d_k, values d_v).
+  - field: para:13
+    text: self-attention에서는 m = n
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: In a self-attention layer all of the keys, values and queries come from the same place, in this case, the output of the previous layer in the encoder.
+    note: ''
+  - field: para:14
+    text: S = QK^T는 n x m, S_ij는 i번째 query와 j번째 key의 dot product
+    verdict: computed
+    sources: []
+    note: 'numpy: Q(3x4), K(5x4): S=Q@K.T has shape (3,5); np.isclose(S[0,1], Q[0]@K[1]) -> True'
+  - field: para:14
+    text: 스케일 S/sqrt(d_k), 행마다 softmax, 각 행의 합은 1
+    verdict: computed
+    sources: []
+    note: 'numpy: A=softmax(S/sqrt(4)) row sums -> [1. 1. 1.]'
+  - field: para:14
+    text: O = AV는 n x d_v, i번째 출력은 A의 i번째 행 비율로 value 행을 섞은 것
+    verdict: computed
+    sources: []
+    note: 'numpy: (A@V).shape -> (3,2) for V(5x2); row i of A@V = sum_j A_ij V_j by definition of matrix product'
+  - field: para:14
+    text: 네 단계는 논문 식 (1)과 같다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: We compute the dot products of the query with all keys, divide each by
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: and apply a softmax function to obtain the weights on the values.
+    note: ''
+  - field: para:15
+    text: 논문은 이 연산에 "Scaled Dot-Product Attention"이라는 이름을 붙였다 (clm:intro-sdpa)
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: We call our particular attention "Scaled Dot-Product Attention" (Figure 2).
+    note: ''
+  - field: para:15
+    text: query와 모든 key의 dot product를 sqrt(d_k)로 나눈 뒤 softmax로 value의 가중치를 얻는다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: We compute the dot products of the query with all keys, divide each by
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: and apply a softmax function to obtain the weights on the values.
+    note: Faithful paraphrase of 3.2.1 paragraph 1.
+  - field: para:16
+    text: '그림 fig-sdpa-flow: Q, K -> QK^T -> / sqrt(d_k) -> softmax(행) -> A·V = O, V는 마지막 곱으로 들어간다'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: We compute the dot products of the query with all keys, divide each by
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: and apply a softmax function to obtain the weights on the values.
+    note: Self-made SVG; the flow matches Eq. (1). Optional mask step of the paper Figure 2 is omitted, consistent with the no-mask scope stated in para 38.
+  - field: para:17
+    text: 행렬 모양만 맞추면 구현이 거의 끝난다
+    verdict: computed
+    sources: []
+    note: 'Evaluative remark; the wiki implementation (code verify block) is 3 lines of numpy (softmax, QK^T/sqrt(d_k), weights@V). Re-ran an equivalent implementation: output shape (3,2), rows sum to 1.'
+  - field: para:17
+    text: 점수 행렬은 n x m이라서 토큰 수의 제곱만큼 메모리를 쓴다
+    verdict: computed
+    sources: []
+    note: Self-attention m=n -> score matrix n*n entries; e.g. n=1024 -> 1,048,576 scores per head. Holds for self-attention (the setting in para 13); for n != m it is n*m.
+  - field: para:18
+    text: </Section>
+    verdict: no-claim
+    sources: []
+    note: closing tag
+  - field: para:19
+    text: <Section id="math" ...>
+    verdict: no-claim
+    sources: []
+    note: section opener
+  - field: para:20
+    text: Attention(Q,K,V) = softmax(QK^T / sqrt(d_k)) V
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: 'We compute the matrix of outputs as:'
+    note: Formula identical to Eq. (1) in 3.2.1 (K^T written as K^\top). Formula itself is math so the passage is the sentence introducing it.
+  - field: para:21
+    text: Q, K, V는 행으로 쌓은 행렬, d_k는 query와 key 차원, softmax는 점수 행렬의 행마다 적용
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: In practice, we compute the attention function on a set of queries simultaneously, packed together into a matrix
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: and apply a softmax function to obtain the weights on the values.
+    note: Row-wise softmax = one softmax per query, as in 3.2.1.
+  - field: para:21
+    text: softmax(z)_i = e^{z_i} / sum_j e^{z_j}
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1503.02531v1
+      tier: B
+      passage: Neural networks typically produce class probabilities by using a “softmax” output layer that converts the logit,
+    note: Hinton et al. 2015, Eq. (1) gives the softmax (with T=1) in this form; also verified numerically (definition used in all computations below).
+  - field: para:22
+    text: softmax 결과는 모두 양수이고 합이 1
+    verdict: computed
+    sources: []
+    note: exp(z)>0 for finite z, normalised by the sum; numpy check softmax([3,1,-2]) all >0, sum 1.0. (With -inf masking an entry becomes exactly 0 - outside this unmasked statement.)
+  - field: para:22
+    text: softmax(z + c) = softmax(z), 구현에서 최댓값을 빼는 이유
+    verdict: computed
+    sources: []
+    note: e^{z_i+c}/sum e^{z_j+c} = e^c e^{z_i}/(e^c sum e^{z_j}); numpy np.allclose(sm(z), sm(z+100)) -> True; np.exp(1000.0) -> inf (overflow) while max-subtracted version is finite.
+  - field: para:24
+    text: <Level of="deep">
+    verdict: no-claim
+    sources: []
+    note: level wrapper
+  - field: para:25
+    text: 논문 인용 "We suspect that for large values of d_k, the dot products grow large in magnitude, pushing the softmax function into regions where it has extremely small gradients"와 그 번역
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: the dot products grow large in magnitude, pushing the softmax function into regions where it has extremely small gradients
+    note: Quoted English matches 3.2.1 verbatim; Korean translation keeps "추정한다" and has no addition.
+  - field: para:25
+    text: 각주 4는 그 크기를 설명하며, q_1..q_dk, k_1..k_dk가 모두 독립이고 평균 0, 분산 1이라고 가정한다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: To illustrate why the dot products get large, assume that the components of
+    note: 'Footnote number 4 confirmed in the v7 PDF (https://arxiv.org/pdf/1706.03762v7, page 4: "4To illustrate why the dot products get large"). Assumption matches.'
+  - field: para:26
+    text: E[q_i k_i] = E[q_i]E[k_i] = 0 (독립)
+    verdict: computed
+    sources: []
+    note: independence -> E[XY]=E[X]E[Y]=0*0=0; Monte Carlo mean of q.k ~ 0.01-0.07 against sd 2-22.6 (consistent with 0).
+  - field: para:26
+    text: Var(q_i k_i) = E[q_i^2]E[k_i^2] - 0 = 1
+    verdict: computed
+    sources: []
+    note: Var(XY)=E[X^2Y^2]-(E[XY])^2 = E[X^2]E[Y^2] - 0 = (1+0)(1+0) = 1 under independence, mean 0, var 1.
+  - field: para:26
+    text: Var(q·k) = sum Var(q_i k_i) = d_k (독립이므로 분산의 합)
+    verdict: computed
+    sources: []
+    note: 'products q_i k_i are mutually independent when all 2 d_k components are independent, so variances add: d_k*1 = d_k. Monte Carlo ratio 1.000/0.993/0.993 for d_k=4/64/512.'
+  - field: para:28
+    text: 이 설명은 가정 아래의 논증이며 학습된 Q, K의 성분이 독립·분산 1이라는 보장은 없다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: To illustrate why the dot products get large, assume that the components of
+    note: The paper presents the variance argument as an illustration under an explicit assumption; nothing in the paper claims learned Q/K satisfy it.
+  - field: para:28
+    text: 논문도 "추정한다(We suspect)"고 썼다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: the dot products grow large in magnitude, pushing the softmax function into regions where it has extremely small gradients
+    note: The sentence in 3.2.1 begins "We suspect that for large values of d_k".
+  - field: para:29
+    text: </Level>
+    verdict: no-claim
+    sources: []
+    note: closing tag
+  - field: para:30
+    text: </Section>
+    verdict: no-claim
+    sources: []
+    note: closing tag
+  - field: para:31
+    text: <Section id="example" ...>
+    verdict: no-claim
+    sources: []
+    note: section opener
+  - field: para:32
+    text: 토큰 3개, d_k = 2, 설명을 위해 Q = K = V = X (실제로는 학습된 투영 행렬을 곱해 만든다)
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: with different, learned linear projections to
+    note: Setup of a toy example (stated as a simplification); real Q/K/V come from learned projections (3.2.2).
+  - field: para:33
+    text: X = [[1,0],[0,1],[1,1]]
+    verdict: no-claim
+    sources: []
+    note: input matrix definition of the worked example (values used in para 34 checks)
+  - field: para:34
+    text: S = XX^T, 첫 행 (1,0,1), 전체 [[1,0,1],[0,1,1],[1,1,2]]
+    verdict: computed
+    sources: []
+    note: numpy X@X.T -> [[1,0,1],[0,1,1],[1,1,2]]
+  - field: para:34
+    text: sqrt(2) ~ 1.4142, 첫 행 스케일 (0.7071, 0, 0.7071)
+    verdict: computed
+    sources: []
+    note: round(sqrt(2),4)=1.4142, round(1/sqrt(2),4)=0.7071
+  - field: para:34
+    text: e^0.7071 ~ 2.0281, 첫 행 가중치 (2.0281,1,2.0281)/5.0562 ~ (0.401,0.198,0.401)
+    verdict: computed
+    sources: []
+    note: exp(1/sqrt2)=2.0281, 2*2.0281+1=5.0562; softmax row1 rounded -> [0.401, 0.198, 0.401]
+  - field: para:34
+    text: 셋째 행 (0.248,0.248,0.503), 반올림 때문에 합 0.999
+    verdict: computed
+    sources: []
+    note: softmax row3 rounded -> [0.248, 0.248, 0.503]; sum of rounded values 0.999
+  - field: para:34
+    text: 출력 첫 행 ~ (0.802, 0.599)
+    verdict: computed
+    sources: []
+    note: (A@X)[0] rounded -> [0.802, 0.599]
+  - field: para:35
+    text: 스케일 없이 첫 행 가중치 (0.422, 0.155, 0.422)로 더 뾰족
+    verdict: computed
+    sources: []
+    note: softmax([1,0,1]) rounded -> [0.422, 0.155, 0.422]; max 0.422 > 0.401 scaled
+  - field: para:35
+    text: d_k가 커질수록 차이가 커진다
+    verdict: computed
+    sources: []
+    note: 'mean max weight unscaled vs scaled (8 keys, N(0,1)): d_k=4 0.528 vs 0.343, d_k=64 0.874 vs 0.359, d_k=512 0.956 vs 0.361'
+  - field: para:36
+    text: </Section>
+    verdict: no-claim
+    sources: []
+    note: closing tag
+  - field: para:37
+    text: <Section id="code" ...>
+    verdict: no-claim
+    sources: []
+    note: section opener
+  - field: para:38
+    text: softmax에서 최댓값을 빼는 것은 결과를 바꾸지 않으면서(shift invariance) exp 넘침을 막는다
+    verdict: computed
+    sources: []
+    note: np.allclose(sm(z), sm(z+100)) -> True; np.exp(1000.0) -> inf (RuntimeWarning overflow) while max-subtracted softmax([1000,0]) is finite.
+  - field: para:38
+    text: 아래는 head 하나, 마스크 없는 버전
+    verdict: computed
+    sources: []
+    note: Describes the verify code block (scaled_dot_product_attention(Q,K,V) without mask / heads) - matches the block in the mdx source.
+  - field: para:38
+    text: 디코더처럼 뒤쪽 토큰을 보면 안 되는 경우 softmax 전에 해당 점수를 -inf로 가린다 (논문 3.2.3의 mask)
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: We need to prevent leftward information flow in the decoder to preserve the auto-regressive property.
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: We implement this inside of scaled dot-product attention by masking out (setting to
+    note: 'Also computed: softmax([1,2,-inf]) -> [0.269, 0.731, 0.0].'
+  - field: para:39
+    text: </Section>
+    verdict: no-claim
+    sources: []
+    note: closing tag
+  - field: para:40
+    text: <Section id="visual" ...>
+    verdict: no-claim
+    sources: []
+    note: section opener
+  - field: para:41
+    text: Lab에서 확인하고 먼저 예측해 보라는 안내
+    verdict: no-claim
+    sources: []
+    note: instruction to the learner, no factual content
+  - field: para:42
+    text: '질문 1: 온도 T를 낮추면 가장 큰 확률은 커질까 작아질까 (정답: 커진다)'
+    verdict: computed
+    sources: []
+    note: 'Lab default logits [3,1,0.2,-1,2.5]: max prob at T=5,2,1,0.5,0.1,0.05 -> 0.278, 0.396, 0.549, 0.719, 0.993, 1.000 (monotone). Single answer for any non-constant logits; answer given in para 44.'
+  - field: para:42
+    text: '질문 2: 나누지 않고 d_k만 키우면 가중치는 한 key에 몰릴까 (정답: 몰린다)'
+    verdict: computed
+    sources: []
+    note: 'mean max weight unscaled: 0.528 (d4) -> 0.874 (d64) -> 0.956 (d512) under the Lab N(0,1) setting; single answer within the Lab scenario.'
+  - field: para:43
+    text: <Lab id="lab:softmax-temperature" />
+    verdict: no-claim
+    sources: []
+    note: lab embed
+  - field: para:45
+    text: <Level of="deep">
+    verdict: no-claim
+    sources: []
+    note: level wrapper
+  - field: para:46
+    text: '몰릴수록 softmax 기울기가 작아진다; Jacobian Frobenius 노름: 나누지 않으면 d_k=4 약 0.34, 512 약 0.06, 나누면 0.36 근처'
+    verdict: computed
+    sources: []
+    note: 'J = diag(p) - p p^T, mean ||J||_F: numpy unscaled 0.3404 (d4), 0.1526 (d64), 0.0596 (d512); scaled 0.3596, 0.3657, 0.3659. Lab port: 0.341, 0.063 unscaled; 0.360, 0.366 scaled.'
+  - field: para:46
+    text: Lab은 seed 42, 표본 1,000개 고정값(0.525->0.955, 0.341->0.063)
+    verdict: computed
+    sources: []
+    note: 'Ported src/lib/lab/softmax.ts sdpaStats (mulberry32 + Box-Muller) to Python: d4 unscaled mean max 0.52513, jac 0.34143; d512 0.9548, 0.0628 -> 0.525/0.955, 0.341/0.063. Lab default seed is 42, samples 1000 (SoftmaxTemperatureLab.tsx).'
+  - field: para:47
+    text: </Level>
+    verdict: no-claim
+    sources: []
+    note: closing tag
+  - field: para:48
+    text: </Section>
+    verdict: no-claim
+    sources: []
+    note: closing tag
+  - field: para:49
+    text: <Section id="limitations" ...>
+    verdict: no-claim
+    sources: []
+    note: section opener
+  - field: para:50
+    text: self-attention 층의 계산량은 O(n^2·d) (Table 1)
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: Maximum path lengths, per-layer complexity and minimum number of sequential operations for different layer types.
+    note: 'Table 1 row Self-Attention, Complexity per Layer = O(n^2 d) (math cell, cannot be quoted as plain text). Memory part: n x n score matrix, computed in para 17.'
+  - field: para:50
+    text: 고해상도 이미지처럼 토큰이 많으면 부담이 커진다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2103.14030v2
+      tier: A
+      passage: There exist many vision tasks such as semantic segmentation that require dense prediction at the pixel level, and this would be intractable for Transformer on high-resolution images, as the computational complexity of its self-attention is quadratic to image size.
+    note: ''
+  - field: para:50
+    text: Swin은 겹치지 않는 창 안에서만 attention을 계산해, 창 크기가 고정이면 계산량이 이미지 크기에 선형
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2103.14030v2
+      tier: A
+      passage: The linear computational complexity is achieved by computing self-attention locally within non-overlapping windows that partition an image (outlined in red). The number of patches in each window is fixed, and thus the complexity becomes linear to image size.
+    note: Condition (fixed window size) kept. Matches clm:swin-mitigates-quadratic.
+  - field: para:50
+    text: 창 사이는 연속한 두 블록에서 일반 창과 창 크기의 절반만큼 옮긴 창을 번갈아 써서 잇는다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2103.14030v2
+      tier: A
+      passage: To introduce cross-window connections while maintaining the efficient computation of non-overlapping windows, we propose a shifted window partitioning approach which alternates between two partitioning configurations in consecutive Swin Transformer blocks.
+    - url: https://arxiv.org/html/2103.14030v2
+      tier: A
+      passage: Then, the next module adopts a windowing configuration that is shifted from that of the preceding layer, by displacing the windows by
+    note: Shift is (floor(M/2), floor(M/2)) in the paper; "절반" is the usual rounding-free description, acceptable. Alternation in consecutive blocks correctly stated (matches clm:intro-shifted-window and the shifted-window entity summary).
+  - field: para:50
+    text: 점수 계산에 위치 정보가 없어 토큰 순서를 바꾸면 출력도 같은 순서로 바뀔 뿐 각 토큰의 출력은 그대로(순열 등변성)
+    verdict: computed
+    sources: []
+    note: 'numpy: X(6x4), random permutation p: np.allclose(att(X[p],X[p],X[p]), att(X,X,X)[p]) -> True'
+  - field: para:50
+    text: 그래서 Transformer는 입력 embedding에 positional encoding을 더한다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: Since our model contains no recurrence and no convolution, in order for the model to make use of the order of the sequence, we must inject some information about the relative or absolute position of the tokens in the sequence.
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: To this end, we add "positional encodings" to the input embeddings at the bottoms of the encoder and decoder stacks.
+    note: ''
+  - field: para:50
+    text: 스케일이 맞지 않으면 softmax가 원-핫에 가까워져 기울기가 작아진다; sqrt(d_k) 스케일은 성분 분포 가정에 기댄 처방
+    verdict: computed
+    sources: []
+    note: Jacobian norm 0.34 -> 0.06 as mean max weight 0.53 -> 0.96 (para 46 computation). The assumption dependence matches footnote 4 ("assume that the components of q and k are independent...").
+  - field: para:51
+    text: </Section>
+    verdict: no-claim
+    sources: []
+    note: closing tag
+  - field: para:52
+    text: <Section id="history" ...>
+    verdict: no-claim
+    sources: []
+    note: section opener
+  - field: para:53
+    text: '2014 Bahdanau et al.: 정렬을 함께 배우는 번역'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/abs/1409.0473v7
+      tier: A
+      passage: Neural Machine Translation by Jointly Learning to Align and Translate
+    - url: https://arxiv.org/abs/1409.0473v7
+      tier: A
+      passage: Submitted on 1 Sep 2014
+    - url: https://arxiv.org/abs/1409.0473v7
+      tier: A
+      passage: Dzmitry Bahdanau, Kyunghyun Cho, Yoshua Bengio
+    note: ''
+  - field: para:53
+    text: 문장 전체를 고정 길이 벡터 하나로 압축하는 것이 병목이라고 보고, 디코더가 원문의 관련 위치를 부드럽게 찾게 했다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1409.0473v7
+      tier: A
+      passage: In this paper, we conjecture that the use of a fixed-length vector is a bottleneck in improving the performance of this basic encoder–decoder architecture, and propose to extend this by allowing a model to automatically (soft-)search for parts of a source sentence that are relevant to predicting a target word, without having to form these parts as a hard segment explicitly.
+    - url: https://arxiv.org/html/1409.0473v7
+      tier: A
+      passage: In order to address this issue, we introduce an extension to the encoder–decoder model which learns to align and translate jointly.
+    note: '"병목이라고 보고" keeps the authors view framing of "we conjecture"; acceptable.'
+  - field: para:53
+    text: 이 점수 함수는 작은 신경망(덧셈 꼴)이라 additive attention이라고 불린다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: Additive attention computes the compatibility function using a feed-forward network with a single hidden layer.
+    - url: https://arxiv.org/html/1409.0473v7
+      tier: A
+      passage: In order to reduce computation, we use a single-layer multilayer perceptron such that
+    note: 'Bahdanau A.1.2: a(s,h) = v^T tanh(W s + U h) - the two inputs are added inside tanh.'
+  - field: para:53
+    text: '2017 Transformer: 당시 dot-product(곱셈형) attention은 additive attention과 함께 가장 널리 쓰이던 두 방식 중 하나'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: The two most commonly used attention functions are additive attention
+    note: Dated (2017) and taken from the paper itself.
+  - field: para:53
+    text: Transformer는 여기에 1/sqrt(d_k) 스케일을 더했고, 논문은 dot-product attention이 스케일 인자를 빼면 자기들 알고리즘과 같다고 쓴다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: Dot-product attention is identical to our algorithm, except for the scaling factor of
+    note: Quote and translation faithful.
+  - field: para:53
+    text: 고도로 최적화된 행렬 곱셈 코드로 구현할 수 있어 additive보다 실제로 더 빠르고 메모리를 덜 쓴다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: While the two are similar in theoretical complexity, dot-product attention is much faster and more space-efficient in practice, since it can be implemented using highly optimized matrix multiplication code.
+    note: '"in practice" kept (실제로); baseline (additive) kept.'
+  - field: para:53
+    text: '2020 ViT (Dosovitskiy et al.): 이미지를 고정 크기 패치(예: 16x16)로 잘라 토큰처럼 다룬다'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/abs/2010.11929v2
+      tier: A
+      passage: 'An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale'
+    - url: https://arxiv.org/abs/2010.11929v2
+      tier: A
+      passage: Submitted on 22 Oct 2020
+    - url: https://arxiv.org/html/2010.11929v2
+      tier: A
+      passage: Image patches are treated the same way as tokens (words) in an NLP application.
+    note: ''
+  - field: para:53
+    text: 표준 Transformer를 최소한만 바꿔 그대로 적용했다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2010.11929v2
+      tier: A
+      passage: Inspired by the Transformer scaling successes in NLP, we experiment with applying a standard Transformer directly to images, with the fewest possible modifications.
+    note: ''
+  - field: para:53
+    text: '2021 Swin: 창 단위 attention과 창 이동으로 전역 attention의 제곱 비용을 이미지 크기에 선형인 비용으로 줄였다'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/abs/2103.14030v2
+      tier: A
+      passage: Submitted on 25 Mar 2021
+    - url: https://arxiv.org/html/2103.14030v2
+      tier: A
+      passage: The shifted windowing scheme brings greater efficiency by limiting self-attention computation to non-overlapping local windows while also allowing for cross-window connection.
+    - url: https://arxiv.org/html/2103.14030v2
+      tier: A
+      passage: The linear computational complexity is achieved by computing self-attention locally within non-overlapping windows that partition an image (outlined in red). The number of patches in each window is fixed, and thus the complexity becomes linear to image size.
+    note: ''
+  - field: para:54
+    text: </Section>
+    verdict: no-claim
+    sources: []
+    note: closing tag
+  - field: para:53
+    text: 2017 Transformer (Vaswani et al.) 서지
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/abs/1706.03762v7
+      tier: A
+      passage: Attention Is All You Need
+    - url: https://arxiv.org/abs/1706.03762v7
+      tier: A
+      passage: Submitted on 12 Jun 2017
+    - url: https://arxiv.org/abs/1706.03762v7
+      tier: A
+      passage: Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit
+    note: ''
+  - field: para:4
+    text: 'query: 모든 key와 비교되는 벡터(self-attention에서는 자기 자신의 key도 포함)'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: We compute the dot products of the query with all keys, divide each by
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: In a self-attention layer all of the keys, values and queries come from the same place, in this case, the output of the previous layer in the encoder.
+    note: 'Round 2 (re-fetched source). Round-1 issue fixed: query is compared with all keys; in self-attention the own token key is among them (consistent with para 34, self-weight 0.401).'
+  - field: para:4
+    text: 'key: query와 비교되어 점수를 정하는 벡터'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: The output is computed as a weighted sum of the values, where the weight assigned to each value is computed by a compatibility function of the query with the corresponding key.
+    note: Round 2 (re-fetched source). Unchanged line.
+  - field: para:4
+    text: 'value: 점수로 얻은 가중치에 따라 섞여 출력이 되는 벡터'
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: The output is computed as a weighted sum of the values, where the weight assigned to each value is computed by a compatibility function of the query with the corresponding key.
+    note: Round 2 (re-fetched source). Unchanged line.
+  - field: para:6
+    text: 블로그는 Transformer가 river에 바로 주목하도록 학습할 수 있다(can learn)고 쓴다
+    verdict: supported
+    sources:
+    - url: https://research.google/blog/transformer-a-novel-neural-network-architecture-for-language-understanding/
+      tier: A
+      passage: In the earlier example “I arrived at the bank after crossing the river”, to determine that the word “bank” refers to the shore of a river and not a financial institution, the Transformer can learn to immediately attend to the word “river” and make this decision in a single step.
+    note: Round 2 (re-fetched source). Modal "can learn" rendered as 학습할 수 있다.
+  - field: para:6
+    text: 블로그는 자신들의 영어-프랑스어 번역 모델에서 바로 이런 동작을 관찰했다고 덧붙인다
+    verdict: supported
+    sources:
+    - url: https://research.google/blog/transformer-a-novel-neural-network-architecture-for-language-understanding/
+      tier: A
+      passage: In fact, in our English-French translation model we observe exactly this behavior.
+    note: Round 2 (re-fetched source). Faithful; scope (their English-French model) kept.
+  - field: para:6
+    text: 블로그는 river가 높은 점수를 받을 수 있다(could receive)고 쓴다
+    verdict: supported
+    sources:
+    - url: https://research.google/blog/transformer-a-novel-neural-network-architecture-for-language-understanding/
+      tier: A
+      passage: In the example, the disambiguating “river” could receive a high attention score when computing a new representation for “bank”.
+    note: 'Round 2 (re-fetched source). '
+  - field: para:6
+    text: 점수는 학습된 query와 key로 계산되므로, 높은 점수가 늘 나온다는 보장은 없다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: with different, learned linear projections to
+    - url: https://research.google/blog/transformer-a-novel-neural-network-architecture-for-language-understanding/
+      tier: A
+      passage: the Transformer can learn to immediately attend to the word
+    note: Round 2 (re-fetched source). Q/K come from learned projections (3.2.2), so the pattern is a training outcome; consistent with the blog modal phrasing and its single-model observation.
+  - field: para:10
+    text: Multi-head attention은 head마다 다른 학습된 행렬로 투영하고, 이 연산을 여러 개 나란히 돌린다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: with different, learned linear projections to
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: On each of these projected versions of queries, keys and values we then perform the attention function in parallel, yielding
+    note: 'Round 2 (re-fetched source). '
+  - field: para:10
+    text: 결과를 이어 붙여 학습된 행렬 W^O로 한 번 더 투영한다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: These are concatenated and once again projected, resulting in the final values, as depicted in Figure 2.
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: Where the projections are parameter matrices
+    note: Round 2 (re-fetched source). Round-1 issue fixed. W^O is listed among the parameter matrices (MultiHead = Concat(head_1..head_h) W^O). Now consistent with the revised method:multi-head-attention summary.
+  - field: para:10
+    text: Transformer encoder layer는 multi-head attention으로 시작한다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: Each layer has two sub-layers. The first is a multi-head self-attention mechanism, and the second is a simple, position-wise fully connected feed-forward network.
+    note: 'Round 2 (re-fetched source). '
+  - field: para:10
+    text: BERT는 이 encoder layer를 쌓아 만든다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1810.04805v2
+      tier: A
+      passage: BERT’s model architecture is a multi-layer bidirectional Transformer encoder based on the original implementation described in Vaswani et al.
+    note: 'Round 2 (re-fetched source). '
+  - field: para:10
+    text: ViT는 이 encoder layer를 쌓아 만든다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2010.11929v2
+      tier: A
+      passage: The Transformer encoder (Vaswani et al., 2017) consists of alternating layers of multiheaded self-attention (MSA, see Appendix A) and MLP blocks (Eq. 2, 3).
+    note: Round 2 (re-fetched source). ViT uses pre-norm placement; not needed at this level.
+  - field: para:10
+    text: RNN은 순서대로 처리해서 학습 예제 안에서 병렬화가 어렵다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: This inherently sequential nature precludes parallelization within training examples, which becomes critical at longer sequence lengths, as memory constraints limit batching across examples.
+    note: 'Round 2 (re-fetched source). '
+  - field: para:10
+    text: Transformer는 순환을 쓰지 않고 attention만으로 이 순차 계산 문제를 풀려고 했다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: In this work we propose the Transformer, a model architecture eschewing recurrence and instead relying entirely on an attention mechanism to draw global dependencies between input and output.
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: The fundamental constraint of sequential computation, however, remains.
+    note: 'Round 2 (re-fetched source). '
+  - field: para:10
+    text: self-attention 층은 모든 위치를 일정한 횟수의 순차 연산으로 연결한다(RNN은 n에 비례)
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: As noted in Table 1, a self-attention layer connects all positions with a constant number of sequentially executed operations, whereas a recurrent layer requires
+    note: 'Round 2 (re-fetched source). Continues with O(n) sequential operations (Table 1: O(1) vs O(n)).'
+  - field: para:10
+    text: 이미지도 패치로 자르면 토큰처럼 다룰 수 있어 같은 연산이 비전으로 옮겨 갔다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/2010.11929v2
+      tier: A
+      passage: To do so, we split an image into patches and provide the sequence of linear embeddings of these patches as an input to a Transformer.
+    - url: https://arxiv.org/html/2010.11929v2
+      tier: A
+      passage: Image patches are treated the same way as tokens (words) in an NLP application.
+    note: 'Round 2 (re-fetched source). '
+  - field: para:23
+    text: 성분이 독립, 평균 0, 분산 1이라고 가정하면 dot product의 분산은 d_k
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: To illustrate why the dot products get large, assume that the components of
+    note: Round 2 (re-fetched source). Footnote 4 (v7 PDF numbering).
+  - field: para:23
+    text: (위 서술의 계산 확인)
+    verdict: computed
+    sources: []
+    note: 'Monte Carlo N(0,1), 50k samples: Var(q.k)/d_k = 1.000 (d=4), 0.993 (d=64), 0.993 (d=512).'
+  - field: para:23
+    text: 논문은 d_k가 크면 dot product의 크기가 커져 softmax를 기울기가 아주 작은 영역으로 밀어낸다고 추정한다(We suspect)
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: the dot products grow large in magnitude, pushing the softmax function into regions where it has extremely small gradients
+    note: 'Round 2 (re-fetched source). Round-1 issue fixed: the paper-attributed sentence now says only what 3.2.1 says, with the hedge (sentence begins "We suspect that for large values of d_k").'
+  - field: para:23
+    text: sqrt(d_k)로 나누면 분산이 다시 1이 된다
+    verdict: computed
+    sources: []
+    note: Var(X/c)=Var(X)/c^2 = d_k/d_k = 1; Monte Carlo 1.000/0.993/0.993.
+  - field: para:23
+    text: 논문은 이를 상쇄하려고 dot product를 1/sqrt(d_k)로 스케일한다
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1706.03762v7
+      tier: A
+      passage: To counteract this effect, we scale the dot products by
+    note: 'Round 2 (re-fetched source). '
+  - field: para:23
+    text: '이 문서의 설명: 점수가 커지면 softmax가 한 key에 쏠린다'
+    verdict: computed
+    sources: []
+    note: 'Now explicitly marked as the document explanation, not the paper. numpy (8 keys, N(0,1)): unscaled mean max weight 0.528 (d4, sd 2) -> 0.874 (d64, sd 8) -> 0.956 (d512, sd 22.6); Lab port seed 42: 0.525 -> 0.872 -> 0.955.'
+  - field: para:27
+    text: 세 번째 줄은 독립 확률변수 합의 분산 성질이고, 점수의 표준편차는 sqrt(d_k)로 커진다
+    verdict: computed
+    sources: []
+    note: 'sd = sqrt(d_k); d_k=64 -> 8 (Lab seed-42 sample sd of q.k: 7.86).'
+  - field: para:27
+    text: Lab과 같은 조건(key 8개, 표본 1,000개, seed 42)에서 나누지 않으면 평균 최대 가중치 추정값이 d_k=64에서 약 0.87, d_k=512에서 약 0.95
+    verdict: computed
+    sources: []
+    note: 'Python port of src/lib/lab/softmax.ts sdpaStats (mulberry32 seed 42, Box-Muller, 1000 samples, 8 keys): d_k=64 0.87183 -> 0.87; d_k=512 0.95480 -> 0.95. Lab still uses sdpaStats(dk, 8, 1000, scaled, seed) with default seed 42 (SoftmaxTemperatureLab.tsx). Round-1 note on expectation vs estimate resolved by the new qualifier.'
+  - field: para:27
+    text: 정확한 기댓값이 아니라 표본에서 얻은 추정값
+    verdict: computed
+    sources: []
+    note: 'Expectation estimated with 200k samples: d_k=64 0.8747, d_k=512 0.9561 (se 0.0002) - differs slightly from the seed-42 estimates 0.8718 / 0.9548, so the caveat is accurate.'
+  - field: para:27
+    text: sqrt(d_k)로 나누면 분산이 다시 1
+    verdict: computed
+    sources: []
+    note: d_k/(sqrt(d_k))^2 = 1; Monte Carlo 1.000/0.993/0.993.
+  - field: para:27
+    text: sqrt(d_k)로 나누는 것을 temperature를 sqrt(d_k)로 둔 것으로 볼 수 있다(논문에는 없는 해석)
+    verdict: supported
+    sources:
+    - url: https://arxiv.org/html/1503.02531v1
+      tier: B
+      passage: produces a softer probability distribution over classes.
+    - url: https://arxiv.org/html/1503.02531v1
+      tier: B
+      passage: Neural networks typically produce class probabilities by using a “softmax” output layer that converts the logit,
+    note: 'Round 2 (re-fetched source). Hinton et al. 2015 Eq. (1): q_i = exp(z_i/T)/sum_j exp(z_j/T); with T=sqrt(d_k) equals softmax(S/sqrt(d_k)) (numpy allclose True). Correctly flagged as not from the Transformer paper.'
+  - field: para:44
+    text: logit [2,1,0]에서 T를 1에서 0.1로 낮추면 최대 확률이 0.665에서 0.99995로
+    verdict: computed
+    sources: []
+    note: softmax([2,1,0]).max()=0.66524 -> 0.665; softmax([20,10,0]).max()=0.999955 -> 0.99995
+  - field: para:44
+    text: 나누지 않고 d_k를 4에서 512로 키우면 평균 최대 가중치가 약 0.53에서 0.95로 한 key에 몰린다
+    verdict: computed
+    sources: []
+    note: 'Lab port seed 42, 1000 samples, 8 keys: 0.52513 -> 0.53, 0.95480 -> 0.95.'
+  - field: para:44
+    text: sqrt(d_k)로 나누면 0.34-0.37 근처에서 거의 그대로
+    verdict: computed
+    sources: []
+    note: 'Lab port seed 42 scaled: 0.341 (d4), 0.361 (d64), 0.365 (d512).'
+  - field: para:44
+    text: (2)의 값은 Lab의 표본 추정값(key 8개, 표본 1,000개, seed 42)이고 정확한 기댓값과 조금 다를 수 있다
+    verdict: computed
+    sources: []
+    note: Lab parameters confirmed in SoftmaxTemperatureLab.tsx / lab item (n_keys fixed 8, seed default 42, samples 1000). Expectation 0.527 / 0.956 vs estimates 0.525 / 0.955.
+  unchecked: []
+  fix: ''
