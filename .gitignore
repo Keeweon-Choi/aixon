@@ -19,3 +19,4 @@ playwright-report/
 dist-e2e/
 dist-seed/
 dist-public-e2e/
+artifacts/verification/clean-fail-*/
