@@ -115,3 +115,7 @@ playwright-traces/      실패한 테스트의 trace: npx playwright show-trace 
 ## 공개 배포 전 체크
 
 GitHub 저장소의 **Settings → Environments → github-pages**에서 required reviewers를 지정합니다. 공개 대상의 사람 승인은 `tools/review.py`로 기록하고, 승인 뒤 내용을 고치면 다시 승인한 뒤 `make check-dist-public`을 실행합니다.
+
+## 라이선스
+
+글·데이터 설명 문장·직접 만든 그림은 CC BY 4.0, 코드는 MIT다. 자세한 범위는 [LICENSE-CONTENT.md](LICENSE-CONTENT.md)와 [LICENSE](LICENSE).
