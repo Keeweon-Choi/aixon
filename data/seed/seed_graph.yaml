@@ -595,8 +595,6 @@ models:
   variants:
   - BERT-Base
   - BERT-Large
-  aliases:
-  - 버트
   fields:
   - field:language-modeling
 - id: model:bit
