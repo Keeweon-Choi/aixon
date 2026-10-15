@@ -233,7 +233,7 @@ class ReviewService:
     def write_decisions(self, by: str, decisions: list[dict]) -> dict:
         if review.agent_session():
             raise PermissionError("AI 에이전트 세션에서는 승인 기록을 만들 수 없습니다 (ADR-021).")
-        if not st.HUMAN_RE.match(by):
+        if not isinstance(by, str) or not st.HUMAN_RE.match(by):
             raise PermissionError("검토자 ID는 human:<id> 형식이어야 합니다.")
         if not decisions:
             raise ValueError("기록할 결정이 없습니다.")
@@ -254,6 +254,8 @@ class ReviewService:
     def commit_push(by: str, approved: int) -> str:
         if review.agent_session():
             raise PermissionError("AI 에이전트 세션에서는 커밋하거나 배포할 수 없습니다 (ADR-021).")
+        if not isinstance(by, str) or not st.HUMAN_RE.match(by):
+            raise PermissionError("검토자 ID는 human:<id> 형식이어야 합니다.")
         paths = list(COMMIT_PATHS)
         output = []
         for command in (["git", "add", "--", *paths], ["git", "diff", "--cached", "--quiet", "--", *paths]):
