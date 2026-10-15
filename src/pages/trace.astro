@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import GraphView from '../islands/GraphView';
 import { claimPath, getGraph } from '../lib/graph';
+import { predicateName } from '../lib/predicates';
 import { url } from '../lib/url';
 const graph = getGraph();
 type Field = { id: string; name: string; parents?: string[] };
@@ -44,7 +45,7 @@ const researchClaims = (Object.values(graph.claims) as Claim[]).filter(
     <ul>
       {researchClaims.map((claim) => (
         <li>
-          <a href={url(claimPath(claim.id))}>{claim.predicate}</a>
+          <a href={url(claimPath(claim.id))}>{predicateName(claim.predicate)}</a>
         </li>
       ))}
     </ul>

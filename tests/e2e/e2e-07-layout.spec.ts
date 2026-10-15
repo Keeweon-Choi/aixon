@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { QUICK_QUERY } from './support/env';
-import { claimPath, entityPath, wikiPath } from './support/data';
-import { hydrateAll, quickSearch, widths } from './support/ui';
+import { claimPath, entityPath, graph, wikiPath } from './support/data';
+import { fitView, hydrateAll, node, quickSearch, widths } from './support/ui';
 
 const settled = async () => {};
 
@@ -81,4 +81,50 @@ test('E2E-7 the header quick search is usable at this width @seed', async ({ pag
   expect(scrollWidth, 'the open result list must not widen the page').toBeLessThanOrEqual(
     innerWidth,
   );
+});
+
+test('E2E-7 selecting a node shows its panel without scrolling (atlas) @seed', async ({ page }) => {
+  const top = graph()
+    .ofType('ResearchField')
+    .find((field) => !(field.parents ?? []).length);
+  await page.goto('atlas/');
+  await graphReady('atlas')(page);
+  await node(page, String(top?.id)).click();
+  const panel = page.getByTestId('node-panel');
+  await expect(panel.locator('h2')).toHaveText(graph().name(String(top?.id)));
+  await expect(panel.locator('h2')).toBeInViewport({ ratio: 1 });
+  await expect(panel.getByTestId('panel-entity-link')).toBeInViewport({ ratio: 1 });
+});
+
+test('E2E-7 trace: the panel is in view after a selection and axis labels do not cover nodes @seed', async ({
+  page,
+  isMobile,
+}) => {
+  await page.goto('trace/');
+  await graphReady('trace')(page);
+  if (isMobile) await page.getByTestId('list-toggle').click();
+  if (!isMobile) await fitView(page);
+  await node(page, 'model:vit').click();
+  await expect(page.getByTestId('node-panel').locator('h2')).toBeInViewport({ ratio: 1 });
+  if (isMobile) return; // the axis labels belong to the drawn graph
+
+  const boxes = async (selector: string) =>
+    page.locator(selector).evaluateAll((elements) =>
+      elements.map((element) => {
+        const { left, right, top, bottom } = element.getBoundingClientRect();
+        return { left, right, top, bottom };
+      }),
+    );
+  const labels = await boxes('[data-testid=trace-labels] span');
+  const nodes = await boxes('[data-testid=graph-view] [data-node-id]');
+  expect(labels.length).toBeGreaterThan(0);
+  for (const label of labels)
+    for (const box of nodes)
+      expect(
+        label.left < box.right &&
+          box.left < label.right &&
+          label.top < box.bottom &&
+          box.top < label.bottom,
+        'an axis label overlaps a node',
+      ).toBe(false);
 });

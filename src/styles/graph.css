@@ -7,6 +7,34 @@
   min-width: 0;
 }
 
+.graph-main {
+  min-width: 0;
+}
+
+/* Side panel next to the canvas on wide screens, so a selection never lands below the fold. */
+@media (min-width: 1024px) {
+  .graph-view {
+    grid-template-columns: minmax(0, 1fr) 20rem;
+    align-items: start;
+  }
+
+  .graph-controls {
+    grid-column: 1 / -1;
+  }
+
+  .graph-main {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .node-panel {
+    position: sticky;
+    top: 1rem;
+    grid-column: 2;
+    grid-row: 2;
+  }
+}
+
 .graph-controls {
   display: flex;
   flex-wrap: wrap;
@@ -85,15 +113,12 @@
 }
 
 .graph-trace-labels {
-  position: absolute;
-  z-index: 2;
-  display: grid;
-  gap: 0.25rem;
-  padding: 0.35rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+  margin-bottom: 0.5rem;
   color: #40516b;
   font-size: 0.75rem;
-  pointer-events: none;
-  background: rgb(255 255 255 / 85%);
 }
 
 .node-panel {

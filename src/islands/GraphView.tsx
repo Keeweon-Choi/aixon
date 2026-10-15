@@ -7,7 +7,7 @@ import {
   type Node,
   type ReactFlowInstance,
 } from '@xyflow/react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   atlasVisible,
   dagreLayout,
@@ -116,6 +116,8 @@ export default function GraphView({
   const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [showCites, setShowCites] = useState(false);
   const [predicates, setPredicates] = useState(() => new Set(TRACE_PREDICATES));
+  const panelRef = useRef<HTMLElement>(null);
+  const userSelected = useRef(false);
   const [flow, setFlow] = useState<ReactFlowInstance<FlowGraphNode, FlowGraphEdge>>();
 
   useEffect(() => {
@@ -131,6 +133,7 @@ export default function GraphView({
         const hashSelection = parseNodeAnchor(location.hash);
         const initialSelection = hashSelection || focus || '';
         if (initialSelection) {
+          userSelected.current = Boolean(hashSelection);
           setSelected(initialSelection);
           if (mode === 'atlas') setExpanded(expandableFields(result, initialSelection));
         }
@@ -152,6 +155,7 @@ export default function GraphView({
   }, [data, enabledTypes, expanded, focus, mode, predicates, selected, showCites, verifiedOnly]);
 
   function selectNode(id: string) {
+    userSelected.current = true;
     setSelected(id);
     if (mode === 'atlas') {
       const node = data?.nodes.find((item) => item.id === id);
@@ -208,6 +212,11 @@ export default function GraphView({
       flow.fitView({ nodes: [{ id: selected }], duration: 0, padding: 0.5 }),
     );
   }, [flow, flowNodes, selected]);
+
+  // The panel must be visible without scrolling after a selection (it sits below the list on narrow screens).
+  useEffect(() => {
+    if (userSelected.current) panelRef.current?.scrollIntoView({ block: 'nearest' });
+  }, [selected, data]);
 
   const selectedNode =
     projection.nodes.find((node) => node.id === selected) ||
@@ -303,79 +312,83 @@ export default function GraphView({
           ))}
       </div>
 
-      {!data && !failed && <p>그래프를 불러오는 중…</p>}
-      {failed && (
-        <div role="alert">
-          <p>그래프를 불러오지 못했습니다</p>
-          {fallbackFields(topFields)}
-        </div>
-      )}
-      {data &&
-        (list ? (
-          <table data-testid="graph-list">
-            <thead>
-              <tr>
-                <th>노드</th>
-                <th>유형</th>
-                <th>상태</th>
-                <th>도입 연도</th>
-              </tr>
-            </thead>
-            <tbody>
-              {projection.nodes.map((node) =>
-                nodeRow(node, selectNode, mode === 'atlas' ? expanded : undefined),
-              )}
-            </tbody>
-            <tbody>
-              {projection.edges
-                .filter((edge) => edge.kind === 'claim')
-                .map((edge) => (
-                  <tr key={edge.id} data-claim-id={edge.id}>
-                    <td colSpan={2}>
-                      {fieldName(edge.source)} → {fieldName(edge.target)}
-                    </td>
-                    <td>
-                      {predicateName(edge.predicate || '')} · {edgeStatusLabel(edge.status)}
-                    </td>
-                    <td>{edge.url && <a href={edge.url}>근거 보기</a>}</td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
-        ) : (
-          <div className={`graph-canvas graph-canvas-${mode}`}>
-            {trace && (
-              <div className="graph-trace-labels" aria-hidden="true">
-                <span>연도 미상</span>
-                {[...new Set(trace.nodes.flatMap((node) => (node.year ? [node.year] : [])))].map(
-                  (year) => (
-                    <span key={year}>{year}</span>
-                  ),
-                )}
-                {trace.lanes.map((lane) => (
-                  <span key={lane}>{lane.replace(/^field:/, '')}</span>
-                ))}
-              </div>
-            )}
-            <ReactFlow<FlowGraphNode, FlowGraphEdge>
-              nodes={flowNodes}
-              edges={flowEdges}
-              nodeTypes={nodeTypes}
-              edgeTypes={edgeTypes}
-              onInit={setFlow}
-              nodesFocusable
-              edgesFocusable={false}
-              nodesDraggable={false}
-              fitView
-            >
-              <Background />
-              <Controls />
-            </ReactFlow>
+      <div className="graph-main">
+        {!data && !failed && <p>그래프를 불러오는 중…</p>}
+        {failed && (
+          <div role="alert">
+            <p>그래프를 불러오지 못했습니다</p>
+            {fallbackFields(topFields)}
           </div>
-        ))}
+        )}
+        {data &&
+          (list ? (
+            <table data-testid="graph-list">
+              <thead>
+                <tr>
+                  <th>노드</th>
+                  <th>유형</th>
+                  <th>상태</th>
+                  <th>도입 연도</th>
+                </tr>
+              </thead>
+              <tbody>
+                {projection.nodes.map((node) =>
+                  nodeRow(node, selectNode, mode === 'atlas' ? expanded : undefined),
+                )}
+              </tbody>
+              <tbody>
+                {projection.edges
+                  .filter((edge) => edge.kind === 'claim')
+                  .map((edge) => (
+                    <tr key={edge.id} data-claim-id={edge.id}>
+                      <td colSpan={2}>
+                        {fieldName(edge.source)} → {fieldName(edge.target)}
+                      </td>
+                      <td>
+                        {predicateName(edge.predicate || '')} · {edgeStatusLabel(edge.status)}
+                      </td>
+                      <td>{edge.url && <a href={edge.url}>근거 보기</a>}</td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          ) : (
+            <>
+              {trace && (
+                <div className="graph-trace-labels" data-testid="trace-labels" aria-hidden="true">
+                  <span>연도 미상</span>
+                  {[...new Set(trace.nodes.flatMap((node) => (node.year ? [node.year] : [])))].map(
+                    (year) => (
+                      <span key={year}>{year}</span>
+                    ),
+                  )}
+                  {trace.lanes.map((lane) => (
+                    <span key={lane}>{lane.replace(/^field:/, '')}</span>
+                  ))}
+                </div>
+              )}
+              <div className={`graph-canvas graph-canvas-${mode}`}>
+                <ReactFlow<FlowGraphNode, FlowGraphEdge>
+                  nodes={flowNodes}
+                  edges={flowEdges}
+                  nodeTypes={nodeTypes}
+                  edgeTypes={edgeTypes}
+                  onInit={setFlow}
+                  nodesFocusable
+                  edgesFocusable={false}
+                  nodesDraggable={false}
+                  fitView
+                >
+                  <Background />
+                  <Controls />
+                </ReactFlow>
+              </div>
+            </>
+          ))}
+      </div>
 
       {selectedNode && !selectedNode.synthetic && (
-        <aside data-testid="node-panel" className="node-panel">
+        <aside data-testid="node-panel" className="node-panel" ref={panelRef}>
           <h2>{selectedNode.name}</h2>
           <p>{typeLabel(selectedNode.type)}</p>
           {nodeStatusLabel(selectedNode.status) && (
