@@ -99,7 +99,7 @@
       return `<dl>${field('문제', d.prompt)}${field('선택지', d.choices)}${field('정답', d.answer)}${field('허용 오차', d.tolerance)}${field('해설', d.rationale)}</dl>`;
     let output = `<dl>${field('별칭', d.aliases)}${field('요약', d.summary)}${field('분야', d.fields)}</dl>`;
     if (d.paper)
-      output += `<h2>논문 메타데이터</h2><dl>${field('제목', d.paper.title)}${field('저자', d.paper.authors)}${field('날짜', d.paper.date)}${field('학회', d.paper.venue)}${field('arXiv', d.paper.arxiv ? `<a href="${esc(d.paper.arxiv)}" target="_blank">${esc(d.paper.arxiv)}</a>` : '—')}</dl>`;
+      output += `<h2>논문 메타데이터</h2><dl>${field('제목', d.paper.title)}${field('저자', d.paper.authors)}${field('날짜', d.paper.date)}${field('학회', d.paper.venue)}<dt>arXiv</dt><dd>${link(d.paper.arxiv, d.paper.arxiv)}</dd></dl>`;
     return output;
   }
   function cross(r) {
