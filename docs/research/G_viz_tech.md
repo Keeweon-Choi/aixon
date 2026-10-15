@@ -394,7 +394,7 @@ Chartability(Frank Elavsky)는 POUR+CAF 7원칙과 50개 휴리스틱으로 구�
 - 원문: "since there is only one WAL file, there can only be one writer at a time."
 - 원문: "All processes using a database must be on the same host computer; WAL does not work over a network filesystem."
 - 원문: "WAL does not work well for very large transactions. For transactions larger than about 100 megabytes, traditional rollback journal modes will likely be faster."
-- WSL에 대한 Microsoft 권고 원문: "For the fastest performance speed, store your files in the WSL file system if you are working in a Linux command line" [S88]. 현재 프로젝트 경로 /home/choi/aixon은 Linux 파일시스템에 있다.
+- WSL에 대한 Microsoft 권고 원문: "For the fastest performance speed, store your files in the WSL file system if you are working in a Linux command line" [S88]. 현재 프로젝트 경로 /home/choi/projects/aixon은 Linux 파일시스템에 있다.
 
 ### 10.4 sqlite-vec / pgvector
 - **sqlite-vec** [S77]

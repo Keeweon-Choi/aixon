@@ -7,7 +7,7 @@
 1. **실행 지침**: `docs/AUTONOMOUS_MVP_LOOP.md` (사용자 /goal). 테스트 실패나 미검증 항목을 PASS로 적지 않는다. 사용자 데이터 파괴, 외부 배포, 자동 push 금지.
 2. **범위(사용자 방향 수정, 02:1x, ADR-019)**: **v0.1 = Knowledge Atlas + Interactive AI Wiki.** GitHub Pages 정적 공개는 허용하지만 실제 배포(저장소 생성·push·Pages 활성화)는 사용자 승인 뒤에 한다(ADR-018). 서버·DB·LLM·계정은 P2. 공개는 사람 승인(ADR-021) 또는 AI 교차 검증 패널 통과(사용자 결정 10-15, ADR-026, 기준 `docs/verification/CROSS_REVIEW.md`)뿐이다.
 3. **저장소(사용자 결정 10-15)**: `~/aixon`이 정본 git 저장소다(개발 이력 포함). 통합용 `~/wt/aixon-base`는 이제 쓰지 않는다(읽기 전용 보관). 배포 승인됨: GitHub 공개 저장소 + Pages. Claude 표시는 상관없음. 라이선스: 텍스트 CC BY 4.0, 코드 MIT.
-4. **Codex**: 명세가 확실한 구현은 `cd /home/choi/aixon && hub codex -m sol|terra|luna /home/choi/aixon <spec>`. 샌드박스에 네트워크가 없다. 결과는 반드시 직접 다시 돌려 검증한다(음성 대조 포함).
+4. **Codex**: 명세가 확실한 구현은 `cd /home/choi/projects/aixon && hub codex -m sol|terra|luna /home/choi/projects/aixon <spec>`. 샌드박스에 네트워크가 없다. 결과는 반드시 직접 다시 돌려 검증한다(음성 대조 포함).
 5. 커밋 신원은 전역 git 설정을 그대로 쓴다.
 
 ## 1. 현재 단계 — 2026-10-15 15:5x (v0.1 인수 완료, 첫 콘텐츠 공개)
