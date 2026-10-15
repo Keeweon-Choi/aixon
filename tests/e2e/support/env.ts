@@ -20,12 +20,10 @@ export const GRAPH_FILES = isSeed
 export const WIKI_DIR = isSeed ? 'src/content/wiki' : 'tests/fixtures/wiki';
 
 /**
- * Quick-search queries that must find Scaled Dot-Product Attention. The fixture has a Korean alias;
- * the real seed names the method in English only, so its queries are Latin.
+ * Quick-search queries. "스케일드" finds Scaled Dot-Product Attention through its Korean alias in both
+ * data sets ("어텐션" matches many nodes); "어텐" is the 2-character query that must still find nodes.
  */
-export const QUICK_QUERY = isSeed
-  ? { main: 'scaled dot', short: 'sc' }
-  : { main: '어텐션', short: '어텐' };
+export const QUICK_QUERY = { main: '스케일드', short: '어텐' };
 
 /** A word that only the draft SDPA fixture document contains (Pagefind and public-gate tests). */
 export const FIXTURE_UNIQUE_WORD = '픽스처어텐션';

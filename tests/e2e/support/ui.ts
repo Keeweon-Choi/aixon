@@ -98,6 +98,7 @@ export async function revealNode(page: Page, id: string, through?: string): Prom
     `test data: ${id} declares no fields, so the Atlas has no field to expand to reveal it`,
   ).toBeGreaterThan(0);
   for (const field of chain) await expandField(page, field);
+  await fitView(page);
   const target = node(page, id);
   await expect(target).toBeVisible();
   return target;

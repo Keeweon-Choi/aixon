@@ -44,7 +44,8 @@ test.describe('E2E-10 Understanding Vision Transformer @seed @seed-only', () => 
 
     await page.goto('atlas/');
     await expect(page.locator('[data-testid=graph-view][data-mode=atlas]')).toBeVisible();
-    await expect(node(page, CV), 'fields start collapsed').toHaveAttribute(
+    const [topField] = data.fieldChain(VIT, CV);
+    await expect(node(page, topField), 'fields start collapsed').toHaveAttribute(
       'aria-expanded',
       'false',
     );
