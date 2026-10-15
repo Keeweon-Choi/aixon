@@ -478,12 +478,16 @@ def prose_of(record: dict) -> set[str]:
     return {text for text in out if len(text) >= MIN_TAINT_LENGTH}
 
 
-def wiki_sentences(body: str) -> set[str]:
-    """Plain sentences of an MDX body (tags, math and code removed) for the taint test."""
+def wiki_plain(body: str) -> str:
+    """MDX body with tags, math and code removed."""
     body = re.sub(r"```.*?```", " ", body, flags=re.S)
     body = re.sub(r"\$\$.*?\$\$|\$[^$\n]*\$", " ", body, flags=re.S)
-    body = re.sub(r"<[^>]+>|\*\*|`", " ", body)
-    parts = re.split(r"(?<=[.!?다요])\s+|\n+", body)
+    return re.sub(r"<[^>]+>|\*\*|`", " ", body)
+
+
+def wiki_sentences(body: str) -> set[str]:
+    """Plain sentences of an MDX body (tags, math and code removed) for the taint test."""
+    parts = re.split(r"(?<=[.!?다요])\s+|\n+", wiki_plain(body))
     return {re.sub(r"\s+", " ", part).strip() for part in parts if len(part.strip()) >= MIN_TAINT_LENGTH}
 
 
@@ -494,10 +498,16 @@ def check_taint(dist: Path, pages: dict[Path, str], paths: list[str], wiki_dir: 
     hidden, shown = set(), set()
     for ident, record in graph["entities"].items():
         (shown if ident in public else hidden).update(prose_of(record))
+    public_wiki = []
     for path in sorted(Path(wiki_dir).glob("*.mdx")):
         meta, body = public_gate.read_wiki(path)
         (shown if meta.get("id") in expected["wiki"] else hidden).update(wiki_sentences(body))
-    forbidden = hidden - shown
+        if meta.get("id") in expected["wiki"]:
+            public_wiki.append(re.sub(r"\s+", " ", wiki_plain(body)))
+    # A public wiki may quote a paper sentence that is also a hidden claim's evidence: text that is
+    # already part of public prose is not a leak.
+    public_text = "\n".join([*public_wiki, *shown])
+    forbidden = {text for text in hidden - shown if re.sub(r"\s+", " ", text) not in public_text}
     haystacks = {page.relative_to(dist).as_posix(): html.unescape(text) for page, text in pages.items()}
     for name in ("graph.json", "node-index.json"):
         if (dist / name).is_file():

@@ -396,3 +396,16 @@ def test_preview_mode_does_not_apply_public_rules(tmp_path, audit):
     )
     exit_code, report = audit(dist)
     assert exit_code == 0, report["errors"]
+
+
+def test_quote_inside_public_wiki_text_is_not_a_leak(tmp_path, audit, public_inputs):
+    """A public wiki may quote a sentence that is also the evidence quote of a non-public claim."""
+    graph, wiki_dir = public_inputs
+    quote = "We split an image into fixed-size patches and feed the sequence of patch embeddings to a Transformer. (fixture)"
+    doc = wiki_dir / "transformer.mdx"
+    doc.write_text(doc.read_text(encoding="utf8").rstrip("\n") + f'\n\n원문은 이렇다: "{quote}" 끝.\n', encoding="utf8")
+    review.approve_wiki(doc, "human:test-reviewer", "test", "2026-10-15")
+    dist = make_public_dist(tmp_path / "dist")
+    mutate_append_to_home(quote)(dist)
+    exit_code, report = audit(dist, "public", graph=graph, wiki_dir=wiki_dir)
+    assert exit_code == 0, report["errors"]
