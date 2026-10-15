@@ -7,6 +7,7 @@ src/content/wiki/
 tests/fixtures/
 docs/
 data/
+review/
 specs/
 study/
 *.md
