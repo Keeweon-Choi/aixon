@@ -1,8 +1,9 @@
 # MVP_ACCEPTANCE_REPORT — AIXON v0.1 인수 보고서
 
 > 2026-10-15. 범위는 ADR-019(v0.1 = Knowledge Atlas + Interactive AI Wiki)다. 요구사항은 [07_MVP_ROADMAP.md §1](../07_MVP_ROADMAP.md), 추적은 [REQUIREMENT_TRACEABILITY.md](REQUIREMENT_TRACEABILITY.md), 계획은 [VERIFICATION_PLAN.md](VERIFICATION_PLAN.md), 테스트별 결과는 [TEST_MATRIX.md](TEST_MATRIX.md)에 있다.
-> 상태는 PASS / FAIL / BLOCKED / NOT RUN / NOT APPLICABLE 다섯 가지만 쓴다. 증거 파일 경로는 저장소 기준이다. `artifacts/verification/runs/`와 `final-review-*/`는 git에 넣지 않는 로컬 증거이고, 통합 저장소 `~/wt/aixon-base`에 있다.
+> 상태는 PASS / FAIL / BLOCKED / NOT RUN / NOT APPLICABLE 다섯 가지만 쓴다. 증거 파일 경로는 저장소 기준이다. `artifacts/verification/runs/`와 `final-review-*/`는 git에 넣지 않는 로컬 증거이고, 정본 저장소 `~/aixon`에 있다(첫 인수 전 실행 일부는 `~/wt/aixon-base`).
 > 기준 커밋: 깨끗한 환경 검증은 최신 실행이 `ab363f0`(`artifacts/verification/runs/20261015T064959Z`, 13단계 PASS)다. 이력으로 남기는 실행은 셋이다. `67854ae`(`20261015T051054Z`, 콘텐츠 게시 전), 첫 인수 때의 `b6ca3d7`(`20261015T040334Z`), 그리고 게시 작업 중의 `186294f`(`20261015T063931Z`, 13단계 PASS)다. 게시 작업 중 실패한 실행도 둘 있다. `a420066`의 실행은 `check-dist-public`에서, `ba511b4`의 실행(`20261015T063234Z`)은 `e2e-seed` E2E-1에서 실패했고 모두 고쳤다(§8). `20261015T063234Z`의 증거는 깨끗한 환경 clone에만 남아 있다. GitHub의 CI는 `ab363f0`에서 전체 `make verify`를 돌려 성공했다(run 38695150153).
+> 마지막 확인(2026-10-15 18:1x): Python 환경을 uv로 옮기고 Anaconda를 지운 상태(venv 밖 `python3`는 `/usr/bin` 3.10)에서 새 클론 `72fdaf4`의 깨끗한 환경 검증 13단계 PASS(`artifacts/verification/runs/20261015T091221Z`, uv Python 3.12.15, E2E fixture 124·seed 50). 같은 상태에서 `make verify-online`도 통과(인용 132 found, 식별자 67/67). `ab363f0` 뒤 바뀐 것은 문서, 검증 스크립트의 venv 생성(uv), requirements 고정 방식뿐이다.
 
 > 2026-10-15 14:3x 갱신. 첫 인수(13:3x) 뒤 바뀐 것은 다음과 같다.
 >
