@@ -236,6 +236,23 @@ def test_panel_signature_and_content_freshness(tmp_path, monkeypatch):
     assert {"id": ENTITY, "reason": "review stale"} in pg.gate(paths, wiki)["excluded"]
 
 
+def test_panel_roster_is_per_record(tmp_path, monkeypatch):
+    paths, wiki, directory = setup_release(tmp_path, True)
+    _, available = cr.records(paths, wiki)
+    dump(directory / "extra.yaml", {"release": "test", "reviewer": "agent:extra", "start": "source-first",
+                                    "items": [make_item(ENTITY, available)]})
+    sample = cr.sampled_ids("test", paths, wiki, tmp_path)
+    dump(directory / "audit.yaml", {"release": "test", "reviewer": "agent:audit", "start": "audit",
+                                    "items": [make_item(i, available) for i in sample]})
+    assert cr.approve("test", paths, wiki, tmp_path, "2026-10-15")["approved"] == 2
+    entity = st.load_graph(paths)["entities"][ENTITY]
+    meta, _ = pg.read_wiki(Path(wiki) / "algebra.mdx")
+    assert "agent:extra" in entity["review"]["reviewers"]
+    assert "agent:extra" not in meta["review"]["reviewers"]
+    monkeypatch.chdir(tmp_path)
+    assert pg.gate(paths, wiki)["wiki"] == [WIKI]
+
+
 @pytest.mark.parametrize("change", [
     lambda block: block.update(method="manual"),
     lambda block: block.update(reviewers=["agent:source", "agent:source"]),

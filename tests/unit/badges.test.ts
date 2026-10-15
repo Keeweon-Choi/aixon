@@ -15,6 +15,8 @@ describe('reviewLabel', () => {
           by: 'panel:first-release',
           method: 'cross-review',
           reviewers: ['agent:source', 'agent:claim'],
+          audit: 'agent:audit',
+          report: 'review/cross/first-release',
           at: '2026-10-15',
           decision: 'approve',
         },

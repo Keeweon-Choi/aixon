@@ -69,7 +69,7 @@ def gate(paths: list[str], wiki_dir: str) -> dict:
     e, t = g["entities"], g["types"]
     excluded: list[dict] = []
 
-    panel_cache: dict[str, tuple[dict, list[str], set[str], str | None]] = {}
+    panel_cache: dict[str, tuple[dict, list[str], dict[str, set[str]], str | None]] = {}
 
     def panel_problem(ident: str, record: dict) -> str | None:
         signature = record.get("review") or {}
@@ -87,11 +87,15 @@ def gate(paths: list[str], wiki_dir: str) -> dict:
                 checks = cr.check_release(release, paths, wiki_dir, root)
                 audit_errors, _, auditor = cr.audit_problems(release, paths, wiki_dir, root)
                 panel_reports = cr.reports(cr.release_dir(release, root))
-                reviewers = {r.get("reviewer") for r in panel_reports.values()
-                             if r.get("start") in ("source-first", "claim-first")}
+                reviewers = {
+                    item["id"]: {r.get("reviewer") for r in panel_reports.values()
+                                 if r.get("start") in ("source-first", "claim-first")
+                                 and any(entry.get("id") == item["id"] for entry in r.get("items") or [])}
+                    for item in cr.worksheet(release, root)
+                }
                 panel_cache[release] = (checks, audit_errors, reviewers, auditor)
             except (OSError, ValueError, KeyError, TypeError, yaml.YAMLError) as exc:
-                panel_cache[release] = ({}, [f"release verification failed: {exc}"], set(), None)
+                panel_cache[release] = ({}, [f"release verification failed: {exc}"], {}, None)
         checks, audit_errors, reviewers, auditor = panel_cache[release]
         if checks.get(ident):
             return checks[ident][0]
@@ -99,7 +103,7 @@ def gate(paths: list[str], wiki_dir: str) -> dict:
             return "record is absent from release worksheet"
         if audit_errors:
             return audit_errors[0]
-        if set(signature.get("reviewers", [])) != reviewers or signature.get("audit") != auditor:
+        if set(signature.get("reviewers", [])) != reviewers.get(ident) or signature.get("audit") != auditor:
             return "reviewers or audit do not match reports"
         return None
 

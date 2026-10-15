@@ -110,7 +110,7 @@ const review = entry.data.review;
     )}
     {['reviewed', 'published'].includes(entry.data.status) && (
       <p data-testid="status-banner" class="banner">
-        {reviewLabel({ review: review && { ...review, at: review.at?.toISOString().slice(0, 10) } })}
+        {reviewLabel({ review })}
       </p>
     )}
     <nav class="toc" aria-label="목차">

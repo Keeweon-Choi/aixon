@@ -33,7 +33,8 @@ def reports(directory):
     for path in sorted(directory.glob("*.yaml")):
         if path.name != "packet.yaml":
             data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-            if not isinstance(data, dict) or not isinstance(data.get("items", []), list):
+            if (not isinstance(data, dict) or not isinstance(data.get("items", []), list)
+                    or not all(isinstance(item, dict) for item in data.get("items", []))):
                 raise ValueError(f"invalid report: {path.name}")
             out[path.stem] = data
     return out
@@ -342,7 +343,6 @@ def approve(release, paths, wiki_dir, root, today):
     if audit_errors:
         return {"approved": 0, "published": 0, "skipped": 0, "failed": sum(bool(v) for v in checked.values()), "errors": audit_errors}
     panel_reports = reports(release_dir(release, root))
-    reviewers = sorted({r["reviewer"] for r in panel_reports.values() if r.get("start") in ("source-first", "claim-first")})
     _, available = records(paths, wiki_dir)
     wikis = review.wiki_files(wiki_dir)
     result = {"approved": 0, "published": 0, "skipped": 0, "failed": 0, "errors": []}
@@ -353,6 +353,9 @@ def approve(release, paths, wiki_dir, root, today):
             result["errors"].append(f"{ident}: {checked[ident][0]}")
             continue
         kind, rec, digest = available[ident]
+        reviewers = sorted({r["reviewer"] for r in panel_reports.values()
+                            if r.get("start") in ("source-first", "claim-first")
+                            and any(entry.get("id") == ident for entry in r.get("items") or [])})
         old = rec.get("review")
         if st.approval_kind(old) == "human" and (pg.wiki_approval(rec, rec["body"]) if kind == "wiki" else st.approval_state(rec)) == "approved":
             result["skipped"] += 1
