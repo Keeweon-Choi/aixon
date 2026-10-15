@@ -158,3 +158,60 @@ def test_two_saves_in_one_second_keep_both_decision_files(tmp_path, monkeypatch)
     for ident in ("method:attention", "concept:softmax"):
         service.write_decisions("human:t", [{"id": ident, "decision": "exclude"}])
     assert len(list((tmp_path / "review/decisions").glob("*.yaml"))) == 2
+
+
+# --- cross-review integration (queue() called directly, no sockets) ---
+import cross_review as cr  # noqa: E402
+import test_cross_review as tcr  # noqa: E402
+
+
+def cross_queue(tmp_path, with_wiki=False):
+    paths, wiki, directory = tcr.setup_release(tmp_path, with_wiki)
+    service = server.ReviewService(paths, wiki, str(tmp_path / "review"), "human:t", "tok")
+    return service, paths, wiki, directory
+
+
+def queue_rows(service):
+    return {row["id"]: row for row in service.queue()["records"]}
+
+
+def test_queue_shows_confirm_status_from_real_confirm_json(tmp_path):
+    service, _paths, _wiki, directory = cross_queue(tmp_path)
+    other = {"url": "https://example.org/other", "tier": "A", "passage": "Another passage."}
+    tcr.mutate_report(directory, "source", lambda d: d["items"][0]["checks"][0]["sources"].append(other))
+    tcr.write_confirm(directory, {f"{tcr.SOURCE['url']}\n{tcr.SOURCE['passage']}": {"status": "found"}, f"{other['url']}\n{other['passage']}": {"status": "not-found"}})
+    by_reviewer = {entry["reviewer"]: entry for entry in queue_rows(service)[tcr.ENTITY]["cross_review"]}
+    assert [s["confirm"] for s in by_reviewer["agent:source"]["checks"][0]["sources"]] == ["found", "not-found"]
+    assert {s["confirm"] for check in by_reviewer["agent:claim"]["checks"] for s in check["sources"]} == {"found"}
+
+
+def test_queue_includes_real_check_release_problems_for_fix_decision(tmp_path):
+    service, paths, wiki, directory = cross_queue(tmp_path)
+    tcr.mutate_report(directory, "claim", lambda d: d["items"][0].update(decision="fix"))
+    expected = cr.check_release("test", paths, wiki, tmp_path)[tcr.ENTITY]
+    row = queue_rows(service)[tcr.ENTITY]
+    assert expected and row["cross_review_problems"] == {"test": expected}
+    assert {entry["decision"] for entry in row["cross_review"]} == {"approve", "fix"}
+
+
+def test_queue_survives_invalid_yaml_report(tmp_path):
+    service, _paths, _wiki, directory = cross_queue(tmp_path)
+    (directory / "broken.yaml").write_text("items: [unclosed\n", encoding="utf-8")
+    row = queue_rows(service)[tcr.ENTITY]
+    assert len(row["cross_review"]) == 2 and "cross_review_problems" not in row
+
+
+def test_queue_survives_non_mapping_confirm_json(tmp_path):
+    service, _paths, _wiki, directory = cross_queue(tmp_path)
+    (directory / "confirm.json").write_text("[1, 2]", encoding="utf-8")
+    row = queue_rows(service)[tcr.ENTITY]
+    assert {s["confirm"] for entry in row["cross_review"] for check in entry["checks"] for s in check["sources"]} == {None}
+    assert row["cross_review_problems"] == {"test": ["missing or invalid confirm.json"]}
+
+
+def test_queue_runs_check_release_once_per_release(tmp_path, monkeypatch):
+    service, _paths, _wiki, _directory = cross_queue(tmp_path, with_wiki=True)
+    calls = []
+    monkeypatch.setattr(cr, "check_release", lambda *args, **kwargs: calls.append(args) or {})
+    rows = queue_rows(service)
+    assert tcr.ENTITY in rows and tcr.WIKI in rows and len(calls) == 1

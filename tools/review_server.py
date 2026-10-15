@@ -97,46 +97,33 @@ def worksheets(review_dir: Path) -> dict[str, dict]:
 
 
 def _confirm_status(confirm: object, url: str, passage: str) -> str | None:
-    """Read both the current confirm shape and simple URL-keyed variants."""
-    if isinstance(confirm, dict):
-        if url in confirm and isinstance(confirm[url], dict):
-            result = confirm[url].get("status") or confirm[url].get("result")
-            return str(result) if result else None
-        if confirm.get("url") == url:
-            result = confirm.get("status") or confirm.get("result")
-            return str(result) if result else None
-        for value in confirm.values():
-            outcome = _confirm_status(value, url, passage)
-            if outcome:
-                return outcome
-    if isinstance(confirm, list):
-        for value in confirm:
-            outcome = _confirm_status(value, url, passage)
-            if outcome:
-                return outcome
-    return None
+    """Status from cross_review's confirm.json: sources["<url>\n<passage>"]["status"]."""
+    sources = confirm.get("sources") if isinstance(confirm, dict) else None
+    row = sources.get(f"{url}\n{passage}") if isinstance(sources, dict) else None
+    return row.get("status") if isinstance(row, dict) else None
 
 
-def cross_reviews(review_root: Path, ident: str) -> list[dict]:
-    reports: list[dict] = []
+def cross_index(review_root: Path) -> dict[str, list[dict]]:
+    """Read every cross-review report and confirm.json once: item id -> report entries."""
+    index: dict[str, list[dict]] = {}
     cross_dir = review_root / "cross"
     if not cross_dir.is_dir():
-        return reports
+        return index
     for release_dir in sorted(path for path in cross_dir.iterdir() if path.is_dir()):
         confirm_path = release_dir / "confirm.json"
         try:
             confirm = json.loads(confirm_path.read_text(encoding="utf-8")) if confirm_path.exists() else None
-        except json.JSONDecodeError:
+        except (OSError, ValueError):
             confirm = None
         for path in sorted(release_dir.glob("*.yaml")):
             if path.name == "packet.yaml":
                 continue
             try:
                 report = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-            except yaml.YAMLError:
+            except (OSError, yaml.YAMLError):
                 continue
             for item in report.get("items", []) if isinstance(report, dict) else []:
-                if not isinstance(item, dict) or item.get("id") != ident:
+                if not isinstance(item, dict) or not isinstance(item.get("id"), str):
                     continue
                 checks = []
                 for check in item.get("checks", []) or []:
@@ -149,21 +136,17 @@ def cross_reviews(review_root: Path, ident: str) -> list[dict]:
                             source["confirm"] = _confirm_status(confirm, str(source.get("url", "")), str(source.get("passage", "")))
                             sources.append(source)
                     checks.append({"field": check.get("field"), "text": check.get("text"), "verdict": check.get("verdict"), "note": check.get("note", ""), "sources": sources})
-                reports.append({"release": report.get("release", release_dir.name), "reviewer": report.get("reviewer", path.stem), "start": report.get("start"), "decision": item.get("decision"), "fix": item.get("fix", ""), "unchecked": item.get("unchecked", []), "checks": checks})
-    return reports
+                index.setdefault(item["id"], []).append({"release": report.get("release", release_dir.name), "reviewer": report.get("reviewer", path.stem), "start": report.get("start"), "decision": item.get("decision"), "fix": item.get("fix", ""), "unchecked": item.get("unchecked", []), "checks": checks})
+    return index
 
 
-def cross_problems(release: str, ident: str) -> list[str] | None:
+def cross_problems(release: str, paths: list[str], wiki_dir: Path, root: Path) -> dict | None:
+    """cross_review.check_release for one release; None when it cannot run (a broken report must not break the queue)."""
     try:
-        module = importlib.import_module("cross_review")
-        result = module.check_release(release)
-    except (ImportError, AttributeError, OSError, ValueError):
+        result = importlib.import_module("cross_review").check_release(release, paths, str(wiki_dir), root)
+    except Exception:
         return None
-    if isinstance(result, dict):
-        candidate = result.get(ident, [])
-    else:
-        candidate = [problem for problem in result if getattr(problem, "id", None) == ident or (isinstance(problem, dict) and problem.get("id") == ident)]
-    return [str(problem) for problem in candidate]
+    return result if isinstance(result, dict) else None
 
 
 class ReviewService:
@@ -177,6 +160,8 @@ class ReviewService:
         gate = pg.gate(self.paths, str(self.wiki_dir))
         public = set(gate["entities"]) | set(gate["claims"]) | set(gate["wiki"])
         pre = worksheets(self.review_dir)
+        cross = cross_index(self.review_dir)
+        checked: dict[str, dict | None] = {}
         records = []
         for ident, record in sorted(graph["entities"].items()):
             typ = graph["types"].get(ident, "")
@@ -194,21 +179,25 @@ class ReviewService:
                 details = self.entity_details(record, typ)
             else:
                 continue
-            records.append(self.base_record(ident, kind, label, title, approval(record), review_by(record), ident in public, details, pre))
+            records.append(self.base_record(ident, kind, label, title, approval(record), review_by(record), ident in public, details, pre, cross, checked))
         for path in sorted(self.wiki_dir.glob("*.mdx")) if self.wiki_dir.is_dir() else []:
             meta, body = pg.read_wiki(path)
             ident = meta.get("id")
             if not isinstance(ident, str):
                 continue
             details = {"status": meta.get("status"), "entity": meta.get("entity"), "claims": meta.get("claims", []), "source": path.read_text(encoding="utf-8")}
-            records.append(self.base_record(ident, "wiki", "위키", str(meta.get("title") or ident), approval(meta, True, body), review_by(meta), ident in public, details, pre))
+            records.append(self.base_record(ident, "wiki", "위키", str(meta.get("title") or ident), approval(meta, True, body), review_by(meta), ident in public, details, pre, cross, checked))
         return {"records": records, "default_by": self.default_by, "agent_session": review.agent_session()}
 
-    def base_record(self, ident, kind, label, title, state, approved_by, is_public, details, pre):
-        item = {"id": ident, "kind": kind, "type_label": label, "title": title, "state": state, "approved_by": approved_by, "public": is_public, "details": details, "pre_review": pre.get(ident), "cross_review": cross_reviews(self.review_dir, ident)}
-        releases = {entry["release"] for entry in item["cross_review"] if entry.get("release")}
-        problems = {release: cross_problems(str(release), ident) for release in releases}
-        if any(value is not None for value in problems.values()):
+    def base_record(self, ident, kind, label, title, state, approved_by, is_public, details, pre, cross, checked):
+        item = {"id": ident, "kind": kind, "type_label": label, "title": title, "state": state, "approved_by": approved_by, "public": is_public, "details": details, "pre_review": pre.get(ident), "cross_review": cross.get(ident, [])}
+        problems = {}
+        for release in {str(entry["release"]) for entry in item["cross_review"] if entry.get("release")}:
+            if release not in checked:  # check_release runs once per release per queue()
+                checked[release] = cross_problems(release, self.paths, self.wiki_dir, self.review_dir.parent)
+            if checked[release] is not None:
+                problems[release] = [str(problem) for problem in checked[release].get(ident, [])]
+        if problems:
             item["cross_review_problems"] = problems
         return item
 

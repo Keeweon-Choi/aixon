@@ -258,7 +258,7 @@ def _check_release(release, paths, wiki_dir, root, include_audit=True):
         confirmed = json.loads(directory.joinpath("confirm.json").read_text(encoding="utf-8"))["sources"]
         if not isinstance(confirmed, dict):
             raise ValueError("sources is not a mapping")
-    except (OSError, ValueError, KeyError):
+    except (OSError, ValueError, KeyError, TypeError):  # TypeError: valid JSON that is not an object
         return {ident: ["missing or invalid confirm.json"] for ident in ids}
     all_reports = reports(directory)
     report_schema = []

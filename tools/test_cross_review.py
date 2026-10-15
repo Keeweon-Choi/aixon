@@ -300,3 +300,10 @@ def test_verifier_regressions(tmp_path, monkeypatch):
                                     "items": [make_item(i, available) for i in cr.sampled_ids("test", paths, wiki, tmp_path)]})
     assert cr.approve("test", paths, wiki, tmp_path, "2026-10-15")["skipped"] == 1
     assert pg.read_wiki(Path(wiki) / "algebra.mdx")[0]["review"]["by"] == "human:tester"
+
+
+def test_non_mapping_confirm_json_excludes_without_crashing(tmp_path):
+    paths, wiki, directory = setup_release(tmp_path, True)
+    (directory / "confirm.json").write_text("[1, 2]", encoding="utf-8")
+    problems = cr.check_release("test", paths, wiki, tmp_path)
+    assert problems and all(value == ["missing or invalid confirm.json"] for value in problems.values())
