@@ -1,0 +1,283 @@
+release: first-release
+reviewer: agent:opus55-aud-1015
+model: claude-opus-5-5
+start: audit
+reviewed_at: 2026-10-15
+items:
+  - id: field:artificial-intelligence
+    reviewed_hash: d2afe7d82b28
+    decision: approve
+    checks:
+      - field: name
+        text: "artificial intelligence의 한국어 이름은 인공지능이다"
+        verdict: supported
+        sources:
+          - url: https://ko.wikipedia.org/wiki/%EC%9D%B8%EA%B3%B5%EC%A7%80%EB%8A%A5
+            tier: C
+            passage: "인공지능(영어: artificial intelligence, AI)은 컴퓨터가 학습, 추론, 지각, 언어 처리, 문제 해결, 계획과 의사 결정처럼 지능과 관련된 일을 수행하도록 하는 방법을 연구하는 컴퓨터 과학 분야이다."
+          - url: https://encykorea.aks.ac.kr/Article/E0080789
+            tier: C
+            passage: "인공지능은 컴퓨터과학의 한 연구 분과에 머물지 않고"
+        note: "서로 다른 두 사이트(위키백과, 한국민족문화대백과사전)가 같은 이름을 쓴다."
+      - field: summary
+        text: "인공지능은 지적 능력을 계산으로 구현하는 방법을 연구하는 분야다"
+        verdict: supported
+        sources:
+          - url: http://jmc.stanford.edu/artificial-intelligence/what-is-ai/index.html
+            tier: B
+            passage: "It is the science and engineering of making intelligent machines, especially intelligent computer programs."
+          - url: https://ko.wikipedia.org/wiki/%EC%9D%B8%EA%B3%B5%EC%A7%80%EB%8A%A5
+            tier: C
+            passage: "인공지능(영어: artificial intelligence, AI)은 컴퓨터가 학습, 추론, 지각, 언어 처리, 문제 해결, 계획과 의사 결정처럼 지능과 관련된 일을 수행하도록 하는 방법을 연구하는 컴퓨터 과학 분야이다."
+        note: "McCarthy(Stanford) 정의와 위키백과 첫 문장이 '연구 분야' 서술을 뒷받침한다."
+      - field: summary
+        text: "그 지적 능력의 예로 지각·추론·학습·언어를 든다"
+        verdict: supported
+        sources:
+          - url: https://en.wikipedia.org/wiki/Artificial_intelligence
+            tier: C
+            passage: "The traditional goals of AI research include learning, reasoning, knowledge representation, planning, natural language processing, and perception, as well as support for robotics."
+          - url: https://www.ibm.com/think/topics/artificial-intelligence
+            tier: C
+            passage: "Applications and devices equipped with AI can see and identify objects. They can understand and respond to human language."
+          - url: https://encykorea.aks.ac.kr/Article/E0080789
+            tier: C
+            passage: "많은 양의 정보를 정리하고 분석하며 이를 바탕으로 추론하고 판단하여 문제를 해결하는 능력을 갖춘 컴퓨터 기술."
+        note: "학습·추론·지각·언어 네 가지가 위키백과에 모두 있고, IBM 글(지각·언어, 'They can learn from new information and experience.')이 다른 사이트로 겹친다. 추론은 한국민족문화대백과사전 정의('이를 바탕으로 추론하고 판단하여 문제를 해결하는')에도 있다. 필수 항목은 아니지만 external_ids의 OpenAlex subfield 1702가 'Artificial Intelligence'(Computer Science 분야)임을 api.openalex.org/subfields/1702에서 확인했다."
+    unchecked: []
+    fix: ""
+
+  - id: clm:transformer-addresses-sequential
+    reviewed_hash: a23252b197b5
+    decision: approve
+    checks:
+      - field: relation
+        text: "Transformer는 RNN의 순차 계산 문제를 해결 대상으로 삼는다(Transformer ADDRESSES RNN의 순차 계산)"
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/1706.03762v7
+            tier: A
+            passage: "The fundamental constraint of sequential computation, however, remains."
+          - url: https://arxiv.org/html/1706.03762v7
+            tier: A
+            passage: "The Transformer allows for significantly more parallelization and can reach a new state of the art in translation quality after being trained for as little as twelve hours on eight P100 GPUs."
+          - url: https://arxiv.org/html/1706.03762v7
+            tier: A
+            passage: "a self-attention layer connects all positions with a constant number of sequentially executed operations, whereas a recurrent layer requires"
+        note: "1절 2문단이 순환 모델의 순차 계산을 남은 제약으로 짚고, 4문단에서 순환을 버린 Transformer를 제안하며 병렬화를 말한다. 방향(Transformer가 주어, 문제가 목적어)과 술어 뜻이 맞고 한정어는 없다."
+      - field: evidence[0]
+        text: "1 Introduction 4문단(S1.p4.1)에 'In this work we propose the Transformer, ... eschewing recurrence ...' 인용이 있고 관계를 뒷받침한다"
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/1706.03762v7
+            tier: A
+            passage: "In this work we propose the Transformer, a model architecture eschewing recurrence and instead relying entirely on an attention mechanism to draw global dependencies between input and output."
+        note: "v7 HTML의 id S1.p4.1에서 그대로 확인. 바로 다음 문장이 병렬화를 말하므로 문맥상 순차 계산 문제 해결을 뒷받침한다."
+      - field: evidence[1]
+        text: "1 Introduction 2문단(S1.p2)에 'This inherently sequential nature precludes parallelization within training examples...' 인용이 있고 관계를 뒷받침한다"
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/1706.03762v7
+            tier: A
+            passage: "This inherently sequential nature precludes parallelization within training examples, which becomes critical at longer sequence lengths, as memory constraints limit batching across examples."
+        note: "v7 HTML의 id S1.p2에서 그대로 확인. 같은 문단 끝의 'The fundamental constraint of sequential computation, however, remains.'와 이어져 Transformer가 겨냥한 문제를 진술한다."
+    unchecked: []
+    fix: ""
+
+  - id: method:transformer-encoder-layer
+    reviewed_hash: 038413779a67
+    decision: approve
+    checks:
+      - field: name
+        text: "이 개념의 이름은 Transformer 인코더 층(encoder layer)이다"
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/1706.03762v7
+            tier: A
+            passage: "In addition to the two sub-layers in each encoder layer, the decoder inserts a third sub-layer"
+          - url: https://ko.wikipedia.org/wiki/%ED%8A%B8%EB%9E%9C%EC%8A%A4%ED%8F%AC%EB%A8%B8_(%EA%B8%B0%EA%B3%84_%ED%95%99%EC%8A%B5)
+            tier: C
+            passage: "각 인코더 층은 멀티헤드 셀프 어텐션 하위층과 위치별 순방향 신경망 하위층을 차례로 포함하며, 각 하위층에는 잔차 연결과 층 정규화가 적용된다."
+          - url: https://velog.io/@kyungmin1029/NLP-Transformer-2
+            tier: C
+            passage: "매개변수 W와 b 는 하나의 인코더 층 내에서는 동일하게 사용되고, 층마다는 다른 값을 가진다."
+        note: "원문 용어 'encoder layer'와 한국어 '인코더 층' 사용(서로 다른 두 사이트)을 확인."
+      - field: summary
+        text: "multi-head self-attention과 위치별 피드포워드 네트워크를 잔차 연결과 층 정규화로 감싼 블록이다"
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/1706.03762v7
+            tier: A
+            passage: "Each layer has two sub-layers. The first is a multi-head self-attention mechanism, and the second is a simple, position-wise fully connected feed-forward network."
+          - url: https://arxiv.org/html/1706.03762v7
+            tier: A
+            passage: "around each of the two sub-layers, followed by layer normalization"
+          - url: https://d2l.ai/chapter_attention-mechanisms-and-transformers/transformer.html
+            tier: B
+            passage: "The first is a multi-head self-attention pooling and the second is a positionwise feed-forward network."
+        note: "'감싼'은 정규화 위치(post-LN/pre-LN)를 특정하지 않으므로 원 논문과 ViT 모두에 맞는다."
+      - field: summary
+        text: "Transformer 인코더는 이 블록을 쌓아 만든다"
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/1706.03762v7
+            tier: A
+            passage: "The encoder is composed of a stack of"
+          - url: https://d2l.ai/chapter_attention-mechanisms-and-transformers/transformer.html
+            tier: B
+            passage: "At a high level, the Transformer encoder is a stack of multiple identical layers, where each layer has two sublayers"
+        note: "원문은 N=6개의 같은 층을 쌓는다."
+      - field: summary
+        text: "BERT는 이 블록을 쌓아 만든다"
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/1810.04805v2
+            tier: A
+            passage: "BERT’s model architecture is a multi-layer bidirectional Transformer encoder based on the original implementation described in Vaswani et al. (2017) and released in the tensor2tensor library."
+        note: ""
+      - field: summary
+        text: "ViT는 이 블록을 쌓아 만든다"
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/2010.11929v2
+            tier: A
+            passage: "consists of alternating layers of multiheaded self-attention"
+          - url: https://arxiv.org/html/2010.11929v2
+            tier: A
+            passage: "Layernorm (LN) is applied before every block, and residual connections after every block"
+        note: "ViT는 같은 구성(MSA+MLP, LN, 잔차)을 쓰되 LN을 블록 앞에 둔다. 요약문은 정규화 위치를 말하지 않으므로 틀리지 않는다."
+      - field: aliases
+        text: "Transformer encoder layer라는 이름으로도 쓴다"
+        verdict: supported
+        sources:
+          - url: https://www.paddlepaddle.org.cn/documentation/docs/en/2.5/api/paddle/nn/TransformerEncoderLayer_en.html
+            tier: C
+            passage: "Applies a Transformer encoder layer on the input."
+          - url: https://docs.pytorch.org/docs/2.14/generated/torch.nn.TransformerEncoderLayer.html
+            tier: C
+            passage: "This TransformerEncoderLayer implements the original architecture described in the Attention Is All You Need paper."
+        note: "서로 다른 두 사이트의 프레임워크 문서. PyTorch stable URL은 meta refresh로 2.14로 넘기므로 판 번호 URL을 적었다."
+      - field: aliases
+        text: "Transformer block이라는 이름으로도 쓴다"
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/1810.04805v2
+            tier: B
+            passage: "In this work, we denote the number of layers (i.e., Transformer blocks) as"
+        note: "Transformer를 이어받은 후속 논문(BERT)이 인코더 층을 Transformer block이라 부른다. 다만 이 말은 디코더형 블록(GPT 등)에도 쓰이는 넓은 말이다(오류로 보지 않음)."
+      - field: classification
+        text: "분야는 딥러닝(field:deep-learning)이다"
+        verdict: supported
+        sources:
+          - url: https://d2l.ai/chapter_attention-mechanisms-and-transformers/transformer.html
+            tier: B
+            passage: "Dive into Deep Learning"
+        note: "딥러닝 교과서(Dive into Deep Learning) 11.7절이 이 블록을 다룬다."
+    unchecked: []
+    fix: ""
+
+  - id: method:scaled-dot-product-attention
+    reviewed_hash: baeb486b2395
+    decision: approve
+    checks:
+      - field: name
+        text: "이름은 Scaled Dot-Product Attention이다"
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/1706.03762v7
+            tier: A
+            passage: 'We call our particular attention "Scaled Dot-Product Attention"'
+        note: ""
+      - field: summary
+        text: "query와 key의 내적을 √d_k로 나눈 뒤 softmax로 가중치를 구해 value를 섞는다"
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/1706.03762v7
+            tier: A
+            passage: "We compute the dot products of the query with all keys, divide each by"
+          - url: https://arxiv.org/html/1706.03762v7
+            tier: A
+            passage: "and apply a softmax function to obtain the weights on the values."
+        note: "두 구절은 3.2.1절 한 문장의 앞뒤(사이에 √d_k 수식). 'value를 섞는다'는 값의 가중합(같은 문서 3.2절 'The output is computed as a weighted sum of the values')과 같다."
+      - field: summary
+        text: "Transformer의 기본 부품이다"
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/1706.03762v7
+            tier: A
+            passage: "Multi-Head Attention consists of several attention layers running in parallel."
+          - url: https://arxiv.org/html/1706.03762v7
+            tier: A
+            passage: "The Transformer uses multi-head attention in three different ways:"
+          - url: https://d2l.ai/chapter_attention-mechanisms-and-transformers/attention-scoring-functions.html
+            tier: B
+            passage: "We thus arrive at the first commonly used attention function that is used, e.g., in Transformers"
+        note: "Transformer의 모든 attention 층(multi-head)이 이 연산을 병렬로 돌려 만든다."
+      - field: aliases
+        text: "scaled dot-product attention(소문자 표기)으로도 쓴다"
+        verdict: supported
+        sources:
+          - url: https://d2l.ai/chapter_attention-mechanisms-and-transformers/attention-scoring-functions.html
+            tier: B
+            passage: "we use the scaled dot product attention scoring function."
+        note: "대소문자만 다른 같은 이름."
+      - field: aliases
+        text: "SDPA라는 약칭으로도 쓴다"
+        verdict: supported
+        sources:
+          - url: https://docs.pytorch.org/tutorials/intermediate/scaled_dot_product_attention_tutorial.html
+            tier: C
+            passage: "(Beta) Implementing High-Performance Transformers with Scaled Dot Product Attention (SDPA)"
+          - url: https://huggingface.co/docs/transformers/attention_interface
+            tier: C
+            passage: "Force SDPA to use a specific implementation with the torch.nn.attention.sdpa_kernel context manager."
+        note: "서로 다른 두 사이트. Hugging Face 문서는 같은 쪽에서 sdpa를 'built-in PyTorch implementation of scaled dot product attention'으로 설명한다."
+      - field: formula
+        text: "Attention(Q,K,V)=softmax(QK^T/√d_k)V 식이 원문 식 (1)과 같다"
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/1706.03762v7
+            tier: A
+            passage: "We compute the matrix of outputs as:"
+        note: "원문 식 (1)의 alttext는 \\mathrm{Attention}(Q,K,V)=\\mathrm{softmax}(\\frac{QK^{T}}{\\sqrt{d_{k}}})V로, 데이터의 K^{\\top}과 기호·첨자가 같다."
+      - field: formula
+        text: "행렬 식이 query마다 내적→√d_k로 나눔→softmax→value 가중합과 같은 결과를 낸다"
+        verdict: computed
+        sources: []
+        note: "numpy(seed 0, n=3, m=4, d_k=8, d_v=5): S=Q@K.T/sqrt(dk); W=softmax(S,axis=1); out=W@V를 query마다 반복한 계산과 비교 → allclose True, 출력 모양 (3,5), 가중치 행 합 1 True. 덤으로 d_k=64 표준정규 q,k 20만 쌍의 내적 분산 63.56, 8로 나눈 뒤 0.993(원문 'mean 0 and variance d_k' 설명과 일치)."
+      - field: classification
+        text: "분야는 딥러닝(field:deep-learning)이다"
+        verdict: supported
+        sources:
+          - url: https://d2l.ai/chapter_attention-mechanisms-and-transformers/attention-scoring-functions.html
+            tier: B
+            passage: "Dive into Deep Learning"
+        note: "딥러닝 교과서 11.3.3절 'Scaled Dot Product Attention'이 이 연산을 다룬다."
+    unchecked: []
+    fix: ""
+
+  - id: clm:intro-shifted-window
+    reviewed_hash: f10e4ecf4504
+    decision: approve
+    checks:
+      - field: relation
+        text: "Swin Transformer 논문(liu2021-swin)이 Shifted Window Attention을 제시한다(INTRODUCES)"
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/abs/2103.14030v2
+            tier: A
+            passage: "The shifted windowing scheme brings greater efficiency by limiting self-attention computation to non-overlapping local windows while also allowing for cross-window connection."
+          - url: https://arxiv.org/html/2103.14030v2
+            tier: A
+            passage: "The shifted window partitioning approach introduces connections between neighboring non-overlapping windows in the previous layer and is found to be effective in image classification, object detection, and semantic segmentation, as shown in Table 4."
+        note: "방향(논문이 주어, 방법이 목적어)과 술어 뜻이 맞고 한정어는 없다. abs 페이지 제목 'Swin Transformer: Hierarchical Vision Transformer using Shifted Windows'로 주어 논문도 확인."
+      - field: evidence[0]
+        text: "3.2절 3문단에 'we propose a shifted window partitioning approach which alternates between two partitioning configurations in consecutive Swin Transformer blocks' 인용이 있고 관계를 뒷받침한다"
+        verdict: supported
+        sources:
+          - url: https://arxiv.org/html/2103.14030v2
+            tier: A
+            passage: "To introduce cross-window connections while maintaining the efficient computation of non-overlapping windows, we propose a shifted window partitioning approach which alternates between two partitioning configurations in consecutive Swin Transformer blocks."
+        note: "v2 HTML에서 3.2절의 세 번째 문단(S3.SS2.p1, S3.SS2.SSS0.Px1.p1 다음의 S3.SS2.SSS0.Px2.p1)에 그대로 있다. 'we propose'가 INTRODUCES를 직접 뒷받침한다."
+    unchecked: []
+    fix: ""
