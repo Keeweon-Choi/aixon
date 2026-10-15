@@ -93,7 +93,7 @@ claims:            [Claim ...]
 | `objectives` | `targets ✓: list[{unit ✓, dimension ✓}]`, `context: id`, `description: str` |
 | `resources` | `format ✓: text\|video\|interactive\|paper_section`, `url`(또는 `lab`) ✓, `author: str`, `license: str`, `estimated_minutes: int`, `verified_at ✓: date`, `explains ✓: list[{unit ✓, dimensions ✓: list, locator: str}]` |
 | `assessment_items` | `assesses ✓: {unit ✓, dimension ✓}`, `kind ✓: mcq\|numeric\|short_text\|lab_prediction\|self_explanation`, `prompt ✓: str(Markdown+KaTeX)`, `choices: list[str]`, `answer ✓`(kind별 형식), `tolerance: float`(numeric ✓), `rubric: list[str]`(self_explanation ✓), `rationale ✓: str`, `hint: str`, `lab: lab id`(lab_prediction ✓), `scenario: map`(lab_prediction ✓), `source: {source, locator}`, `verified_by: computation\|source\|review` |
-| `labs` | `component ✓: str`, `version ✓: int`, `parameters ✓: list[{name, min, max, step, default}]`, `demonstrates ✓: list[{unit, dimensions}]`, `items ✓: list[item id]`, `reference_impl: str` |
+| `labs` | `component ✓: str`, `version ✓: int`, `parameters ✓: list[{name, min, max, step, default, scale, choices}]`(`scale: log`이면 step은 ln 값의 간격, `choices`가 있으면 그 값 중 하나만 고르고 step은 생략), `demonstrates ✓: list[{unit, dimensions}]`, `items ✓: list[item id]`, `reference_impl: str` |
 | `sources` | `kind ✓: paper_version\|metadata_record\|web_page\|book_section`, `paper`(paper_version ✓), `url ✓`, `fulltext_url`, `version`, `retrieved_at ✓: date`, `content_sha256` |
 | `claims` | `predicate ✓`, `subject ✓`, `object ✓`, `qualifiers: map`, `status ✓`, `confidence ✓: high\|medium\|low`, `evidence: list[Evidence]`, `verification: {method, by, at}`, `review: {by, at, decision, note}\|null`, `note`, `supersedes`, `rejected_reason`(rejected ✓) |
 

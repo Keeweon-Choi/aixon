@@ -140,11 +140,11 @@ fields:
   - field:artificial-intelligence
 - summary_by: agent:codex
   id: field:ml-systems-efficient-inference
-  name: 기계학습 시스템과 효율적 추론
+  name: ML Systems and Efficient Inference
   aliases:
   - ML Systems
   - Efficient Inference
-  summary: 기계학습 시스템과 효율적 추론은 모델 학습과 배포의 계산 및 메모리 효율을 연구하는 분야이다.
+  summary: ML Systems and Efficient Inference는 모델 학습과 배포의 계산 및 메모리 효율을 연구하는 분야이다.
   parents:
   - field:machine-learning
 - summary_by: agent:codex
@@ -641,10 +641,8 @@ fields:
   - field:ml-systems-efficient-inference
 - summary_by: agent:codex
   id: field:efficient-transformers
-  name: 효율적 트랜스포머
-  aliases:
-  - Efficient Transformers
-  summary: 효율적 트랜스포머는 긴 입력에서 어텐션 계산 비용을 낮추는 구조를 연구하는 분야이다.
+  name: Efficient Transformers
+  summary: Efficient Transformers는 긴 입력에서 어텐션 계산 비용을 낮추는 구조를 연구하는 분야이다.
   parents:
   - field:ml-systems-efficient-inference
   - field:deep-learning

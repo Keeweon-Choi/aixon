@@ -283,7 +283,7 @@ concepts:
   - attention mechanism
   - attention
   - 어텐션
-  - 주의 메커니즘
+  - 어텐션 메커니즘
   fields:
   - field:deep-learning
 - id: concept:inductive-bias
@@ -395,7 +395,6 @@ methods:
   aliases:
   - Bahdanau attention
   - additive attention
-  - 가산 어텐션
   fields:
   - field:machine-translation
   - field:deep-learning
@@ -411,12 +410,11 @@ methods:
   aliases:
   - scaled dot-product attention
   - SDPA
-  - 스케일드 닷프로덕트 어텐션
   fields:
   - field:deep-learning
 - id: method:multi-head-attention
   name: Multi-Head Attention
-  summary: attention을 서로 다른 선형 투영 공간에서 여러 개 나란히 계산한 뒤 이어 붙여, 여러 종류의 관계를 동시에 보도록 한 방법이다.
+  summary: attention을 서로 다른 선형 투영 공간에서 여러 개 나란히 계산한 뒤 이어 붙이고 학습된 행렬로 한 번 더 투영해, 여러 종류의 관계를 동시에 보도록 한 방법이다.
   summary_by: agent:claude-opus-5-5
   dimensions: *id001
   estimated_minutes:
@@ -425,9 +423,10 @@ methods:
   - multi-head attention
   - MHA
   - 멀티헤드 어텐션
-  - multi-head self-attention
   fields:
   - field:deep-learning
+  key_terms:
+  - multi-head self-attention
 - id: method:positional-encoding
   name: 위치 인코딩
   summary: 순서 정보가 없는 self-attention에 각 토큰의 위치를 알려 주려고 입력 임베딩에 더하는 위치별 벡터다.
@@ -461,11 +460,11 @@ methods:
   dimensions: *id001
   aliases:
   - Transformer encoder layer
-  - Transformer encoder
   - Transformer block
-  - 트랜스포머 인코더
   fields:
   - field:deep-learning
+  key_terms:
+  - Transformer encoder
 - id: method:patch-embedding
   name: 패치 임베딩
   summary: 이미지를 겹치지 않는 작은 패치로 자르고 각 패치를 펼쳐 선형 투영해 토큰 벡터로 만드는 방법으로, ViT의 입력 단계다.
@@ -528,7 +527,6 @@ methods:
   aliases:
   - shifted window attention
   - shifted windows
-  - 시프티드 윈도 어텐션
   fields:
   - field:vision-transformers
   - field:efficient-transformers
@@ -578,7 +576,7 @@ models:
   - field:image-classification
 - id: model:transformer
   name: Transformer
-  summary: 순환과 합성곱 없이 attention만으로 만든 인코더–디코더 시퀀스 변환 모델로, 기계 번역을 위해 제안되었다.
+  summary: 순환과 합성곱 없이 attention만으로 만든 인코더–디코더 시퀀스 변환(sequence transduction) 모델로, WMT 2014 영어–독일어·영어–프랑스어 번역과 English constituency parsing에서 평가되었다.
   summary_by: agent:claude-opus-5-5
   dimensions: *id002
   variants:
@@ -656,7 +654,6 @@ models:
   - Swin-L
   aliases:
   - Swin
-  - 스윈 트랜스포머
   fields:
   - field:vision-transformers
 papers:
@@ -901,7 +898,6 @@ papers:
   identifiers:
     arxiv: '1409.0473'
     arxiv_doi: 10.48550/arXiv.1409.0473
-    dblp: conf/iclr/BahdanauCB14
     openalex:
     - W2133564696
   metadata_checked:
@@ -945,7 +941,6 @@ papers:
   identifiers:
     arxiv: '1706.03762'
     arxiv_doi: 10.48550/arXiv.1706.03762
-    dblp: journals/corr/VaswaniSPUJGKP17
     openalex:
     - W2626778328
   metadata_checked:
@@ -2364,16 +2359,24 @@ labs:
   - name: T
     min: 0.05
     max: 5
-    step: 0.05
+    step: 0.001
     default: 1
+    scale: log
   - name: d_k
     min: 1
     max: 1024
-    step: 1
     default: 64
+    choices:
+    - 1
+    - 4
+    - 16
+    - 64
+    - 256
+    - 512
+    - 1024
   - name: n_keys
-    min: 2
-    max: 16
+    min: 8
+    max: 8
     step: 1
     default: 8
   - name: seed
