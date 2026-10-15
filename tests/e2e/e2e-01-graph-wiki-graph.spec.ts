@@ -97,6 +97,9 @@ test('E2E-1 Graph → Wiki → Related → Graph @seed', async ({ page }) => {
     await expect(page).toHaveURL(new RegExp(`/atlas/${nodeAnchor(SOFTMAX)}$`));
     await expect(page.locator('[data-testid=graph-view][data-mode=atlas]')).toBeVisible();
     await expect(page.getByTestId('node-panel').locator('h2')).toHaveText(data.name(SOFTMAX));
+    const panel = await page.getByTestId('node-panel').innerText();
+    expect(panel, 'the type is shown in Korean').toContain('개념');
+    expect(panel, 'no raw type or status value').not.toMatch(/\bConcept\b|\bactive\b/);
   });
 });
 
@@ -151,4 +154,19 @@ test('E2E-1 wiki "관련 개념" respects direction and status @seed', async ({ 
   expect(await ids('[data-testid=related-dependents]')).toContain(MHA);
   await expect(page.getByTestId('related-prerequisites')).toContainText('먼저 알아야 할 개념');
   await expect(page.getByTestId('related-dependents')).toContainText('바탕으로 하는');
+});
+
+test('E2E-1 wiki references and inline citations are human readable @seed', async ({ page }) => {
+  await page.goto('wiki/scaled-dot-product-attention/');
+  const references = await page.getByTestId('references').innerText();
+  expect(references).not.toMatch(/clm:|src:/);
+  const cites = await page.locator('sup.cite').allInnerTexts();
+  expect(cites.length).toBeGreaterThan(0);
+  for (const text of cites) expect(text).not.toMatch(/clm:|src:/);
+  // a claim reference reads as the claim's sentence, a source reference as its paper title and version
+  const [firstSource] = wikiFrontmatter('scaled-dot-product-attention').sources as string[];
+  const source = graph().source(firstSource);
+  await expect(page.getByTestId('references')).toContainText(graph().name(String(source.paper)));
+  await expect(page.getByTestId('references')).toContainText(String(source.version));
+  await expect(page.getByTestId('references')).toContainText('은(는)');
 });

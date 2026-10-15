@@ -118,3 +118,22 @@ test('E2E-4 predicate filters: all on by default, unchecking ADAPTS removes the 
   await showView(page, 'list');
   await expect(row).toBeVisible();
 });
+
+test('E2E-4 list rows and the node panel show Korean labels, not raw ids or enum values', async ({
+  page,
+}) => {
+  const data = graph();
+  await showView(page, 'list');
+  const row = page.locator(`tr[data-claim-id="${ADAPTS}"]`);
+  const text = await row.innerText();
+  expect(text).toContain(data.name(VIT));
+  expect(text).toContain(data.name(TRANSFORMER));
+  expect(text).not.toMatch(/model:|ADAPTS/);
+  const nodeRow = await node(page, VIT).innerText();
+  expect(nodeRow).toContain('모델');
+  expect(nodeRow).not.toMatch(/\bModel\b|\bactive\b/);
+  await node(page, VIT).click();
+  const panel = await page.getByTestId('node-panel').innerText();
+  expect(panel).toContain('모델');
+  expect(panel).not.toMatch(/\bModel\b|\bactive\b/);
+});

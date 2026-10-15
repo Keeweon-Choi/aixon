@@ -3,7 +3,7 @@ import Base from '../../../layouts/Base.astro';
 import ClaimBadges from '../../../components/ClaimBadges.astro';
 import { claimStatusLabel, entityTypeLabels } from '../../../lib/badges';
 import { claimPath, entityPath, getGraph } from '../../../lib/graph';
-import { claimSentence } from '../../../lib/predicates';
+import { claimSentence, predicateName } from '../../../lib/predicates';
 import { nodeAnchor, url } from '../../../lib/url';
 import GraphView from '../../../islands/GraphView';
 const graph = getGraph();
@@ -118,7 +118,7 @@ const arxiv =
       <h2>관계</h2>
       {Object.entries(grouped).map(([predicate, rows]) => (
         <section>
-          <h3>{predicate}</h3>
+          <h3>{predicateName(predicate)}</h3>
           <ul>
             {rows?.map((claim) => (
               <li>

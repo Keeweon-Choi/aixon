@@ -1,6 +1,7 @@
 import { Handle, Position, type Node, type NodeProps } from '@xyflow/react';
 import type { KeyboardEvent } from 'react';
 import { memo } from 'react';
+import { nodeStatusLabel, typeLabel } from '../../lib/badges';
 import type { GraphNode as GraphNodeData } from '../../lib/graph/view';
 
 export type FlowNodeData = {
@@ -27,7 +28,7 @@ function GraphNode({ data, selected }: NodeProps<FlowNode>) {
         className="nodrag nopan"
         data-node-id={node.id}
         data-year={node.year}
-        aria-label={`${node.type} ${node.name} ${node.status || 'active'}`}
+        aria-label={`${typeLabel(node.type)} ${node.name} ${nodeStatusLabel(node.status) || '활성'}`}
         aria-expanded={field ? data.expanded : undefined}
         onClick={() => data.activate(node.id)}
         onKeyDown={activate}

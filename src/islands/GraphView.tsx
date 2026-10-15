@@ -20,6 +20,7 @@ import {
   type GraphNode as GraphDataNode,
   type GraphViewData,
 } from '../lib/graph/view';
+import { edgeStatusLabel, nodeStatusLabel, typeLabel } from '../lib/badges';
 import { predicateName } from '../lib/predicates';
 import ClaimEdge, { type ClaimEdgeData } from './graph/ClaimEdge';
 import GraphNode, { type FlowNodeData } from './graph/GraphNode';
@@ -70,7 +71,7 @@ function expandableFields(data: GraphViewData, selectedId: string): Set<string> 
 function edgeLabel(edge: GraphEdge): string {
   const style = edgeStyle(edge.predicate, edge.status);
   const review = edge.status === 'verified' && !edge.reviewed ? ' ○' : '';
-  return `${style.badge || style.label || edge.predicate || '관계'}${review}`;
+  return `${style.badge || style.label || predicateName(edge.predicate || '') || '관계'}${review}`;
 }
 
 function nodeRow(node: GraphDataNode, select: (id: string) => void, expanded?: Set<string>) {
@@ -79,7 +80,7 @@ function nodeRow(node: GraphDataNode, select: (id: string) => void, expanded?: S
       key={node.id}
       data-node-id={node.id}
       aria-expanded={expanded && node.type === 'ResearchField' ? expanded.has(node.id) : undefined}
-      aria-label={`${node.type} ${node.name} ${node.status || 'active'}`}
+      aria-label={`${typeLabel(node.type)} ${node.name} ${nodeStatusLabel(node.status) || '활성'}`}
       tabIndex={0}
       onClick={() => select(node.id)}
       onKeyDown={(event) => {
@@ -90,8 +91,8 @@ function nodeRow(node: GraphDataNode, select: (id: string) => void, expanded?: S
       }}
     >
       <td>{node.url ? <a href={node.url}>{node.name}</a> : node.name}</td>
-      <td>{node.type}</td>
-      <td>{node.status || 'active'}</td>
+      <td>{typeLabel(node.type)}</td>
+      <td>{nodeStatusLabel(node.status)}</td>
       <td>{node.year || '연도 미상'}</td>
     </tr>
   );
@@ -256,7 +257,7 @@ export default function GraphView({
                   })
                 }
               />
-              {type}
+              {typeLabel(type)}
             </label>
           ))}
         {mode === 'atlas' && (
@@ -330,8 +331,12 @@ export default function GraphView({
                 .filter((edge) => edge.kind === 'claim')
                 .map((edge) => (
                   <tr key={edge.id} data-claim-id={edge.id}>
-                    <td colSpan={2}>{edge.source}</td>
-                    <td>{edge.predicate}</td>
+                    <td colSpan={2}>
+                      {fieldName(edge.source)} → {fieldName(edge.target)}
+                    </td>
+                    <td>
+                      {predicateName(edge.predicate || '')} · {edgeStatusLabel(edge.status)}
+                    </td>
                     <td>{edge.url && <a href={edge.url}>근거 보기</a>}</td>
                   </tr>
                 ))}
@@ -372,8 +377,10 @@ export default function GraphView({
       {selectedNode && !selectedNode.synthetic && (
         <aside data-testid="node-panel" className="node-panel">
           <h2>{selectedNode.name}</h2>
-          <p>{selectedNode.type}</p>
-          <p className="badge">{selectedNode.status || 'active'}</p>
+          <p>{typeLabel(selectedNode.type)}</p>
+          {nodeStatusLabel(selectedNode.status) && (
+            <p className="badge">{nodeStatusLabel(selectedNode.status)}</p>
+          )}
           <p>{selectedNode.summary || '준비 중'}</p>
           <p>도입 연도: {selectedNode.year || '연도 미상'}</p>
           {!!selectedNode.fields?.length && (

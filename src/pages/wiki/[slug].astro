@@ -8,7 +8,8 @@ import Figure from '../../components/wiki/Figure.astro';
 import Lab from '../../components/wiki/Lab.astro';
 import Level from '../../components/wiki/Level.astro';
 import Section from '../../components/wiki/Section.astro';
-import { claimPath, entityPath, getGraph } from '../../lib/graph';
+import { claimPath, entityPath, getGraph, sourceLabel } from '../../lib/graph';
+import { claimSentence } from '../../lib/predicates';
 import { dimensionLabels } from '../../lib/badges';
 import { nodeAnchor, url } from '../../lib/url';
 const graph = getGraph();
@@ -177,10 +178,12 @@ const review = entry.data.review;
         {references.map((id, index) => (
           <li id={`ref-${index + 1}`}>
             {id.startsWith('clm:') ? (
-              <a href={url(claimPath(id))}>{id}</a>
+              <a href={url(claimPath(id))}>
+                {claimSentence(graph.claims[id] ?? graph.emittedClaims[id], displayName)}
+              </a>
             ) : (
               <a rel="noopener noreferrer" href={String(graph.sources[id]?.url || '#')}>
-                {String(graph.sources[id]?.title || graph.sources[id]?.name || id)}
+                {sourceLabel(graph, id)}
               </a>
             )}
           </li>
