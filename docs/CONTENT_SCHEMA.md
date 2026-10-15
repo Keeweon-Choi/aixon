@@ -16,12 +16,12 @@ title: "Scaled Dot-Product Attention"           # 필수, 표시 제목
 subtitle: "query·key·value로 정보를 섞는 Transformer의 핵심 연산"   # 필수, 1문장(검색 결과·meta description)
 status: draft                                   # 필수: outline | draft | reviewed | published
 levels: [intuition, fundamentals, deep]         # 필수, 문서에 있는 단계(부분집합, 순서 고정)
-sections: [overview, why, mechanism, math, example, code, visual, limitations, history, related, references]
-                                                # 필수, 문서에 있는 섹션 id(아래 표의 부분집합)
+sections: [overview, why, mechanism, math, example, code, visual, limitations, history]
+                                                # 필수, 직접 쓰는 섹션 id(아래 표의 부분집합). related·references는 빌드가 생성하므로 적지 않는다
 authors:                                        # 필수, 1명 이상
   - {id: "agent:claude-opus-5-5", role: draft}  # id: agent:<model> 또는 human:<handle>; role: draft | edit | review
 ai_generated: true                              # 필수. agent 저자가 한 명이라도 있으면 true
-review: null                                    # reviewed·published에서 필수: {by: "human:<handle>", at: YYYY-MM-DD, decision: approve, note}
+review: null                                    # reviewed·published에서 필수: {by: "human:<handle>", at: YYYY-MM-DD, decision: approve, reviewed_hash, note}. `tools/review.py`가 쓴다(ADR-021)
 published_at: null                              # published에서 필수(YYYY-MM-DD)
 sources: [src:arxiv:1706.03762v7, src:arxiv:2010.11929v2]   # 문서가 인용하는 Source ID(Graph에 있어야 함)
 claims: [clm:intro-sdpa, clm:prereq-variance-of-sum-scaled-dot-product-attention-derive]
@@ -45,8 +45,8 @@ updated_at: 2026-10-15                          # 필수
 | `visual` | 시각적 설명 (Visual Explanations) | intuition | 직접 만든 SVG, Lab |
 | `limitations` | 한계와 트레이드오프 (Limitations & Trade-offs) | deep | |
 | `history` | 역사적 발전 (Historical Development) | deep | 연구 Claim 인용 |
-| `related` | 관련 개념·논문 (Related Concepts / Papers) | — | **빌드가 Graph에서 생성**(문서에 적지 않아도 됨) |
-| `references` | 참고문헌과 근거 (References & Evidence) | — | **빌드가 `sources`·`claims`·`<Cite>`에서 생성** |
+| `related` | 관련 개념·논문 (Related Concepts / Papers) | — | **빌드가 Graph에서 생성**(frontmatter `sections`에 적지 않는다) |
+| `references` | 참고문헌과 근거 (References & Evidence) | — | **빌드가 `sources`·`claims`·`<Cite>`에서 생성**(frontmatter `sections`에 적지 않는다) |
 
 문서는 개념의 성격에 맞는 섹션만 고른다(예: 역사적 인물·데이터셋 문서에 `code`가 없어도 된다). 섹션은 MDX 본문에서 `<Section id="math" level="fundamentals" title="수학적 기초">…</Section>`로 감싼다. frontmatter `sections`와 본문의 `<Section>` 집합은 같아야 한다(V-SCHEMA-3).
 
@@ -78,8 +78,7 @@ updated_at: 2026-10-15                          # 필수
 
 | 필드 | 위치 | 의미 |
 |---|---|---|
-| `summary_review` | 모든 엔티티(선택) | `{by: human:*, at, decision: approve}`. AI 요약(`summary_by: agent:*`)이 public 빌드에 나오려면 필요 |
-| `review` | Claim(기존) | public 빌드에 나오려면 `decision: approve` |
+| `review` | 모든 엔티티·Claim·Wiki | `{by: human:*, at, decision: approve, reviewed_hash}`. 엔티티는 이름·별칭·요약·분류·질문·메타데이터 전체를 이 하나가 덮는다. 해시가 현재 레코드와 다르면 오래된 승인(G022). public 빌드 포함 조건은 ADR-021. `summary_review`는 폐지 |
 | `metadata_checked.arxiv` | Paper(기존) | `tools/verify_identifiers.py --write-checked`가 arXiv 제목 대조 성공 시 기록. 비어 있으면 "식별자 미검증" 배지 |
 
 ## 5. 빌드 산출 JSON

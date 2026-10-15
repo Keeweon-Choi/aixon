@@ -1,6 +1,7 @@
 # 07. MVP Roadmap — v0.1 Knowledge Atlas + Interactive AI Wiki
 
 > 범위는 사용자 방향 수정(2026-10-15, ADR-019)을 따른다. 요구사항 ID는 [verification/REQUIREMENT_TRACEABILITY.md](verification/REQUIREMENT_TRACEABILITY.md)에서 데이터·화면·모듈·테스트와 연결된다.
+> 독립 설계 감사(2026-10-15)의 지적과 처리는 [08_ARCHITECTURE_REVIEW.md](08_ARCHITECTURE_REVIEW.md)에 있다.
 > **MVP 성공은 기능 수나 데이터 건수가 아니라, Graph → Wiki → 근거 → Graph로 이어지는 경험의 정확성과 일관성으로 판단한다**(00 문서 §6 지표 S1–S7).
 
 ## 1. P0 (v0.1)
@@ -15,7 +16,7 @@
 | R-06 | Graph ↔ Wiki 이동 | 탐색과 학습 연결 | R-01, R-03 | `<ConceptLink>`가 Entity ID로 연결(존재 검증), Entity → Wiki, Wiki → Atlas 노드 선택 | — | V-LINK-1, E2E-1 | 하 | ID 변경(불변 규칙으로 대응) |
 | R-07 | 검색 | 빠른 진입 | 빌드 | 노드 빠른 검색(2글자 한국어), Pagefind 전문 검색 → 페이지 이동 | node-index.json, pagefind | V-SEARCH, E2E-5 | 하 | Pagefind 한국어 품질 |
 | R-08 | 근거·참고문헌 | 신뢰 | R-01 | Claim 페이지(인용·위치·원문 링크·상태·검토), Wiki 참고문헌 자동 목록 | claims, sources | E2E-3, V-CITE | 하 | — |
-| R-09 | 검증된 시드 콘텐츠 | 정확성의 기준 | — | 시드 Claim 105(검증 100, disputed 1, proposed 3, rejected 1), 인용 121/121, E2E 계획 golden | `data/seed` | V-QUOTE, P15·P15b | 상(완료) | — |
+| R-09 | 검증된 시드 콘텐츠 | 정확성의 기준 | — | 시드 Claim 105(verified 95, disputed 1, proposed 8, rejected 1 — 감사 후), 인용 offline 132/132(오케스트레이터 실행), E2E 계획 golden | `data/seed` | V-QUOTE, P15·P15b | 상(완료) | — |
 | R-10 | GitHub Pages 배포 | 공개 | R-15 | `pages.yml`, base 경로·디렉터리 URL, 로컬에서 직접 링크·새로고침 재현 | — | E2E-6, V-DIST-LINK | 하 | 실제 배포는 사용자 승인 필요(NOT RUN) |
 | R-11 | 자동 검증 하네스 | 지속적 품질 | 전체 | `make verify` 한 번으로 정적·단위·검증·빌드·dist·E2E 실행, `summary.json` 증거, CI(`ci.yml`) | artifacts/ | 하네스 자체 | 중 | 느린 E2E |
 | R-12 | Interactive Lab | 이해 확인 | R-03 | Softmax Temperature·SDPA Lab이 브라우저에서만 실행, 화면 수치 = 독립 계산(4자리), 예측 문제 채점 | lab fixtures | V-LAB L1–L7, E2E-2 | 중 | 수치 불일치 |
@@ -46,4 +47,4 @@
 
 1. **AIXON 콘텐츠 라이선스**(텍스트·코드·그림): 공개 전에 정해야 한다(예: 텍스트 CC BY 4.0, 코드 MIT).
 2. **공개 범위와 시점**: 저장소 생성·push·GitHub Pages 활성화는 사용자 승인 뒤에 한다. public 빌드는 사람이 승인한 콘텐츠만 내보내므로, 첫 공개 전에 시드 Claim과 대표 Wiki 검토가 필요하다.
-3. **넓은 지도(atlas.yaml)의 요약 문장**: AI 초안이다. 공개하려면 분야 단위로 검토 승인(`summary_review`)이 필요하다.
+3. **넓은 지도(atlas.yaml)의 요약 문장**: AI 초안이다. 공개하려면 엔티티 단위 `review`(ADR-021: `human:*` 서명 + `reviewed_hash`)가 필요하다. 승인은 `tools/review.py list|show|approve`로 기록한다(`summary_review`는 폐지).

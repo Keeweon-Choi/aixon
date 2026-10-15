@@ -45,7 +45,7 @@ flowchart LR
 규칙:
 1. **Wiki는 Graph를 바꾸지 않는다.** 문서가 "ViT는 Transformer를 비전에 적용했다"고 말하려면 해당 Claim(`clm:vit-adapts-transformer`)을 `claims:`에 걸고 `<Cite claim=…>`로 인용한다. 문서 안의 문장이 새 관계의 근거가 되지는 않는다.
 2. **모든 노드에 Wiki가 필요하지는 않다.** Wiki가 없는 노드는 상태 `missing`으로 집계된다(§5).
-3. **ID는 불변이다.** Wiki slug는 entity slug와 같게 둔다(`method:scaled-dot-product-attention` → `wiki/scaled-dot-product-attention`). 하나의 entity에 Wiki는 최대 하나다.
+3. **ID는 불변이다.** Wiki slug는 entity slug와 같게 둔다(`method:scaled-dot-product-attention` → `wiki/scaled-dot-product-attention`). 하나의 entity에 Wiki는 최대 하나다. 서로 다른 엔티티의 slug는 유형이 달라도 전역에서 유일해야 한다(G024, ADR-023) — 그렇지 않으면 `wiki/<slug>`가 충돌한다.
 4. 문서 안의 개념 링크는 **항상 Entity ID로** 건다(`<ConceptLink id="concept:softmax">`). URL은 빌드가 만든다. 그래서 Wiki가 생기거나 없어져도 링크가 깨지지 않는다(Wiki가 있으면 Wiki로, 없으면 Entity 페이지로 간다).
 
 ## 3. 정적 사이트 아키텍처 비교 (요구사항 6)
