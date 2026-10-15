@@ -206,12 +206,22 @@ export default function GraphView({
     return output;
   }, [projection.edges]);
 
+  // Fit the viewport only when the layout changes (data loaded, a field expanded or collapsed, a filter
+  // toggled), on the selected node and what it reveals: a field's subfields and members. A selection that
+  // leaves the layout alone keeps the viewport, so the canvas never moves under the pointer that clicked it,
+  // and revealed nodes land inside the clipped canvas, where a pointer can reach them (React Flow resets any
+  // scroll of its wrapper, so a node outside the canvas cannot be scrolled into reach).
+  const selectedRef = useRef(selected);
+  selectedRef.current = selected;
   useEffect(() => {
-    if (!selected || !flow || !flowNodes.some((node) => node.id === selected)) return;
-    requestAnimationFrame(() =>
-      flow.fitView({ nodes: [{ id: selected }], duration: 0, padding: 0.5 }),
-    );
-  }, [flow, flowNodes, selected]);
+    const id = selectedRef.current;
+    if (!flow || !id) return;
+    const targets = projection.nodes
+      .filter((node) => node.id === id || node.parents?.includes(id) || node.fields?.includes(id))
+      .map((node) => ({ id: node.id }));
+    // fitView waits until the new nodes are measured, then applies the viewport in one step.
+    if (targets.length) void flow.fitView({ nodes: targets, padding: 0.2, maxZoom: 1 });
+  }, [flow, projection]);
 
   // The panel must be visible without scrolling after a selection (it sits below the list on narrow screens).
   useEffect(() => {
@@ -377,6 +387,7 @@ export default function GraphView({
                   nodesFocusable
                   edgesFocusable={false}
                   nodesDraggable={false}
+                  minZoom={0.1}
                   fitView
                 >
                   <Background />
