@@ -43,21 +43,21 @@
         crossMatches(r),
     );
   }
+  // A check fails on a non-passing verdict or any source not confirmed as found (missing = unconfirmed).
+  const checkBad = (c) =>
+    !['supported', 'computed', 'analogy-sourced', 'no-claim'].includes(c.verdict) ||
+    (c.sources || []).some((s) => s.confirm !== 'found');
+  const reportBad = (r, x) =>
+    x.decision !== 'approve' ||
+    (x.unchecked || []).length > 0 ||
+    (x.checks || []).some(checkBad) ||
+    (r.cross_review_problems?.[x.release] || []).length > 0;
   function crossMatches(r) {
     const wanted = $('#cross').value;
     if (!wanted) return true;
     const reviews = r.cross_review || [];
     if (wanted === 'none') return !reviews.length;
-    const failures = reviews.some(
-      (x) =>
-        x.decision !== 'approve' ||
-        (x.unchecked || []).length ||
-        (x.checks || []).some(
-          (c) =>
-            !['supported', 'computed', 'analogy-sourced', 'no-claim'].includes(c.verdict) ||
-            (c.sources || []).some((s) => s.confirm && s.confirm !== 'found'),
-        ),
-    );
+    const failures = reviews.some((x) => reportBad(r, x));
     return wanted === 'fail' ? failures : reviews.length > 0 && !failures;
   }
   function renderQueue() {
@@ -111,13 +111,10 @@
         const problems = r.cross_review_problems?.[x.release] || [];
         const rows = (x.checks || [])
           .map((c) => {
-            const bad =
-              !['supported', 'computed', 'analogy-sourced', 'no-claim'].includes(c.verdict) ||
-              (c.sources || []).some((s) => s.confirm && s.confirm !== 'found');
-            return `<tr class="${bad ? 'fail' : ''}"><td>${esc(c.field)}</td><td>${esc(c.verdict)}</td><td>${(c.sources || []).map((s) => `${link(s.url, '원문')} (${esc(s.tier || '—')})`).join('<br>')}</td><td>${(c.sources || []).map((s) => esc(s.passage || '—')).join('<br>')}</td><td>${(c.sources || []).map((s) => esc(s.confirm || '미확인')).join('<br>')}</td></tr>`;
+            return `<tr class="${checkBad(c) ? 'fail' : ''}"><td>${esc(c.field)}</td><td>${esc(c.verdict)}</td><td>${(c.sources || []).map((s) => `${link(s.url, '원문')} (${esc(s.tier || '—')})`).join('<br>')}</td><td>${(c.sources || []).map((s) => esc(s.passage || '—')).join('<br>')}</td><td>${(c.sources || []).map((s) => esc(s.confirm || '미확인')).join('<br>')}</td></tr>`;
           })
           .join('');
-        return `<article class="card ${x.decision === 'approve' && !problems.length ? 'ok' : 'bad'}"><h3>${esc(x.reviewer)} · ${esc(x.decision)} · ${esc(x.start)}</h3><p>수정: ${esc(x.fix || '없음')}<br>미확인: ${text(x.unchecked)}</p><table><thead><tr><th>필드</th><th>판정</th><th>출처 / 등급</th><th>구절</th><th>대조</th></tr></thead><tbody>${rows}</tbody></table>${problems.length ? `<pre>${esc(problems.join('\n'))}</pre>` : ''}</article>`;
+        return `<article class="card ${reportBad(r, x) ? 'bad' : 'ok'}"><h3>${reportBad(r, x) ? '실패' : '통과'} · ${esc(x.reviewer)} · ${esc(x.decision)} · ${esc(x.start)}</h3><p>수정: ${esc(x.fix || '없음')}<br>미확인: ${text(x.unchecked)}</p><table><thead><tr><th>필드</th><th>판정</th><th>출처 / 등급</th><th>구절</th><th>대조</th></tr></thead><tbody>${rows}</tbody></table>${problems.length ? `<pre>${esc(problems.join('\n'))}</pre>` : ''}</article>`;
       })
       .join('');
     return `<section class="cross"><h2>교차 검증</h2>${blocks}</section>`;
