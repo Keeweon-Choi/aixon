@@ -12,7 +12,7 @@ ai_generated: true
 review: null
 published_at: null
 sources: [src:arxiv:1706.03762v7, src:arxiv:1409.0473v7, src:arxiv:2010.11929v2, src:arxiv:2103.14030v2]
-claims: [clm:intro-sdpa, clm:sdpa-is-a-attention, clm:transformer-addresses-sequential, clm:transformer-mitigates-sequential, clm:intro-additive-attention, clm:vit-adapts-transformer, clm:swin-addresses-quadratic]
+claims: [clm:intro-sdpa, clm:sdpa-is-a-attention, clm:scaled-dot-product-attention-part-of-multi-head-attention, clm:multi-head-attention-part-of-transformer-encoder-layer, clm:transformer-encoder-layer-part-of-bert, clm:transformer-encoder-layer-part-of-vit, clm:transformer-addresses-sequential, clm:transformer-mitigates-sequential, clm:intro-additive-attention, clm:vit-adapts-transformer, clm:swin-mitigates-quadratic, clm:intro-shifted-window]
 labs: [lab:softmax-temperature]
 figures:
   - {id: fig-sdpa-flow, origin: self-made, alt: "Q와 K의 전치를 곱해 점수 행렬을 만들고, √d_k로 나눈 뒤 행마다 softmax를 취해 가중치를 얻고, 그 가중치로 V의 행들을 섞어 출력을 만드는 흐름"}
@@ -21,7 +21,7 @@ updated_at: 2026-10-15
 
 <Section id="overview" level="intuition" title="개요와 직관">
 
-문장 "그 동물은 길을 건너지 않았다, 왜냐하면 그것은 너무 피곤했기 때문이다"에서 "그것"이 무엇을 가리키는지 알려면, "그것"이라는 단어가 문장의 다른 단어들을 **얼마나 참고해야 하는지** 정해야 합니다. Scaled Dot-Product Attention은 이 "얼마나 참고할지"를 계산하는 방법입니다.
+"민수가 지수에게 우산을 빌려주었다. 그녀는 고맙다고 했다."에서 '그녀'가 누구인지 판단하려면, '그녀'라는 단어를 처리할 때 문장의 다른 단어들(민수, 지수, 우산…)을 **얼마나 참고할지** 정해야 합니다. Scaled Dot-Product Attention은 이 '참고하는 비율'을 계산하는 연산입니다.
 
 각 단어(토큰)는 세 가지 역할의 벡터를 가집니다.
 
@@ -29,19 +29,21 @@ updated_at: 2026-10-15
 - **key(열쇠)**: "나는 이런 정보를 가지고 있다"는 표시
 - **value(값)**: 실제로 넘겨줄 정보
 
-query와 각 key가 얼마나 잘 맞는지 점수를 매기고, 점수를 확률처럼 바꾼 뒤, 그 비율대로 value들을 섞습니다. 결과는 "나에게 필요한 정보를 다른 토큰들에서 골라 섞은 벡터"입니다. Transformer 논문은 attention 함수를 "query와 key–value 쌍들을 출력으로 대응시키는 것이며, 출력은 value들의 가중합이고 가중치는 query와 각 key의 호환도로 정한다"고 정의합니다<Cite claim="clm:sdpa-is-a-attention" loc="§3.2" />.
+query와 각 key가 얼마나 잘 맞는지 점수를 매기고, 점수를 확률처럼 바꾼 뒤, 그 비율대로 value들을 섞습니다. 결과는 "나에게 필요한 정보를 다른 토큰들에서 골라 섞은 벡터"입니다. Transformer 논문은 attention 함수를 query와 key–value 쌍들을 출력으로 대응시키는 함수라고 설명합니다(번역)<Cite claim="clm:sdpa-is-a-attention" loc="§3.2" />.
+
+비유에는 한계가 있습니다. attention이 '그녀'를 이해해서 지수를 고르는 것은 아닙니다. 학습된 query와 key가 그런 관련도를 높은 점수로 나타내게 될 수 있을 뿐입니다.
 
 <Callout kind="key">
-한 줄 요약: **점수 = query·key, 가중치 = softmax(점수 ÷ √d_k), 출력 = 가중치로 섞은 value.**
+한 줄 요약: **점수 = query·key, 가중치 = softmax(점수 ÷ √d_k), 출력 = 가중치로 섞은 value.** 여기서 d_k는 query·key 벡터의 길이(성분 개수)입니다.
 </Callout>
 
 </Section>
 
 <Section id="why" level="intuition" title="왜 중요한가">
 
-- Transformer, BERT, ViT, Swin 같은 모델이 모두 이 연산을 기본 부품으로 씁니다. <ConceptLink id="method:multi-head-attention">Multi-head attention</ConceptLink>은 이 연산을 여러 번 나란히 돌린 것이고, <ConceptLink id="method:transformer-encoder-layer">Transformer encoder layer</ConceptLink>의 첫 번째 부분입니다.
-- 순환 신경망(RNN)은 단어를 하나씩 순서대로 처리해서 학습 예제 안에서 병렬화가 어렵습니다. Transformer는 이 순차 계산 문제를 해결 대상으로 삼았고<Cite claim="clm:transformer-addresses-sequential" loc="§1" />, self-attention 층은 모든 위치를 **일정한 횟수의 순차 연산**으로 연결합니다(RNN은 시퀀스 길이 n에 비례)<Cite claim="clm:transformer-mitigates-sequential" loc="Table 1" />.
-- 이미지도 패치로 자르면 토큰처럼 다룰 수 있어서, 같은 연산이 비전으로 옮겨 갔습니다<Cite claim="clm:vit-adapts-transformer" loc="§3" />.
+- <ConceptLink id="method:multi-head-attention">Multi-head attention</ConceptLink>은 이 연산을 여러 개 나란히 돌린 것이고<Cite claim="clm:scaled-dot-product-attention-part-of-multi-head-attention" loc="§3.2.2" />, <ConceptLink id="method:transformer-encoder-layer">Transformer encoder layer</ConceptLink>는 multi-head attention으로 시작합니다<Cite claim="clm:multi-head-attention-part-of-transformer-encoder-layer" loc="§3.1" />. BERT와 ViT는 이 encoder layer를 쌓아 만듭니다<Cite claim="clm:transformer-encoder-layer-part-of-bert" loc="BERT §3" /><Cite claim="clm:transformer-encoder-layer-part-of-vit" loc="ViT §3.1" />.
+- 순환 신경망(RNN)은 단어를 하나씩 순서대로 처리해서 학습 예제 안에서 병렬화가 어렵습니다. Transformer는 순환을 쓰지 않고 attention만으로 이 순차 계산 문제를 풀려고 했고<Cite claim="clm:transformer-addresses-sequential" loc="§1" />, self-attention 층은 모든 위치를 **일정한 횟수의 순차 연산**으로 연결합니다(RNN은 시퀀스 길이 n에 비례)<Cite claim="clm:transformer-mitigates-sequential" loc="§4, Table 1" />.
+- 이미지도 패치로 자르면 토큰처럼 다룰 수 있어서, 같은 연산이 비전으로 옮겨 갔습니다<Cite claim="clm:vit-adapts-transformer" loc="ViT §1" />.
 
 </Section>
 
@@ -54,11 +56,16 @@ query와 각 key가 얼마나 잘 맞는지 점수를 매기고, 점수를 확�
 3. **가중치**: 행마다 <ConceptLink id="concept:softmax">softmax</ConceptLink>를 취해 $A = \mathrm{softmax}(S/\sqrt{d_k})$. 각 행의 합은 1입니다.
 4. **출력**: $O = AV \in \mathbb{R}^{n \times d_v}$. i번째 출력은 value 행들을 $A$의 i번째 행 비율로 섞은 것입니다.
 
-논문은 이것을 "query와 모든 key의 dot product를 계산하고, 각각을 $\sqrt{d_k}$로 나눈 뒤, softmax로 value에 대한 가중치를 얻는다"고 설명하고 "Scaled Dot-Product Attention"이라고 부릅니다<Cite claim="clm:intro-sdpa" loc="§3.2.1" />.
+논문은 이 연산에 "Scaled Dot-Product Attention"이라는 이름을 붙였고<Cite claim="clm:intro-sdpa" loc="§3.2.1" />, query와 모든 key의 dot product를 $\sqrt{d_k}$로 나눈 뒤 softmax로 value의 가중치를 얻는다고 설명합니다<Cite src="src:arxiv:1706.03762v7" loc="§3.2.1" />.
 
 <Figure id="fig-sdpa-flow">
 <svg viewBox="0 0 640 150" role="img" aria-labelledby="fig-sdpa-flow-title" xmlns="http://www.w3.org/2000/svg">
   <title id="fig-sdpa-flow-title">Scaled Dot-Product Attention 계산 흐름</title>
+  <defs>
+    <marker id="fig-sdpa-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="currentColor"/>
+    </marker>
+  </defs>
   <g font-family="IBM Plex Mono, monospace" font-size="13" fill="currentColor">
     <rect x="10" y="20" width="70" height="40" rx="4" fill="none" stroke="currentColor"/><text x="45" y="45" text-anchor="middle">Q</text>
     <rect x="10" y="90" width="70" height="40" rx="4" fill="none" stroke="currentColor"/><text x="45" y="115" text-anchor="middle">K</text>
@@ -67,14 +74,19 @@ query와 각 key가 얼마나 잘 맞는지 점수를 매기고, 점수를 확�
     <rect x="380" y="55" width="100" height="40" rx="4" fill="none" stroke="currentColor"/><text x="430" y="80" text-anchor="middle">softmax(행)</text>
     <rect x="520" y="55" width="110" height="40" rx="4" fill="none" stroke="currentColor" stroke-width="2"/><text x="575" y="80" text-anchor="middle">A · V = O</text>
     <rect x="380" y="110" width="100" height="32" rx="4" fill="none" stroke="currentColor" stroke-dasharray="4 3"/><text x="430" y="131" text-anchor="middle">V</text>
-    <path d="M80 40 L120 70 M80 110 L120 80 M210 75 L250 75 M340 75 L380 75 M480 75 L520 75 M480 126 L540 95" stroke="currentColor" fill="none"/>
+  </g>
+  <g stroke="currentColor" fill="none" marker-end="url(#fig-sdpa-arrow)">
+    <line x1="80" y1="40" x2="118" y2="68"/>
+    <line x1="80" y1="110" x2="118" y2="82"/>
+    <line x1="210" y1="75" x2="248" y2="75"/>
+    <line x1="340" y1="75" x2="378" y2="75"/>
+    <line x1="480" y1="75" x2="518" y2="75"/>
+    <line x1="480" y1="126" x2="538" y2="97"/>
   </g>
 </svg>
 </Figure>
 
-<Level of="fundamentals">
 행렬 모양만 맞추면 구현이 거의 끝납니다. 점수 행렬은 n × m이라서 **토큰 수의 제곱**만큼 메모리를 씁니다(한계 절 참고).
-</Level>
 
 </Section>
 
@@ -84,24 +96,26 @@ $$
 \mathrm{Attention}(Q, K, V) = \mathrm{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}}\right)V
 $$
 
-softmax는 벡터 $\mathbf{z}$를 $\mathrm{softmax}(\mathbf{z})_i = e^{z_i} / \sum_j e^{z_j}$로 바꿉니다. 두 가지 성질이 중요합니다.
+$Q, K, V$는 query·key·value를 행으로 쌓은 행렬, $d_k$는 query와 key 벡터의 차원이고, softmax는 점수 행렬의 **행마다** 따로 적용합니다. softmax는 벡터 $\mathbf{z}$를 $\mathrm{softmax}(\mathbf{z})_i = e^{z_i} / \sum_j e^{z_j}$로 바꿉니다. 두 가지 성질이 중요합니다.
 
 - 결과는 모두 양수이고 합이 1입니다(가중치로 쓸 수 있다).
 - 모든 성분에 같은 상수를 더해도 결과가 같습니다: $\mathrm{softmax}(\mathbf{z} + c) = \mathrm{softmax}(\mathbf{z})$. 구현에서 최댓값을 빼는 이유입니다.
 
+**왜 $\sqrt{d_k}$로 나누는가 (요약).** query와 key의 성분이 평균 0, 분산 1이라고 가정하면 dot product의 분산은 $d_k$입니다. $d_k$가 크면 점수가 커지고, softmax가 한 key에 쏠려 기울기가 아주 작아집니다. $\sqrt{d_k}$로 나누면 분산이 다시 1이 됩니다<Cite src="src:arxiv:1706.03762v7" loc="§3.2.1, 각주 4" />. 유도는 심화 단계에서 볼 수 있습니다.
+
 <Level of="deep">
 
-**왜 $\sqrt{d_k}$로 나누는가.** 논문은 "$d_k$가 크면 dot product의 크기가 커져 softmax를 기울기가 매우 작은 영역으로 밀어낸다고 추정한다"고 쓰고, 이를 막으려고 $1/\sqrt{d_k}$로 나눕니다<Cite src="src:arxiv:1706.03762v7" loc="§3.2.1" />. 각주는 그 크기를 이렇게 설명합니다<Cite src="src:arxiv:1706.03762v7" loc="각주 4" />. query와 key의 성분 $q_i, k_i$가 서로 독립이고 평균 0, 분산 1이라고 가정하면:
+**유도.** 논문은 "$d_k$가 크면 dot product의 크기가 커져 softmax를 기울기가 매우 작은 영역으로 밀어낸다고 추정한다"고 씁니다(번역; 원문: "We suspect that for large values of d_k, the dot products grow large in magnitude, pushing the softmax function into regions where it has extremely small gradients"). 각주 4는 그 크기를 이렇게 설명합니다<Cite src="src:arxiv:1706.03762v7" loc="각주 4" />. query와 key의 성분 $q_i, k_i$가 서로 독립이고 평균 0, 분산 1이라고 가정하면:
 
 $$
 \begin{aligned}
 \mathbb{E}[q_i k_i] &= \mathbb{E}[q_i]\,\mathbb{E}[k_i] = 0 && \text{(독립)}\\
 \mathrm{Var}(q_i k_i) &= \mathbb{E}[q_i^2]\,\mathbb{E}[k_i^2] - 0 = 1 && \text{(독립, 분산 1)}\\
-\mathrm{Var}(\mathbf{q}\cdot\mathbf{k}) &= \sum_{i=1}^{d_k} \mathrm{Var}(q_i k_i) = d_k && \text{(항들이 독립이므로 분산의 합)}
+\mathrm{Var}(\mathbf{q}\cdot\mathbf{k}) &= \textstyle\sum_{i=1}^{d_k} \mathrm{Var}(q_i k_i) = d_k && \text{(독립이므로 분산의 합)}
 \end{aligned}
 $$
 
-세 번째 줄은 <ConceptLink id="concept:variance-of-sum">독립 확률변수 합의 분산</ConceptLink> 성질입니다. 그래서 점수의 표준편차는 $\sqrt{d_k}$로 커집니다. $d_k = 64$이면 표준편차가 8이라, softmax 입력의 차이가 수십이 되고 출력은 거의 원-핫이 됩니다. $\sqrt{d_k}$로 나누면 분산이 다시 1이 됩니다. 이것은 softmax의 <ConceptLink id="concept:softmax-temperature">temperature</ConceptLink>를 $\sqrt{d_k}$로 두는 것과 같은 효과입니다.
+세 번째 줄은 <ConceptLink id="concept:variance-of-sum">독립 확률변수 합의 분산</ConceptLink> 성질입니다. 그래서 점수의 표준편차는 $\sqrt{d_k}$로 커집니다. 예를 들어 key가 8개일 때 나누지 않으면, $d_k = 64$(표준편차 8)에서 평균 최대 가중치가 약 0.87로 한 key에 크게 쏠리고, $d_k = 512$에서는 약 0.96으로 거의 원-핫이 됩니다. $\sqrt{d_k}$로 나누면 분산이 다시 1이 됩니다. 이것을 softmax의 <ConceptLink id="concept:softmax-temperature">temperature</ConceptLink>를 $\sqrt{d_k}$로 둔 것으로 볼 수도 있습니다(논문에는 없는 해석입니다).
 
 이 설명은 **가정 아래의 근사 논증**입니다. 학습된 Q, K의 성분이 독립·분산 1이라는 보장은 없습니다. 논문도 "추정한다(We suspect)"고 썼습니다.
 
@@ -137,8 +151,12 @@ S = X @ X.T
 A = softmax(S / np.sqrt(2))
 O = A @ X
 assert np.allclose(S, [[1, 0, 1], [0, 1, 1], [1, 1, 2]])
+assert round(np.sqrt(2), 4) == 1.4142 and round(1 / np.sqrt(2), 4) == 0.7071
+assert round(np.exp(1 / np.sqrt(2)), 4) == 2.0281
+assert round(2 * np.exp(1 / np.sqrt(2)) + 1, 4) == 5.0562
 assert np.allclose(A[0].round(3), [0.401, 0.198, 0.401])
 assert np.allclose(A[2].round(3), [0.248, 0.248, 0.503])
+assert round(A[2].round(3).sum(), 3) == 0.999
 assert np.allclose(O[0].round(3), [0.802, 0.599])
 assert np.allclose(A.sum(axis=1), 1.0)
 assert np.allclose(softmax(S)[0].round(3), [0.422, 0.155, 0.422])
@@ -149,7 +167,7 @@ print("example ok")
 
 <Section id="code" level="fundamentals" title="구현">
 
-numpy로 쓰면 몇 줄입니다. softmax에서 최댓값을 먼저 빼는 것은 결과를 바꾸지 않으면서(shift invariance) `exp`가 넘치는 것을 막기 위해서입니다.
+numpy로 쓰면 몇 줄입니다. softmax에서 최댓값을 먼저 빼는 것은 결과를 바꾸지 않으면서(shift invariance) `exp`가 넘치는 것을 막기 위해서입니다. 아래는 **head 하나, 마스크 없는** 버전입니다. 디코더처럼 뒤쪽 토큰을 보면 안 되는 경우에는 softmax 전에 해당 점수를 $-\infty$로 가립니다(논문 §3.2.3의 mask)<Cite src="src:arxiv:1706.03762v7" loc="§3.2.3" />.
 
 ```python verify
 import numpy as np
@@ -171,6 +189,12 @@ assert out.shape == (4, 3) and w.shape == (4, 6)
 assert np.allclose(w.sum(axis=1), 1.0)
 # 큰 logit에서도 NaN이 나오지 않는다
 assert np.all(np.isfinite(softmax(np.array([1000.0, 0.0]))))
+# 순열 등변성: self-attention에서 토큰 순서를 바꾸면 출력도 같은 순서로 바뀔 뿐이다
+X = rng.standard_normal((5, 8))
+perm = rng.permutation(5)
+out_x, _ = scaled_dot_product_attention(X, X, X)
+out_p, _ = scaled_dot_product_attention(X[perm], X[perm], X[perm])
+assert np.allclose(out_p, out_x[perm])
 # 분산 확인: 성분이 N(0, 1)이면 Var(q·k) ≈ d_k, 스케일 후 ≈ 1
 for d_k in (4, 64, 512):
     q, k = rng.standard_normal((20000, d_k)), rng.standard_normal((20000, d_k))
@@ -184,28 +208,73 @@ print("implementation ok")
 
 <Section id="visual" level="intuition" title="시각적 설명">
 
-아래 Lab에서 직접 확인해 보세요. **슬라이더를 움직이기 전에** 결과를 먼저 예측해 보는 것이 좋습니다.
+아래 Lab에서 직접 확인해 보세요. **숫자를 보기 전에 먼저 예측해 보세요.**
 
-- **모드 A (temperature)**: logit을 그대로 두고 온도 T를 낮추면 가장 큰 확률은 어떻게 될까요? T를 1에서 0.1로 낮추면 [2, 1, 0]의 최대 확률은 0.665에서 0.99995가 됩니다.
-- **모드 B (scaled dot-product)**: 스케일 없이 $d_k$를 4에서 512로 키우면(key 8개, 표본 1,000개, seed 42) 평균 최대 가중치는 0.525에서 0.955로 포화하고, softmax Jacobian의 크기(기울기의 크기)는 0.341에서 0.063으로 줄어듭니다. $\sqrt{d_k}$로 나누면 두 값이 거의 일정합니다(0.34–0.37). 이 숫자들은 numpy 기준 구현으로 계산한 고정값과 같습니다.
+1. 온도 T를 낮추면 가장 큰 확률은 커질까요, 작아질까요?
+2. √d_k로 나누지 않고 벡터 길이 d_k만 키우면, 가중치는 한 key에 몰릴까요, 고르게 퍼질까요?
 
 <Lab id="lab:softmax-temperature" />
 
+<Callout kind="note">
+확인: (1) logit [2, 1, 0]에서 T를 1에서 0.1로 낮추면 가장 큰 확률이 0.665에서 0.99995로 커집니다. (2) 나누지 않고 d_k를 4에서 512로 키우면(key 8개) 평균 최대 가중치가 약 0.53에서 0.96으로 한 key에 몰립니다. √d_k로 나누면 0.34–0.37 근처에서 거의 그대로입니다.
+</Callout>
+
+<Level of="deep">
+
+몰릴수록 softmax의 기울기도 작아집니다. softmax Jacobian의 Frobenius 노름(기울기 크기)은 나누지 않을 때 d_k = 4에서 약 0.34, d_k = 512에서 약 0.06으로 줄고, √d_k로 나누면 0.36 근처로 유지됩니다. Lab은 seed 42, 표본 1,000개로 계산한 고정값(0.525→0.955, 0.341→0.063)을 보여 주고, 아래 코드는 다른 난수로 같은 경향을 다시 확인합니다.
+
+```python verify
+import numpy as np
+
+def softmax(z):
+    z = z - z.max(axis=-1, keepdims=True)
+    e = np.exp(z)
+    return e / e.sum(axis=-1, keepdims=True)
+
+p1 = softmax(np.array([2.0, 1.0, 0.0]))
+p01 = softmax(np.array([2.0, 1.0, 0.0]) / 0.1)
+assert round(p1.max(), 3) == 0.665 and round(p01.max(), 5) == 0.99995
+
+rng = np.random.default_rng(7)
+
+def stats(d_k, scaled, n_keys=8, samples=4000):
+    q = rng.standard_normal((samples, 1, d_k))
+    k = rng.standard_normal((samples, n_keys, d_k))
+    z = (q * k).sum(axis=-1)
+    if scaled:
+        z = z / np.sqrt(d_k)
+    p = softmax(z)
+    J = p[:, :, None] * np.eye(n_keys) - p[:, :, None] * p[:, None, :]  # softmax Jacobian per sample
+    return p.max(axis=-1).mean(), np.linalg.norm(J, axis=(1, 2)).mean()
+
+m4, j4 = stats(4, False)
+m64, _ = stats(64, False)
+m512, j512 = stats(512, False)
+assert abs(m4 - 0.525) < 0.01 and abs(m64 - 0.87) < 0.01 and abs(m512 - 0.955) < 0.01
+assert abs(j4 - 0.341) < 0.01 and abs(j512 - 0.063) < 0.01
+for d_k in (4, 64, 512):
+    m, j = stats(d_k, True)
+    assert 0.33 < m < 0.37 and 0.35 < j < 0.38
+print("visual numbers ok")
+```
+
+</Level>
+
 </Section>
 
-<Section id="limitations" level="deep" title="한계와 트레이드오프">
+<Section id="limitations" level="fundamentals" title="한계와 트레이드오프">
 
-- **계산·메모리가 토큰 수의 제곱**: self-attention 층의 계산량은 $O(n^2 \cdot d)$입니다<Cite src="src:arxiv:1706.03762v7" loc="Table 1" />. 고해상도 이미지처럼 토큰이 많으면 부담이 커지고, Swin Transformer는 이것을 해결 대상으로 삼아 창(window) 안에서만 attention을 계산합니다<Cite claim="clm:swin-addresses-quadratic" loc="§1, §3.2" />.
-- **순서를 모른다**: 점수 계산에 위치 정보가 없어서, 토큰 순서를 바꿔도 각 출력은 같은 방식으로 섞입니다. 그래서 Transformer는 입력 embedding에 <ConceptLink id="method:positional-encoding">positional encoding</ConceptLink>을 더합니다<Cite src="src:arxiv:1706.03762v7" loc="§3.5" />.
+- **계산·메모리가 토큰 수의 제곱**: self-attention 층의 계산량은 $O(n^2 \cdot d)$입니다<Cite src="src:arxiv:1706.03762v7" loc="Table 1" />. 고해상도 이미지처럼 토큰이 많으면 부담이 커집니다. Swin Transformer는 이미지를 겹치지 않는 창으로 나눠 창 안에서만 attention을 계산하고<Cite claim="clm:swin-mitigates-quadratic" loc="Swin §1" />, 층마다 창을 어긋나게 옮겨 창 사이를 잇는 방식으로<Cite claim="clm:intro-shifted-window" loc="Swin §3.2" /> 계산량을 이미지 크기에 선형으로 줄였습니다.
+- **순서를 모른다**: 점수 계산에 위치 정보가 없어서, self-attention에서 토큰 순서를 바꾸면 출력도 같은 순서로 바뀔 뿐 각 토큰의 출력 값은 그대로입니다(순열 등변성, 구현 절의 확인 코드). 그래서 Transformer는 입력 embedding에 <ConceptLink id="method:positional-encoding">positional encoding</ConceptLink>을 더합니다<Cite src="src:arxiv:1706.03762v7" loc="§3.5" />.
 - **포화**: 스케일이 맞지 않으면 softmax가 원-핫에 가까워져 기울기가 작아집니다(수학 절). $\sqrt{d_k}$ 스케일은 성분 분포에 대한 가정에 기댄 처방입니다.
 
 </Section>
 
 <Section id="history" level="deep" title="역사적 발전">
 
-- **2014 — 정렬을 함께 배우는 번역(Bahdanau et al.)**: 인코더–디코더 번역에서 문장 전체를 고정 길이 벡터 하나로 압축하는 것이 병목이라고 보고, 디코더가 원문의 관련 위치를 부드럽게 찾게 했습니다<Cite claim="clm:intro-additive-attention" loc="§1, §3.1" />. 이 점수 함수는 작은 신경망(덧셈 꼴)이라 나중에 additive attention이라고 불립니다.
-- **2017 — Transformer(Vaswani et al.)**: 점수를 dot product로 바꾸고 $1/\sqrt{d_k}$ 스케일을 더했습니다. 논문은 "dot-product attention은 스케일링 인자를 빼면 우리 알고리즘과 같다"고 밝힙니다<Cite claim="clm:intro-sdpa" loc="§3.2.1" />. 행렬 곱으로 구현할 수 있어 additive보다 실제로 빠르고 메모리를 덜 쓴다고 설명합니다.
-- **2020 — ViT(Dosovitskiy et al.)**: 이미지를 16×16 패치로 잘라 토큰처럼 다루고, 원래 Transformer 설계를 최대한 그대로 따랐습니다<Cite claim="clm:vit-adapts-transformer" loc="§3" />.
-- **2021 — Swin Transformer**: 전역 attention의 제곱 비용을 창 단위 attention으로 줄였습니다<Cite claim="clm:swin-addresses-quadratic" loc="§3.2" />.
+- **2014 — 정렬을 함께 배우는 번역(Bahdanau et al.)**: 인코더–디코더 번역에서 문장 전체를 고정 길이 벡터 하나로 압축하는 것이 병목이라고 보고, 디코더가 원문의 관련 위치를 부드럽게 찾게 했습니다<Cite claim="clm:intro-additive-attention" loc="§1" />. 이 점수 함수는 작은 신경망(덧셈 꼴)이라 additive attention이라고 불립니다<Cite src="src:arxiv:1706.03762v7" loc="§3.2.1" />.
+- **2017 — Transformer(Vaswani et al.)**: 당시 dot-product(곱셈형) attention은 additive attention과 함께 가장 널리 쓰이던 두 방식 중 하나였고, Transformer는 여기에 $1/\sqrt{d_k}$ 스케일을 더했습니다. 논문은 dot-product attention이 스케일 인자를 빼면 자기들의 알고리즘과 같다고 쓰고(번역; 원문: "Dot-product attention is identical to our algorithm, except for the scaling factor of 1/√d_k"), 고도로 최적화된 행렬 곱셈 코드로 구현할 수 있어 실제로 더 빠르고 메모리를 덜 쓴다고 설명합니다<Cite src="src:arxiv:1706.03762v7" loc="§3.2.1" />.
+- **2020 — ViT(Dosovitskiy et al.)**: 이미지를 고정 크기 패치(예: 16×16)로 잘라 토큰처럼 다루고, 표준 Transformer를 최소한만 바꿔 그대로 적용했습니다<Cite claim="clm:vit-adapts-transformer" loc="ViT §1, §3" />.
+- **2021 — Swin Transformer**: 창 단위 attention과 창 이동으로 전역 attention의 제곱 비용을 이미지 크기에 선형인 비용으로 줄였습니다<Cite claim="clm:swin-mitigates-quadratic" loc="Swin §1" />.
 
 </Section>

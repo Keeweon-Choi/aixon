@@ -2262,7 +2262,7 @@ assessment_items:
     unit: concept:variance-of-sum
     dimension: explain
   kind: lab_prediction
-  prompt: d_k = 64일 때 q·k의 표준편차는?
+  prompt: q, k의 성분이 서로 독립이고 평균 0, 분산 1이다. d_k = 64일 때 q·k의 표준편차는?
   answer: 8
   tolerance: 0.5
   rationale: √64 = 8 (seed 42, 표본 10,000에서 Var 64.65)
@@ -3958,6 +3958,14 @@ claims:
   status: verified
   confidence: high
   evidence:
+  - source: src:arxiv:1706.03762v7
+    locator:
+      figure: 2
+      part: caption
+      html_id: S3.F2
+    quote: (left) Scaled Dot-Product Attention. (right) Multi-Head Attention consists of several attention layers running in parallel.
+    type: author_statement
+    stance: supports
   - source: src:arxiv:1706.03762v7
     locator:
       section: 3.2.2 Multi-Head Attention
