@@ -11,7 +11,8 @@ test('E2E-1 Graph → Wiki → Related → Graph @seed', async ({ page }) => {
 
   await test.step('home → quick search → Scaled Dot-Product Attention entity page', async () => {
     await page.goto('./');
-    await quickSearch(page, QUICK_QUERY.main);
+    // by name: the seed has no Korean alias for SDPA since the cross-review dropped the unsourced one
+    await quickSearch(page, 'Scaled Dot-Product');
     await page.locator(`#quick-results a[data-node-id="${SDPA}"]`).click();
     await expect(page).toHaveURL(new RegExp(`/${entityPath(SDPA)}$`));
     await expect(page.locator('h1')).toHaveText(data.name(SDPA));
@@ -35,11 +36,17 @@ test('E2E-1 Graph → Wiki → Related → Graph @seed', async ({ page }) => {
     );
   });
 
-  await test.step('the wiki shows KaTeX math, a code block and the draft banner', async () => {
+  await test.step('the wiki shows KaTeX math, a code block and its status banner', async () => {
     await expect(page.locator('main .katex').first()).toBeVisible();
     await expect(page.locator('.katex-error')).toHaveCount(0);
     await expect(page.locator('main pre code').first()).toBeVisible();
-    await expect(page.getByTestId('status-banner')).toContainText('검토 전 초안');
+    // the fixture doc is a draft; the seed doc is published (approved by the cross-review panel)
+    const draft = ['outline', 'draft'].includes(
+      String(wikiFrontmatter('scaled-dot-product-attention').status),
+    );
+    await expect(page.getByTestId('status-banner')).toContainText(
+      draft ? '검토 전 초안' : /AI 교차 검증 \d+명|사람 검토:/,
+    );
   });
 
   await test.step('switching 직관 / 기초 / 심화 changes the visible sections', async () => {
