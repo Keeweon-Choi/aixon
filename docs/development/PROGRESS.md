@@ -27,6 +27,8 @@
 | 13:55 | 배포 사이트 스모크 테스트(Playwright, 1280×800·390×844): 6개 경로 200, 404 페이지, 콘솔 오류·가로 넘침 없음. 한글 글꼴이 없어 스크린샷은 네모(텍스트는 DOM으로 확인) | `artifacts/verification/deploy-smoke-20261015T045518Z/` |
 | (시각 미기록) | 사전 검수표 44건(승인 권고 41, 수정 3) → 수정 `89310e5`, 일괄 승인 `approve-batch`·`publish` 병합(`ea87acf`, `2355c44`). 사용자 결정: 사람 승인 대신 AI 교차 검증 패널 자동 게시(ADR-026). 도구(`codex/1015-140312-aixon`)와 로컬 검수 화면(`codex/1015-140314-aixon`)은 검증 중. 게시 0건 | — |
 | 14:10 | 깨끗한 환경 5회차(`67854ae`, 새 clone + `npm ci` + 새 venv, 2코어) | `runs/20261015T051054Z` 13/13 PASS |
+| (시각 미기록, 15:5x까지) | 첫 콘텐츠 공개. AI 교차 검증 도구(병합 `285ba74`, Opus 검증자 "수정 필요" → 검증 커밋 3개 뒤 병합, 음성 대조 46개)와 로컬 검수 화면(병합 `7016084`, 검증 커밋 14개 뒤 병합, 데이터 손실 버그 포함, 음성 대조 55개)을 병합하고 통합 수정 `a9097a5`, `4bc4ee5`를 넣었다. 패널: `first-release` 44건(엔티티 27, Claim 12, 문항 4, Wiki 1), Opus 5.5 High 검증자 6명(원문 우선 + 서술 우선), 2차례. 1차에서 Wiki(출력 투영 W^O 누락, 논문 "We suspect" 과장, query 비교 대상)와 엔티티(틀린 별칭, 출처 없는 한국어 별칭, 확인 불가 dblp 키, 랩 설정값, Transformer 요약)의 실제 오류를 찾았고, 편집 담당이 `6e8bcf3`, `3740a47`로 고친 뒤 2차에서 모두 승인. 구절 대조 400/400 found, 5건 표본 감사 모두 승인. 승인 커밋 `a420066`(되돌리기 `git revert a420066`). 공개 관문: 엔티티 31, Claim 12, Wiki 1, 출처 6, 제외 0, 오류 0. 사람 승인은 0건 | 기록 `review/cross/first-release/RELEASE.md` |
+| (시각 미기록, 15:5x까지) | 게시 후 검증과 후속 수정. `a420066`의 깨끗한 환경 실행이 `check-dist-public`에서 실패(오염 검사 오탐 → `ba511b4`), `ba511b4`의 실행 `20261015T063234Z`가 `e2e-seed` E2E-1 2건에서 실패(시드 Wiki 가정 → `186294f`). `186294f`: 깨끗한 환경 13/13 PASS(`20261015T063931Z`), CI 38693966099·Pages 38693966125 성공. 배포 사이트를 Playwright로 사용(`deploy-smoke-20261015T064629Z`): 게시된 12개 경로 200, 비공개 경로 404, Wiki 배너·KaTeX 50개 노드 오류 0·랩·퀴즈·검색 동작, 홈이 "인공지능 · 0개 노드"를 보임 → `ab363f0`(공개 15, preview 205). `ab363f0`: 깨끗한 환경 13/13 PASS(`20261015T064959Z`), CI 38695150153·Pages 38695150022 성공, 배포된 홈 "인공지능 · 15개 노드"와 `/about/`의 "AI 교차 검증" 절을 curl로 확인 | `runs/20261015T064959Z` |
 
 ## 마지막 테스트 결과 (13:08, 커밋 b6ca3d7, 깨끗한 환경, 2코어)
 
@@ -39,3 +41,10 @@
 - `make verify` 13단계 PASS, 108.15초: lint, typecheck, test(vitest 22 · pytest 206), validate, validate-fixtures, build(632쪽), check-dist, build-public(7쪽, 승인 0건), check-dist-public, e2e(fixture 122), e2e-seed(50 + 4 skipped: P2), check-dist-seed(632쪽), secrets(3323개 파일)
 - 67854ae 뒤 c6851db까지는 문서, `.gitignore`, verify-online 워크플로, `seedtool quotes` 종료 코드만 바뀌었다. GitHub CI가 c6851db에서 전체 `make verify`를 통과했다.
 - 증거: `artifacts/verification/runs/20261015T051054Z/` (summary.json, logs, clean-env-job.log). 위 13:08 항목은 첫 인수 때의 이력이다.
+
+## 마지막 테스트 결과 (15:5x, 커밋 ab363f0, 깨끗한 환경, 2코어)
+
+- `make verify` 13단계 PASS, 165.43초: lint, typecheck, test(vitest 25 · pytest 242), validate(public gate: 엔티티 31, Claim 12, Wiki 1, 제외 0, 오류 0), validate-fixtures, build(632쪽), check-dist, build-public(62쪽), check-dist-public, e2e(fixture 124, 리뷰 화면 테스트 2건 포함), e2e-seed(50 + 4 skipped: P2), check-dist-seed(632쪽), secrets(3454개 파일)
+- GitHub: CI 38695150153 성공(3분 55초), Pages 38695150022 성공
+- 증거: `artifacts/verification/runs/20261015T064959Z/` (summary.json, logs, clean-env-job.log). 위 13:08과 14:1x 항목은 이력이다.
+- 아직 NOT RUN: 사람이 직접 써 본 확인, 검색엔진 색인, 스크린 리더 확인. E2E-10 ⑤⑥은 NOT APPLICABLE(P2).

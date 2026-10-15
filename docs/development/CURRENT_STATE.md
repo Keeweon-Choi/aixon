@@ -1,6 +1,6 @@
 # CURRENT_STATE — 작업 재개용 상태 (오케스트레이터가 갱신)
 
-> 컴팩션·세션 교체(hub renew) 뒤에는 **이 파일부터 읽는다.** 마지막 갱신: 2026-10-15 14:3x
+> 컴팩션·세션 교체(hub renew) 뒤에는 **이 파일부터 읽는다.** 마지막 갱신: 2026-10-15 15:5x
 
 ## 0. 반드시 지킬 운영 조건 (사용자 지시)
 
@@ -10,23 +10,22 @@
 4. **Codex**: 명세가 확실한 구현은 `cd /home/choi/aixon && hub codex -m sol|terra|luna /home/choi/aixon <spec>`. 샌드박스에 네트워크가 없다. 결과는 반드시 직접 다시 돌려 검증한다(음성 대조 포함).
 5. 커밋 신원은 전역 git 설정을 그대로 쓴다.
 
-## 1. 현재 단계 — 2026-10-15 14:3x (v0.1 인수 완료, 배포 완료)
+## 1. 현재 단계 — 2026-10-15 15:5x (v0.1 인수 완료, 첫 콘텐츠 공개)
 
 | Phase | 상태 |
 |---|---|
 | A 설계 감사 → B 수정 | 완료(31건, `docs/08_ARCHITECTURE_REVIEW.md`) |
-| C–H 사이트·하네스·E2E·회귀 | 완료. 최신 깨끗한 환경 `make verify` 13단계 PASS (`artifacts/verification/runs/20261015T051054Z`, 커밋 67854ae, 2코어). 이전 `20261015T040334Z`(b6ca3d7)도 PASS. 67854ae 뒤 c6851db까지는 문서·.gitignore·verify-online 워크플로·quotes 종료 코드만 바뀌었고 GitHub CI가 c6851db에서 전체 `make verify`를 통과했다 |
+| C–H 사이트·하네스·E2E·회귀 | 완료. 최신 깨끗한 환경 `make verify` 13단계 PASS (`artifacts/verification/runs/20261015T064959Z`, 커밋 ab363f0, 2코어): vitest 25, pytest 242, e2e fixture 124(리뷰 화면 테스트 2건 포함), e2e-seed 50 + 4 skipped. 이전 실행 `20261015T063931Z`(186294f), `20261015T051054Z`(67854ae), `20261015T040334Z`(b6ca3d7)도 PASS |
 | I 최종 독립 리뷰 | ACCEPT WITH FIXES → 지적 전부 수정·검증 후 병합(Major 2, 부분 충족 2, I-40 간헐 실패) |
-| 인수 | 완료: `docs/verification/MVP_ACCEPTANCE_REPORT.md` 판정 PASS. 공개 준비 4개: 실배포 PASS(https://keeweon-choi.github.io/aixon/, 스모크 테스트 PASS), GitHub Actions PASS(CI 38686155036, Pages 38686154994, Verify Online 38686154873), 콘텐츠 승인 0건·게시 0건(사용자가 AI 교차 검증 경로를 택함, ADR-026), 사람이 직접 써 본 확인 NOT RUN. 검색엔진 색인·스크린 리더 확인도 NOT RUN |
-| 남은 것 | BLOCKERS는 B-02(콘텐츠 게시 경로, ADR-026 도구 구현 중)만 열려 있다. 나머지는 해결(B-06은 GitHub verify-online). 아래 진행 중 목록 참고 |
+| 인수 | 완료: `docs/verification/MVP_ACCEPTANCE_REPORT.md` 판정 PASS. 공개 준비 4개: 실배포 PASS(https://keeweon-choi.github.io/aixon/, 내용이 있는 상태의 스모크 `deploy-smoke-20261015T064629Z` PASS), GitHub Actions PASS(CI 38695150153, Pages 38695150022), 콘텐츠 승인은 AI 교차 검증 패널이 44건 승인·게시(ADR-026, 승인 커밋 a420066, 사람 승인은 0건), 사람이 직접 써 본 확인 NOT RUN. 검색엔진 색인·스크린 리더 확인도 NOT RUN |
+| 첫 콘텐츠 공개 | 완료. `first-release` 44건(엔티티 27, Claim 12, 문항 4, Wiki 1)을 Opus 5.5 High 검증자 6명이 두 차례 검증했고, 공개 관문 결과는 엔티티 31, Claim 12, Wiki 1, 출처 6, 제외 0이다. 기록 `review/cross/first-release/RELEASE.md`. 되돌리기 `git revert a420066` |
+| 남은 것 | BLOCKERS는 모두 해결(B-02는 첫 릴리스에 한해 ADR-026 경로로 해결, 사람 검토는 로컬 검수 화면에서 선택). 아래 다음 단계 참고 |
 
-진행 중(Codex worktree 검증 대기):
+다음 단계:
 
-1. AI 교차 검증 도구: 브랜치 `codex/1015-140312-aixon`, 검증 중.
-2. 로컬 검수 화면: 브랜치 `codex/1015-140314-aixon`, 검증 중.
-3. 그 뒤: 패널 실행 → 자동 게시 → 배포된 사이트 재확인.
-
-게시된 콘텐츠는 아직 0건이다.
+1. 다음 릴리스 후보(게시되지 않은 시드 Claim, 엔티티, Wiki)를 같은 AI 교차 검증 패널에 올린다. 검증자마다 내려받기 폴더를 따로 지정한다(`RELEASE.md` 독립성 기록).
+2. `RELEASE.md` 백로그 메모: `clm:intro-additive-attention`에 논문 §3.1 문장을 두 번째 근거로 추가. 실험실 온도 모드에 logit 입력을 정확히 넣을 수 있게 해서 문항 `ai:lab-softmax-temp-01`의 [2, 1, 0]을 입력할 수 있게 하기. 인용문 두 개가 원문의 수식 앞에서 끊기는 것 고치기.
+3. 월 1회 `cross_review.py confirm --refresh`로 인용 구절 대조를 다시 한다.
 
 모델 배정·하네스·PC 규칙은 `~/.local/share/hub/rules.md`(사용자 결정 10-15). 공개할 수 있는 저장소이므로 커밋에 Claude 표시를 넣지 않는다(B-08).
 
