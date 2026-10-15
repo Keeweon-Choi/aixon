@@ -39,6 +39,7 @@ PREDICATE_LABELS = {
     "PART_OF": "구성 요소", "IS_A": "한 종류", "CITES": "인용", "EVALUATED_ON": "평가",
     "TRAINED_ON": "학습", "IMPROVES_ON": "성능 비교", "COMPARED_WITH": "비교",
 }
+COMMIT_PATHS = ("review", "data", "src/content/wiki")
 
 
 def claim_sentence(record: dict, names: dict[str, str]) -> str:
@@ -253,7 +254,7 @@ class ReviewService:
     def commit_push(by: str, approved: int) -> str:
         if review.agent_session():
             raise PermissionError("AI 에이전트 세션에서는 커밋하거나 배포할 수 없습니다 (ADR-021).")
-        paths = ["review", "data", "src/content/wiki"]
+        paths = list(COMMIT_PATHS)
         output = []
         for command in (["git", "add", "--", *paths], ["git", "diff", "--cached", "--quiet", "--", *paths]):
             run = subprocess.run(command, text=True, capture_output=True, check=False)
