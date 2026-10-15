@@ -1,6 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
-import { hasMachineCitation, humanReviewLabel } from '../lib/badges';
+import { hasMachineCitation, reviewLabel } from '../lib/badges';
 import { entityPath, getGraph } from '../lib/graph';
 import { url } from '../lib/url';
 const graph = getGraph();
@@ -23,7 +23,7 @@ const wikiStatus = Object.values(graph.wikis).reduce<Record<string, number>>((co
     <p>상단 빠른 검색에서 이름, 별칭 또는 ID로 개념을 찾을 수 있습니다.</p>
     {graph.build === 'public' && entityIds.length === 0 && (
       <p class="banner">
-        아직 사람이 검토·승인한 공개 항목이 없습니다. <a href={url('about/')}>방법론 보기</a>
+        아직 승인된 공개 항목이 없습니다. <a href={url('about/')}>방법론 보기</a>
       </p>
     )}
     <section>
@@ -44,8 +44,8 @@ const wikiStatus = Object.values(graph.wikis).reduce<Record<string, number>>((co
         {entityIds.filter((id) => graph.types[id] === 'Paper').length}개
       </p>
       <p>
-        Claim: 인용 확인 {claims.filter(hasMachineCitation).length}개 · 사람 검토{' '}
-        {claims.filter((claim) => humanReviewLabel(claim) !== '검토 대기').length}개
+        Claim: 인용 확인 {claims.filter(hasMachineCitation).length}개 · 검토 완료{' '}
+        {claims.filter((claim) => reviewLabel(claim) !== '검토 대기').length}개
       </p>
       <p>
         Wiki:{' '}

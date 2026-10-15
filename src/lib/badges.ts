@@ -25,14 +25,24 @@ export function hasMachineCitation(claim: RecordMap): boolean {
   return ['verified', 'disputed'].includes(String(claim.status)) && Boolean(claim.verification);
 }
 
-export function humanReviewLabel(claim: RecordMap): string {
-  const review = claim.review as RecordMap | undefined;
+export function reviewLabel(record: RecordMap): string {
+  const review = record.review as RecordMap | undefined;
   if (
     review?.decision === 'approve' &&
     typeof review.by === 'string' &&
-    review.by.startsWith('human:')
+    /^human:[a-z0-9][a-z0-9_-]*$/.test(review.by)
   ) {
-    return `승인: ${review.by}, ${review.at || '날짜 미지정'}`;
+    return `사람 검토: ${review.by}, ${review.at || '날짜 미지정'}`;
+  }
+  if (
+    review?.decision === 'approve' &&
+    typeof review.by === 'string' &&
+    /^panel:[a-z0-9][a-z0-9_-]*$/.test(review.by) &&
+    review.method === 'cross-review' &&
+    Array.isArray(review.reviewers) &&
+    review.reviewers.length >= 2
+  ) {
+    return `AI 교차 검증 ${review.reviewers.length}명, ${review.at || '날짜 미지정'}`;
   }
   return '검토 대기';
 }

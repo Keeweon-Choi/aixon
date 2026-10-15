@@ -69,13 +69,50 @@ def gate(paths: list[str], wiki_dir: str) -> dict:
     e, t = g["entities"], g["types"]
     excluded: list[dict] = []
 
+    panel_cache: dict[str, tuple[dict, list[str], set[str], str | None]] = {}
+
+    def panel_problem(ident: str, record: dict) -> str | None:
+        signature = record.get("review") or {}
+        if st.approval_kind(signature) != "panel":
+            return None
+        release = signature["by"].split(":", 1)[1]
+        if release not in panel_cache:
+            # Import here to avoid a module cycle: cross_review uses wiki_hash and read_wiki.
+            import cross_review as cr
+
+            root = Path(paths[0]).resolve().parent if Path(paths[0]).is_absolute() else Path.cwd()
+            if not (root / "review" / "cross" / release).exists():
+                root = Path.cwd()
+            try:
+                checks = cr.check_release(release, paths, wiki_dir, root)
+                audit_errors, _, auditor = cr.audit_problems(release, paths, wiki_dir, root)
+                panel_reports = cr.reports(cr.release_dir(release, root))
+                reviewers = {r.get("reviewer") for r in panel_reports.values()
+                             if r.get("start") in ("source-first", "claim-first")}
+                panel_cache[release] = (checks, audit_errors, reviewers, auditor)
+            except (OSError, ValueError, KeyError, TypeError, yaml.YAMLError) as exc:
+                panel_cache[release] = ({}, [f"release verification failed: {exc}"], set(), None)
+        checks, audit_errors, reviewers, auditor = panel_cache[release]
+        if checks.get(ident):
+            return checks[ident][0]
+        if ident not in checks:
+            return "record is absent from release worksheet"
+        if audit_errors:
+            return audit_errors[0]
+        if set(signature.get("reviewers", [])) != reviewers or signature.get("audit") != auditor:
+            return "reviewers or audit do not match reports"
+        return None
+
     entities = set()
     for ident, rec in sorted(e.items()):
         if t[ident] not in ENTITY_TYPES or rec.get("status") in {"merged", "deprecated"}:
             continue
         state = st.approval_state(rec)
-        if state == "approved":
+        problem = panel_problem(ident, rec) if state == "approved" else None
+        if state == "approved" and problem is None:
             entities.add(ident)
+        elif problem:
+            excluded.append({"id": ident, "reason": f"panel: {problem}"})
         elif state:
             excluded.append({"id": ident, "reason": f"review {state}"})
 
@@ -84,7 +121,10 @@ def gate(paths: list[str], wiki_dir: str) -> dict:
         state = st.approval_state(c)
         if state is None:
             continue
-        if state != "approved":
+        problem = panel_problem(cid, c) if state == "approved" else None
+        if problem:
+            excluded.append({"id": cid, "reason": f"panel: {problem}"})
+        elif state != "approved":
             excluded.append({"id": cid, "reason": f"review {state}"})
         elif c.get("status") not in PUBLIC_CLAIM_STATUS:
             excluded.append({"id": cid, "reason": f"status {c.get('status')} is never public"})
@@ -101,7 +141,10 @@ def gate(paths: list[str], wiki_dir: str) -> dict:
             continue
         reasons = []
         state = wiki_approval(meta, body)
-        if state != "approved":
+        problem = panel_problem(meta["id"], meta) if state == "approved" else None
+        if problem:
+            reasons.append(f"panel: {problem}")
+        elif state != "approved":
             reasons.append(f"review {state or 'missing'}")
         if meta.get("entity") not in entities:
             reasons.append(f"entity {meta.get('entity')} is not public")

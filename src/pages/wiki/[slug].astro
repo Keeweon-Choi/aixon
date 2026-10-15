@@ -10,7 +10,7 @@ import Level from '../../components/wiki/Level.astro';
 import Section from '../../components/wiki/Section.astro';
 import { claimPath, entityPath, getGraph, sourceLabel } from '../../lib/graph';
 import { claimSentence } from '../../lib/predicates';
-import { dimensionLabels } from '../../lib/badges';
+import { dimensionLabels, reviewLabel } from '../../lib/badges';
 import { nodeAnchor, url } from '../../lib/url';
 const graph = getGraph();
 interface Props {
@@ -110,7 +110,7 @@ const review = entry.data.review;
     )}
     {['reviewed', 'published'].includes(entry.data.status) && (
       <p data-testid="status-banner" class="banner">
-        사람 검토 완료 · {review?.by} · {review?.at?.toISOString().slice(0, 10)}
+        {reviewLabel({ review: review && { ...review, at: review.at?.toISOString().slice(0, 10) } })}
       </p>
     )}
     <nav class="toc" aria-label="목차">

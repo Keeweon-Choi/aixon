@@ -32,7 +32,10 @@ def reports(directory):
     out = {}
     for path in sorted(directory.glob("*.yaml")):
         if path.name != "packet.yaml":
-            out[path.stem] = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+            data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+            if not isinstance(data, dict) or not isinstance(data.get("items", []), list):
+                raise ValueError(f"invalid report: {path.name}")
+            out[path.stem] = data
     return out
 
 
@@ -83,6 +86,8 @@ def worksheet(release, root):
 
 def packet(release, paths, wiki_dir, root):
     graph, available = records(paths, wiki_dir)
+    predicate_text = (Path(__file__).resolve().parent.parent / "src" / "lib" / "predicates.ts").read_text(encoding="utf-8")
+    descriptions = dict(re.findall(r"^\s*([A-Z_]+): '([^']+)',", predicate_text.split("export const predicateLabels")[0], re.M))
     entries = []
     for item in worksheet(release, root):
         ident = item["id"]
@@ -95,6 +100,7 @@ def packet(release, paths, wiki_dir, root):
             if kind == "claim":
                 content["subject_name"] = graph["entities"].get(rec.get("subject"), {}).get("name")
                 content["object_name"] = graph["entities"].get(rec.get("object"), {}).get("name")
+                content["predicate_meaning"] = descriptions.get(rec.get("predicate"), "")
                 content["evidence"] = [{**ev, "source_detail": graph["sources"].get(ev.get("source"), {})}
                                        for ev in rec.get("evidence") or []]
         entries.append({"id": ident, "kind": kind, "reviewed_hash": digest,
@@ -262,6 +268,8 @@ def _check_release(release, paths, wiki_dir, root, include_audit=True):
         fields = required_fields(kind, record)
         found = []
         for stem, report in all_reports.items():
+            if not include_audit and report.get("start") == "audit":
+                continue
             containing = [entry for entry in report.get("items") or [] if isinstance(entry, dict) and entry.get("id") == ident]
             if not containing:
                 continue
@@ -327,8 +335,8 @@ def audit_problems(release, paths, wiki_dir, root):
 def approve(release, paths, wiki_dir, root, today):
     audit_errors, _, auditor = audit_problems(release, paths, wiki_dir, root)
     checked = check_release(release, paths, wiki_dir, root)
-    if audit_errors or any(checked.values()):
-        return {"approved": 0, "published": 0, "skipped": 0, "failed": sum(bool(v) for v in checked.values()), "errors": audit_errors or [f"{i}: {p[0]}" for i, p in checked.items() if p]}
+    if audit_errors:
+        return {"approved": 0, "published": 0, "skipped": 0, "failed": sum(bool(v) for v in checked.values()), "errors": audit_errors}
     panel_reports = reports(release_dir(release, root))
     reviewers = sorted({r["reviewer"] for r in panel_reports.values() if r.get("start") in ("source-first", "claim-first")})
     _, available = records(paths, wiki_dir)
@@ -336,6 +344,10 @@ def approve(release, paths, wiki_dir, root, today):
     result = {"approved": 0, "published": 0, "skipped": 0, "failed": 0, "errors": []}
     for item in worksheet(release, root):
         ident = item["id"]
+        if checked.get(ident):
+            result["failed"] += 1
+            result["errors"].append(f"{ident}: {checked[ident][0]}")
+            continue
         kind, rec, digest = available[ident]
         old = rec.get("review")
         if st.approval_kind(old) == "human" and (pg.wiki_approval(rec, rec["body"]) if kind == "wiki" else st.approval_state(rec)) == "approved":

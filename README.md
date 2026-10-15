@@ -119,3 +119,12 @@ GitHub 저장소의 **Settings → Environments → github-pages**에서 require
 ## 라이선스
 
 글·데이터 설명 문장·직접 만든 그림은 CC BY 4.0, 코드는 MIT다. 자세한 범위는 [LICENSE-CONTENT.md](LICENSE-CONTENT.md)와 [LICENSE](LICENSE).
+
+## AI 교차 검증
+
+사람 승인 외에도 독립된 AI 검증자 두 명이 원문 우선·서술 우선으로 각각 검토하고,
+인용 구절의 웹 원문 대조와 제3 검증자의 표본 감사를 통과한 콘텐츠를 공개할 수 있습니다.
+검증 묶음은 `python tools/cross_review.py packet <release>`로 만들고, 보고서를 받은 뒤
+`confirm`, `check`, `sample`, `approve` 순서로 실행합니다. `approve`는 통과한 레코드에
+내용 해시가 묶인 패널 승인을 기록합니다. 공개 관문은 빌드마다 보고서와 감사를 다시 검사합니다.
+전체 판정 기준과 보고서 형식은 [AI 교차 검증 기준](docs/verification/CROSS_REVIEW.md)에 있습니다.
