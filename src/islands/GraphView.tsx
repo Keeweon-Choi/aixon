@@ -21,6 +21,7 @@ import {
 } from '../lib/graph/view';
 import ClaimEdge, { type ClaimEdgeData } from './graph/ClaimEdge';
 import GraphNode, { type FlowNodeData } from './graph/GraphNode';
+import '@xyflow/react/dist/style.css';
 import '../styles/graph.css';
 
 type Mode = 'atlas' | 'local' | 'trace';
