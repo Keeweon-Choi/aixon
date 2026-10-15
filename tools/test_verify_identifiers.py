@@ -50,7 +50,13 @@ def test_write_checked_stamps_matches_and_drops_stale_non_arxiv_stamp(tmp_path, 
     fixture = Path(__file__).parent / "fixtures" / "arxiv_sample.xml"
     monkeypatch.setattr(verify_identifiers, "fetch_entries", lambda identifiers, cache, offline: (parse_atom(fixture.read_bytes()), {}))
 
-    assert verify_identifiers.main(["--offline", "--write-checked", str(graph)]) == 1
+    real_report = Path("data/cache/arxiv/report.json")
+    real_before = real_report.read_bytes() if real_report.exists() else None
+    cache = tmp_path / "cache"
+
+    assert verify_identifiers.main(["--offline", "--cache", str(cache), "--write-checked", str(graph)]) == 1
+    assert (cache / "report.json").is_file(), "the report goes to the test's own cache"
+    assert (real_report.read_bytes() if real_report.exists() else None) == real_before, "the real report is untouched"
     today = dt.date.today().isoformat()
     expected = before.replace(
         "      openalex: '2020-01-01'\n    note",
