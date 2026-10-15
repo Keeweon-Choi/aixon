@@ -849,7 +849,10 @@ def main(argv=None):
         read_digests: dict[str, str] = {}
         rows = check_quotes(graph, args.cache, args.offline, read_digests)
         if args.pin:
-            from tools.yamlrec import edit_file, set_field
+            try:
+                from tools.yamlrec import edit_file, set_field
+            except ModuleNotFoundError:
+                from yamlrec import edit_file, set_field
 
             pending = set(read_digests)
             for path in _graph_paths(args.graph):
