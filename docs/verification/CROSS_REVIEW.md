@@ -8,9 +8,9 @@
 
 | 종류 | 필수 항목(`field`) |
 |---|---|
-| 엔티티 | `summary`, `aliases`(있으면), `metadata`(논문: 제목·저자·날짜·학회) |
+| 엔티티 | `name`, `summary`, 있으면 `aliases`·`question`·`formula`·`variants`·`parameters`·`demonstrates`, `classification`(분야·상위 분류), `metadata`(논문: 제목·저자·날짜·학회·식별자) |
 | Claim | `relation`(주어·술어·목적어·한정어가 뜻하는 문장), `evidence[i]`(증거 인용마다) |
-| 문항 | `prompt`, `answer`, `choices`(있으면), `rationale`(있으면) |
+| 문항 | `prompt`, `answer`, 있으면 `choices`·`tolerance`·`rationale` |
 | Wiki | `para:N`(문단마다. 번호는 검증 묶음에 적혀 있다) |
 
 필수 항목마다 판정이 하나 이상 있어야 하고, 도구가 이를 센다. 한 문단에 사실 서술이 여러 개면 서술마다 판정을 따로 단다. 도구는 "항목마다 하나 이상"까지만 볼 수 있으니, 서술마다 다는 것은 검증자가 지킨다.
@@ -42,7 +42,7 @@
 - 도구는 위키백과, Stack Exchange 계열, Reddit, Medium, Quora, 개인 블로그 호스팅 같은 도메인을 검증자가 적은 등급과 관계없이 C로 센다. 올려 세지는 않는다.
 - 작성자를 확인할 수 없는 글, AI가 만든 것으로 보이는 글(요약 사이트, 자동 생성 블로그, 챗봇 대화 공유 링크)은 출처로 쓰지 않는다.
 - 구절은 원문 그대로, 필요한 만큼만 옮긴다(문장 한두 개). 번역해서 적지 않는다.
-- 논문은 판 번호까지 적는다(예: `https://arxiv.org/abs/1706.03762v7`). 수치는 그 판에서 확인한다.
+- 논문은 판 번호까지 적는다. 본문 구절은 전문 URL(`https://arxiv.org/html/1706.03762v7`처럼 데이터의 `fulltext_url` 형식), 제출일 같은 서지 사실은 abs 페이지(`https://arxiv.org/abs/1706.03762v7`)로 적는다. 도구는 데이터에 있는 판의 전문만 캐시로 대조하고 나머지는 직접 내려받는다. 수치는 그 판에서 확인한다.
 - 구절은 서술을 문맥 안에서 뒷받침해야 한다. 원문의 조건·가정·단서("We suspect", "in our experiments", "for large values of")가 글에서 빠졌으면 `wrong`이다.
 
 ## 3. 지어낸 내용 점검

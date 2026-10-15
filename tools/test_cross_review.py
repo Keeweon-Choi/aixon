@@ -157,7 +157,16 @@ def test_confirm_statuses_and_arxiv_cache(tmp_path, monkeypatch):
     cache.mkdir(parents=True)
     stem = hashlib.sha256(full.encode()).hexdigest()[:16] + (Path(full).suffix or ".bin")
     (cache / stem).write_text("A cached arxiv passage.")
-    assert "cached arxiv" in real_fetch("https://arxiv.org/abs/1706.03762v1", tmp_path, paths)
+    assert "cached arxiv" in real_fetch("https://arxiv.org/html/1706.03762v7", tmp_path, paths)
+
+    def offline(*args, **kwargs):
+        raise OSError("network disabled in test")
+
+    # abs pages and other versions are not the cached full text: they go to the network
+    monkeypatch.setattr(cr.urllib.request, "urlopen", offline)
+    for url in ("https://arxiv.org/abs/1706.03762v7", "https://arxiv.org/html/1706.03762v1"):
+        with pytest.raises(OSError):
+            real_fetch(url, tmp_path, paths)
 
 
 def test_sample_approve_gate_and_tampering(tmp_path, monkeypatch):

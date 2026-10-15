@@ -53,16 +53,12 @@ def required_fields(kind, record):
     if kind == "claim":
         return ["relation"] + [f"evidence[{i}]" for i in range(len(record.get("evidence") or []))]
     if kind == "item":
-        return ["prompt", "answer"] + (["choices"] if record.get("choices") else []) + (["rationale"] if "rationale" in record else [])
-    fields = ["name"]
-    if "summary" in record:
-        fields.append("summary")
-    if record.get("aliases"):
-        fields.append("aliases")
+        return ["prompt", "answer"] + [k for k in ("choices", "tolerance") if record.get(k)] + (["rationale"] if "rationale" in record else [])
+    # keys as stored in the graph: papers have `title` (under metadata), problems `question`, labs `parameters`
+    fields = [k for k in ("name", "summary") if k in record]
+    fields += [k for k in ("aliases", "question", "formula", "variants", "parameters", "demonstrates") if record.get(k)]
     if record.get("fields") or record.get("parents"):
         fields.append("classification")
-    if record.get("questions"):
-        fields.append("questions")
     if str(record.get("id", "")).startswith("paper:") or any(k in record for k in ("authors", "venue", "identifiers")):
         fields.append("metadata")
     return fields
@@ -117,7 +113,9 @@ def packet(release, paths, wiki_dir, root):
 
 
 def _arxiv_id(url):
-    match = re.search(r"arxiv\.org/(?:abs|pdf|html)/([0-9]{4}\.[0-9]{4,5})(?:v\d+)?", url)
+    """Versioned id of an arXiv full-text URL (html/pdf). Abs pages and other versions are fetched live:
+    their facts (submission dates, DOI) are not in the cached full text of the seeded version."""
+    match = re.search(r"arxiv\.org/(?:pdf|html)/([0-9]{4}\.[0-9]{4,5}v\d+)", url)
     return match.group(1) if match else None
 
 
