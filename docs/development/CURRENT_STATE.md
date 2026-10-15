@@ -11,8 +11,7 @@
    - `/goal`은 사용자만 끌 수 있다. 85%를 넘으면 hub가 `/goal clear`를 넣는다. 이 조건은 컴팩션·renew 뒤에도 유지한다.
 2. **실행 지침**: `docs/AUTONOMOUS_MVP_LOOP.md` (사용자 /goal). 테스트 실패나 미검증 항목을 PASS로 적지 않는다. 사용자 데이터 파괴, 외부 배포, 자동 push 금지.
 3. **범위(사용자 방향 수정, 02:1x, ADR-019)**: **v0.1 = Knowledge Atlas + Interactive AI Wiki.** GitHub Pages 정적 공개는 허용하지만 실제 배포(저장소 생성·push·Pages 활성화)는 사용자 승인 뒤에 한다(ADR-018). 서버·DB·LLM·계정은 P2. **AI 생성 콘텐츠 자동 게시 금지** → public 빌드는 사람이 승인한 콘텐츠만(ADR-017).
-4. **커밋 정책**: `~/aixon`은 git 저장소가 아니다. 프로젝트 안에서 `git init`·커밋을 하지 않는다. Codex 작업은 통합용 저장소 `~/wt/aixon-base`(오케스트레이터가 관리, Codex worktree의 부모)에서 하고, 검증된 결과만 `~/aixon`으로 동기화한다:
-   `rsync -a --exclude node_modules --exclude .venv --exclude .git --exclude data/cache --exclude __pycache__ --exclude .pytest_cache --exclude dist --exclude dist-public ~/wt/aixon-base/ /home/choi/aixon/`
+4. **저장소(사용자 결정 10-15)**: `~/aixon`이 정본 git 저장소다(개발 이력 포함). 통합용 `~/wt/aixon-base`는 이제 쓰지 않는다(읽기 전용 보관). 배포 승인됨: GitHub 공개 저장소 + Pages. Claude 표시는 상관없음. 라이선스: 텍스트 CC BY 4.0, 코드 MIT.
 5. **Codex**: 명세가 확실한 구현은 `hub codex ~/wt/aixon-base <spec>`. 샌드박스에 네트워크가 없고 worktree에는 의존성이 없다(I-15) → 새 worktree마다 `cp -al ~/wt/aixon-base/node_modules <wt>/node_modules; ln -s ~/wt/aixon-base/.venv <wt>/.venv`. 결과는 반드시 직접 다시 돌려 검증한다(음성 대조 포함).
 6. 커밋 신원은 전역 git 설정을 그대로 쓴다.
 
