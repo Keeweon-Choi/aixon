@@ -16,15 +16,15 @@
 5. **Codex**: 명세가 확실한 구현은 `hub codex ~/wt/aixon-base <spec>`. 샌드박스에 네트워크가 없고 worktree에는 의존성이 없다(I-15) → 새 worktree마다 `cp -al ~/wt/aixon-base/node_modules <wt>/node_modules; ln -s ~/wt/aixon-base/.venv <wt>/.venv`. 결과는 반드시 직접 다시 돌려 검증한다(음성 대조 포함).
 6. 커밋 신원은 전역 git 설정을 그대로 쓴다.
 
-## 1. 현재 단계 — 2026-10-15 12:2x
+## 1. 현재 단계 — 2026-10-15 13:1x
 
 | Phase | 상태 |
 |---|---|
 | A 설계 감사 → B 수정 | 완료(31건, `docs/08_ARCHITECTURE_REVIEW.md`) |
-| C–G 사이트·하네스·E2E | 완료. 깨끗한 환경 `make verify` 12단계 PASS (`artifacts/verification/runs/20261015T030106Z`, 커밋 85c3c39) |
-| I 최종 독립 리뷰(Opus 5.5 High) | ACCEPT WITH FIXES — Major 2(Wiki 관련 개념 방향, Lab 링크 base 경로) + R-06·R-13 부분 충족 |
-| 수정 | 진행 중: Sonnet 서브에이전트, `~/wt/aixon-fix` (`fix/final-review`) |
-| 다음 | 수정 검증(Opus 5.5 High) → 병합 → 깨끗한 환경 재검증 → `MVP_ACCEPTANCE_REPORT.md`·`TEST_MATRIX.md` → `~/aixon` 동기화 |
+| C–H 사이트·하네스·E2E·회귀 | 완료. 최종 깨끗한 환경 `make verify` 13단계 PASS (`artifacts/verification/runs/20261015T040334Z`, 커밋 b6ca3d7, 2코어) |
+| I 최종 독립 리뷰 | ACCEPT WITH FIXES → 지적 전부 수정·검증 후 병합(Major 2, 부분 충족 2, I-40 간헐 실패) |
+| 인수 | `docs/verification/MVP_ACCEPTANCE_REPORT.md`·`TEST_MATRIX.md` 작성 중(Sonnet, `~/wt/aixon-accept`) |
+| 남은 것 | 사용자 결정(BLOCKERS B-01…B-08): 실배포, 콘텐츠 사람 검토·승인, 라이선스, git, 공개 저장소 정책 |
 
 모델 배정·하네스·PC 규칙은 `~/.local/share/hub/rules.md`(사용자 결정 10-15). 공개할 수 있는 저장소이므로 커밋에 Claude 표시를 넣지 않는다(B-08).
 

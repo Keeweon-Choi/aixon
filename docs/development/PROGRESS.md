@@ -21,8 +21,11 @@
 | 10:5x–11:2x | 감사 반영 마무리(대표 Wiki 검증 블록), A·B·C 병합, 공개 관문을 Makefile·check_dist에 연결(오염 검사 음성 대조 확인) | 단위 20, 빌드 632쪽 |
 | 11:2x–11:5x | 모델 배정 규칙(사용자 10-15) 적용: H1·F13(Codex Terra), E2E 통합·문서(Sonnet), 검증(Opus 5.5 High) | F13 MERGE, H1·E2E FIX FIRST → 수정 후 병합 |
 | 11:57–12:02 | 깨끗한 환경 검증(새 clone + `npm ci` + 새 venv + `make verify`) 2회: 1회차 12단계 PASS 뒤 증거 복사에서 중단(I-36) → 수정 → 2회차 PASS | `artifacts/verification/runs/20261015T030106Z` |
+| 12:0x–12:3x | 최종 독립 리뷰(Opus 5.5 High): ACCEPT WITH FIXES → 수정(Sonnet) → 검증(Opus 5.5 High) MERGE, 상태 문구 "인용 확인" | e2e 122, seed 50 + 4 fixme |
+| 12:40–13:08 | 깨끗한 환경 3회차 FAIL(I-40, 2코어 간헐 실패) → 원인 분석·수정(Opus 5.5 High) → 4회차 PASS + 반복 안정성 확인 | `runs/20261015T040334Z` |
 
-## 마지막 테스트 결과 (12:02, 커밋 85c3c39, 깨끗한 환경)
+## 마지막 테스트 결과 (13:08, 커밋 b6ca3d7, 깨끗한 환경, 2코어)
 
-- `make verify` 12단계 PASS: lint, typecheck, test(vitest 21 · pytest 200), validate, validate-fixtures, build(632쪽), check-dist, build-public(7쪽, 승인 0건), check-dist-public, e2e(fixture 108/108), e2e-seed(42 통과 + 4 fixme: P2), secrets
-- 증거: `artifacts/verification/runs/20261015T030106Z/summary.json` (git dirty=false)
+- `make verify` 13단계 PASS: lint, typecheck, test(vitest 22 · pytest 201), validate, validate-fixtures, build(632쪽), check-dist, build-public(7쪽, 승인 0건), check-dist-public, e2e(fixture 122/122), e2e-seed(50 + 4 fixme: P2), check-dist-seed(632쪽), secrets
+- I-40 시나리오 반복(2코어, 데스크톱): E2E-11 ×5 35 통과, E2E-10 ×5 20 통과(10 fixme)
+- 증거: `artifacts/verification/runs/20261015T040334Z/` (summary.json, logs, Playwright 보고서, clean-env-job.log)
