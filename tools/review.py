@@ -110,7 +110,7 @@ def set_wiki_frontmatter(path: Path, fields: dict) -> None:
 
 
 def publish_wiki(path: Path, today: str) -> None:
-    """Publish an already-fresh human-approved wiki document."""
+    """Publish an already-fresh human- or panel-approved wiki document."""
     meta, body = pg.read_wiki(path)
     state = pg.wiki_approval(meta, body)
     if state != "approved":

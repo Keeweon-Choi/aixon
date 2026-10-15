@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Decide what a public build may show (ADR-021) and write the allow-list the Astro build reads.
+"""Decide what a public build may show (ADR-021/026) and write the allow-list Astro reads.
 
-Public = explicitly human-approved records whose content has not changed since approval:
+Public = fresh human approvals or fully checked cross-review panel approvals:
   entity  -> its own `review` is approved (covers name, aliases, summary, fields, question, metadata)
   claim   -> approved, status verified|disputed, and both endpoints public
   wiki    -> status published, approved, its entity public, and every claim it cites public
