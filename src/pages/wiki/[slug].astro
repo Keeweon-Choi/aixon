@@ -10,7 +10,7 @@ import Level from '../../components/wiki/Level.astro';
 import Section from '../../components/wiki/Section.astro';
 import { claimPath, entityPath, getGraph } from '../../lib/graph';
 import { dimensionLabels } from '../../lib/badges';
-import { url } from '../../lib/url';
+import { nodeAnchor, url } from '../../lib/url';
 const graph = getGraph();
 interface Props {
   entry: any;
@@ -93,6 +93,15 @@ const review = entry.data.review;
   <article>
     <h1>{entry.data.title}</h1>
     <p>{entry.data.subtitle}</p>
+    <p>
+      <a data-testid="wiki-entity-link" href={url(entityPath(E, graph))}>
+        개념 페이지
+      </a>{' '}
+      ·{' '}
+      <a data-testid="wiki-atlas-link" href={`${url('atlas/')}#${nodeAnchor(E)}`}>
+        아틀라스에서 보기
+      </a>
+    </p>
     {['outline', 'draft'].includes(entry.data.status) && (
       <p data-testid="status-banner" class="banner">
         검토 전 초안 · {entry.data.ai_generated ? 'AI 작성' : '작성 중'}

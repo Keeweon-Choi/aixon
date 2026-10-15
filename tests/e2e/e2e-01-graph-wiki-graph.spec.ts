@@ -24,6 +24,17 @@ test('E2E-1 Graph → Wiki → Related → Graph @seed', async ({ page }) => {
     await expect(page.locator('h1')).toHaveText(title);
   });
 
+  await test.step('the wiki links to its entity page and its Atlas node', async () => {
+    await expect(page.getByTestId('wiki-entity-link')).toHaveAttribute(
+      'href',
+      `${BASE_PATH}${entityPath(SDPA)}`,
+    );
+    await expect(page.getByTestId('wiki-atlas-link')).toHaveAttribute(
+      'href',
+      `${BASE_PATH}atlas/${nodeAnchor(SDPA)}`,
+    );
+  });
+
   await test.step('the wiki shows KaTeX math, a code block and the draft banner', async () => {
     await expect(page.locator('main .katex').first()).toBeVisible();
     await expect(page.locator('.katex-error')).toHaveCount(0);
@@ -61,6 +72,16 @@ test('E2E-1 Graph → Wiki → Related → Graph @seed', async ({ page }) => {
   await test.step('the generated "관련 개념" and "참고문헌과 근거" lists are filled', async () => {
     await expect(page.getByTestId('related').locator('a').first()).toBeVisible();
     await expect(page.getByTestId('references').locator('li').first()).toBeVisible();
+  });
+
+  await test.step('wiki → "아틀라스에서 보기" selects the same node in the Atlas, then back', async () => {
+    await page.getByTestId('wiki-atlas-link').click();
+    await expect(page).toHaveURL(new RegExp(`/atlas/${nodeAnchor(SDPA)}$`));
+    await expect(page.getByTestId('node-panel').locator('h2')).toHaveText(data.name(SDPA));
+    await page.goBack();
+    await page.getByTestId('wiki-entity-link').click();
+    await expect(page).toHaveURL(new RegExp(`/${entityPath(SDPA)}$`));
+    await page.goBack();
   });
 
   await test.step('ConceptLink "softmax" → softmax entity page', async () => {
