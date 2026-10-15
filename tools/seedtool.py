@@ -873,7 +873,12 @@ def main(argv=None):
                     pending.difference_update(updates)
             if pending:
                 raise ValueError(f"sources not found in graph files: {', '.join(sorted(pending))}")
-        print(_dump(rows)); return 1 if any(x["status"] != "found" for x in rows) else 0
+        # W106 (docs/02): changed source bytes are a warning while every quote is still found;
+        # arXiv HTML bytes also differ between clients, so only the per-quote rows decide the exit code.
+        changed = sorted({x["source"] for x in rows if x["status"] == "source_changed"})
+        if changed:
+            print(f"W106 source bytes changed, quotes re-checked below: {', '.join(changed)}", file=sys.stderr)
+        print(_dump(rows)); return 1 if any(x["status"] not in ("found", "source_changed") for x in rows) else 0
     learner = _read_learner(args.learner)
     if args.command == "mastery":
         payload = {f"{u}@{d}": x for (u, d), x in compute_mastery(graph, learner).items()}; print(_dump(payload)); return 0

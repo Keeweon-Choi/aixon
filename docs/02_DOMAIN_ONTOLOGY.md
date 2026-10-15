@@ -562,7 +562,7 @@ stateDiagram-v2
 | W103 | proposed Claim 개수(정보) | 투명성 |
 | W104 | 어디서도 참조되지 않는 엔티티 | 정리 |
 | W105 | merged tombstone을 Claim이나 링크가 직접 참조 — survivor로 옮길 것 | 병합 |
-| W106 | (`quotes` 명령) Source 원문 해시가 기록과 다름 → 인용 재검증 필요. **구현 상태**: `validate`에는 W106이 없다. `quotes`가 기록된 `content_sha256`과 다르면 결과 행에 `source_changed`를 내고 exit 1이다. 해시 기록(`--pin`)은 작업 F13이 진행 중 | 출처 변경 |
+| W106 | (`quotes` 명령) Source 원문 해시가 기록과 다름 → 인용 재검증 필요. **구현 상태**: `validate`에는 W106이 없다. `quotes`가 기록된 `content_sha256`과 다르면 결과 행에 `source_changed`를 내고 stderr에 경고를 쓴다. 종료 코드는 인용 행(`found`가 아닌 행이 있으면 1)만 정한다. 같은 arXiv HTML도 받는 곳에 따라 바이트가 달라서다(2026-10-15 GitHub 실행에서 4편 확인, 인용은 모두 찾음). 해시 기록(`--pin`)은 작업 F13이 진행 중 | 출처 변경 |
 | W107 | Concept·Method·Model·Paper·ResearchProblem인데 `fields`가 비어 있음(Atlas에서 어느 분야에도 안 나옴) | 연결성 |
 | W108 | 서로 다른 Wiki 대상 엔티티가 같은 이름·별칭을 가짐 | 중복 |
 | W109 | 서로 다른 Wiki 대상 엔티티의 요약 문장이 완전히 같음 | 복사 요약(I-21) |

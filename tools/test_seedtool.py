@@ -363,6 +363,11 @@ claims:
     # --pin must not silently accept the changed source: the stored digest stays and the run fails
     assert main(["quotes", "--offline", "--cache", str(cache), "--pin", str(graph)]) == 1
     assert graph.read_text(encoding="utf-8") == pinned
+    capsys.readouterr()
+    # W106: different bytes that still contain the quote warn but pass
+    (cache / stem).write_bytes(b"<div><p>Exact source text.</p></div>")
+    assert main(["quotes", "--offline", "--cache", str(cache), str(graph)]) == 0
+    assert [row["status"] for row in json.loads(capsys.readouterr().out)] == ["source_changed", "found"]
 
 
 def test_t18_p15_seed_if_present():
