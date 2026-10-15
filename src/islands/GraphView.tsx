@@ -70,11 +70,12 @@ function edgeLabel(edge: GraphEdge): string {
   return `${style.badge || style.label || edge.predicate || '관계'}${review}`;
 }
 
-function nodeRow(node: GraphDataNode, select: (id: string) => void) {
+function nodeRow(node: GraphDataNode, select: (id: string) => void, expanded?: Set<string>) {
   return (
     <tr
       key={node.id}
       data-node-id={node.id}
+      aria-expanded={expanded && node.type === 'ResearchField' ? expanded.has(node.id) : undefined}
       aria-label={`${node.type} ${node.name} ${node.status || 'active'}`}
       tabIndex={0}
       onClick={() => select(node.id)}
@@ -280,7 +281,11 @@ export default function GraphView({
                 <th>도입 연도</th>
               </tr>
             </thead>
-            <tbody>{projection.nodes.map((node) => nodeRow(node, selectNode))}</tbody>
+            <tbody>
+              {projection.nodes.map((node) =>
+                nodeRow(node, selectNode, mode === 'atlas' ? expanded : undefined),
+              )}
+            </tbody>
             {(mode === 'local' || mode === 'trace') && (
               <tbody>
                 {projection.edges.map((edge) => (
