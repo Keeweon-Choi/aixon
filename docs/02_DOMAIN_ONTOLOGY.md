@@ -231,7 +231,7 @@ slug    := [a-z0-9]+(-[a-z0-9]+)*      # kebab-case, ASCII
   - `lab_prediction`: `lab`, `scenario`(고정 파라미터), `choices` 또는 수치 `answer`. 가중치 1.
   - `self_explanation`: `rubric`(체크 항목). 학습자가 직접 채점하므로 가중치 1.
 - **선택**: `hint`, `source`(사실 문항의 출처. 예: ViT Table 1), `verified_by`(정답 검증 방법. 예: `computation`).
-- 정답은 API가 **제출 전에 내보내지 않는다**(03·06 문서).
+- 정답은 API가 **제출 전에 내보내지 않는다**(03·06 문서). 단 서버가 없는 v0.1의 정적 퀴즈는 브라우저에서 채점하며 정답이 번들에 있다([ADR-024](DECISIONS.md), 저장·숙련도 반영 없음). 이 규칙은 P2에서 응답을 저장할 때부터 적용한다.
 
 ### 4.13 LabExperiment (Experiment)
 
@@ -416,7 +416,7 @@ stateDiagram-v2
 
 | 속성 | 필수 | 설명 |
 |---|---|---|
-| `id` | ✓ | `src:arxiv:2010.11929v2`, `src:doi:10.1109/cvpr.2016.90`, `src:url:<sha1-12>` |
+| `id` | ✓ | `src:arxiv:2010.11929v2`, `src:doi:10.1109/cvpr.2016.90`, `src:pdf:<paper-slug>`(arXiv 전문이 없는 논문의 PDF 원문, 예: `src:pdf:krizhevsky2012-alexnet`, 버전 접미사 없음), `src:url:<sha1-12>` |
 | `kind` | ✓ | `paper_version` · `metadata_record` · `web_page` · `book_section` |
 | `paper` | paper_version일 때 ✓ | Paper ID |
 | `url` | ✓ | 사람이 여는 주소 |
@@ -550,12 +550,24 @@ stateDiagram-v2
 | G016 | rejected Claim과 같은 키로 활성 Claim을 다시 만들면 금지 | 반려 이력 |
 | G017 | 인용이 필요한 evidence type에서 `quote`가 비었거나 300자를 넘으면 금지. curator_rationale은 `rationale` 필수 | 근거 품질 |
 | G018 | AssessmentItem은 kind별 필수 필드(정답, tolerance, choices)가 있어야 하고, `assesses` 대상은 KU여야 함 | 평가 |
+| G019 | **없음**(번호만 비어 있다. `tools/seedtool.py`에 G019 규칙이 없다) | — |
+| G020 | 유형별 필수 필드가 비어 있으면 금지(03 §2.2 표 기준, 예: Paper의 `authors`·`identifiers`, Claim의 `confidence`, LearningResource의 `url` 또는 `lab`) | 스키마 |
+| G021 | Paper의 외부 식별자 값은 비어 있지 않은 문자열(YAML이 `1611.03530`을 숫자로 읽어 손상하는 사고 방지, I-03) | 식별 |
+| G022 | `review: {decision: approve}`가 있는 레코드는 `by`가 `human:<id>`이고 `at`이 있어야 하며, `reviewed_hash`가 현재 내용과 같아야 함(다르면 stale) | 공개 관문(ADR-021) |
+| G023 | verified·disputed Claim의 `definitional_dependency`(supports) 인용 가운데 적어도 하나는 subject의 이름·별칭·`key_terms`를 언급해야 함(단어 접두 일치) | 근거 부합(ADR-022) |
+| G024 | Wiki 대상 유형 엔티티의 slug(접두 뒤 부분)는 전역에서 유일 | URL·Wiki 파일명(ADR-023) |
+| G025 | 엔티티의 `url`·`fulltext_url`은 `https://`로 시작(`javascript:`·`data:`·`http:` 금지) | 보안 |
 | W101 | 큐레이션 목표의 선수 폐포(closure)에 문항이 2개 미만인 `(KU, dim)` 노드가 있음(증거로 숙달할 수 없음) | 평가 가능성 |
 | W102 | 목표의 폐포에 EXPLAINS 자료가 없는 `(KU, dim)` 노드가 있음 | 학습 가능성 |
 | W103 | proposed Claim 개수(정보) | 투명성 |
 | W104 | 어디서도 참조되지 않는 엔티티 | 정리 |
 | W105 | merged tombstone을 Claim이나 링크가 직접 참조 — survivor로 옮길 것 | 병합 |
-| W106 | (`quotes` 명령) Source 원문 해시가 기록과 다름 → 인용 재검증 필요 | 출처 변경 |
+| W106 | (`quotes` 명령) Source 원문 해시가 기록과 다름 → 인용 재검증 필요. **구현 상태**: `validate`에는 W106이 없다. `quotes`가 기록된 `content_sha256`과 다르면 결과 행에 `source_changed`를 내고 exit 1이다. 해시 기록(`--pin`)은 작업 F13이 진행 중 | 출처 변경 |
+| W107 | Concept·Method·Model·Paper·ResearchProblem인데 `fields`가 비어 있음(Atlas에서 어느 분야에도 안 나옴) | 연결성 |
+| W108 | 서로 다른 Wiki 대상 엔티티가 같은 이름·별칭을 가짐 | 중복 |
+| W109 | 서로 다른 Wiki 대상 엔티티의 요약 문장이 완전히 같음 | 복사 요약(I-21) |
+| W110 | 이름이 소문자·숫자·공백·하이픈뿐(슬러그 같음)인데 `aliases`가 없음 | 표시 이름 |
+| W111 | verified PREREQUISITE_OF가 같은 (subject, object)의 PART_OF 근거 인용을 그대로 재사용 — 구성 관계이지 필요 관계가 아닐 수 있음. 사람 검토 힌트 | 근거 부합(ADR-022) |
 
 **그래프 개정 뒤 경로 정합성**은 정적 검사가 아니라 publish할 때 실행되는 런타임 검사다. 각 학습 계획(plan)은 자신이 근거로 쓴 Claim의 `(id, content_hash)`를 저장해 둔다. 새 그래프 버전에서 그중 하나라도 사라지거나, 내용이 바뀌거나, 경로 노드에 새 필수 간선이 생기면 그 계획을 `stale`로 표시하고 다시 계산한다. 이전 계획과의 차이는 화면에 보여 준다(04 문서 §5.3).
 

@@ -420,7 +420,7 @@ MVP 백엔드보다 먼저 만드는 **표준 라이브러리 + PyYAML** 도구�
 
 | 명령 | 입력 | 출력 | 종료 코드 |
 |---|---|---|---|
-| `validate <graph.yaml>` | 그래프 | G/W 목록, 통계, graph_version | G 오류가 있으면 1 |
+| `validate <graph.yaml>... [--json]` | 그래프(여러 파일 가능) | 이슈 목록: 한 줄에 `코드 대상: 메시지`(G·W 혼합, 코드순). `--json`이면 `{code, ref, message}` 배열. 통계와 graph_version은 출력하지 않는다(버전은 `plan` 결과에 있다) | G 오류가 있으면 1, W만 있으면 0 |
 | `quotes <graph.yaml> [--cache DIR] [--offline]` | 그래프 | evidence마다 인용문이 원문에 있는지(NFKC·공백·하이픈 줄바꿈 정규화 후 포함 여부) | 없는 인용이 있으면 1 |
 | `plan <graph.yaml> --objective <lo:id> --learner <learner.yaml>` | 그래프, 학습자 fixture | 계획 JSON(04 §4.7 형식) | 0 |
 | `mastery <graph.yaml> --learner <learner.yaml>` | 같음 | `(unit, dim)`별 상태 JSON(04 §3) | 0 |

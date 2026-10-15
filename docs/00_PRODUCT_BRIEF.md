@@ -1,6 +1,6 @@
 # 00. Product Brief — AIXON
 
-> **AIXON**(AI + AXON, 구 가칭 Neural Atlas) — AI 연구 분야 전체를 잇는 Knowledge Graph와 개념별 교육 Wiki를 하나로 묶은 **Interactive AI Knowledge Atlas**. 브랜드 표시명은 바뀔 수 있으므로 코드·데이터의 내부 식별자는 `aixon` 대신 기능명(`atlas`, `wiki`, `graph`)을 쓴다.
+> **AIXON**(AI + AXON, 구 가칭 Neural Atlas) — AI 연구 분야 전체를 잇는 Knowledge Graph와 개념별 교육 Wiki를 하나로 묶은 **Interactive AI Knowledge Atlas**. 브랜드 표시명은 바뀔 수 있으므로 코드·데이터의 도메인 식별자(엔티티 ID, 모듈·컴포넌트 이름)는 `aixon` 대신 기능명(`atlas`, `wiki`, `graph`)을 쓴다. 예외로 **배포·실행 설정**에는 프로젝트 이름을 둔다: 환경 변수 `AIXON_BUILD`·`AIXON_BASE`, 빌드·E2E의 기본 base 경로 `/aixon/`(Makefile의 `PUBLIC_BASE`·`E2E_BASE`, 실제 공개 값은 저장소 이름으로 정해짐, ADR-018), 공개 관문 산출 디렉터리 `.aixon/`. 이 이름들은 바뀌어도 데이터(YAML)의 ID에는 영향이 없다.
 > 작성 2026-10-15 · 상태: v0.1 기준선 · 방향 수정 이력: 같은 날 "개인 학습 앱"(P0: 학습 경로·숙련도)에서 "Atlas + Wiki"(P0: 지도·교육 콘텐츠)로 바뀌었다(ADR-019).
 
 ---

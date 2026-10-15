@@ -1,3 +1,6 @@
+> **Superseded in parts** by `specs/site_common.md`, `specs/codex_site_A_graph.md`, `specs/codex_site_B_pages.md`, `specs/site_C_harness.md` and ADR-021..023 (public gate v2, three-axis badges, ID/URL policy).
+> Where this file disagrees with them, the newer specs win (history only; do not implement from this file alone).
+
 # Task: implement the AIXON v0.1 static site (Knowledge Atlas + Interactive AI Wiki) and its verification harness
 
 Read first (they are the spec; do not edit docs): `docs/WIKI_CONTENT_ARCHITECTURE.md`, `docs/CONTENT_SCHEMA.md`, `docs/02_DOMAIN_ONTOLOGY.md` (§6 projections, §7 claims/evidence/statuses, §8 predicates), `docs/03_DATA_MODEL.md` §2 (graph YAML), `docs/05_UX_AND_INTERACTIVE_LAB.md` §4.3 (edge/badge notation) and §5 (Lab), `tools/seedtool.py` (reference loader/validator in Python — reuse it from Python scripts).
