@@ -10,7 +10,9 @@ let url = '';
 
 function cleanEnvironment() {
   return Object.fromEntries(
-    Object.entries(process.env).filter(([key]) => key !== 'CLAUDECODE' && key !== 'AI_AGENT' && !key.startsWith('CODEX_')),
+    Object.entries(process.env).filter(
+      ([key]) => key !== 'CLAUDECODE' && key !== 'AI_AGENT' && !key.startsWith('CODEX_'),
+    ),
   );
 }
 
@@ -20,20 +22,43 @@ test.beforeAll(async () => {
   const wiki = path.join(root, 'wiki');
   const review = path.join(root, 'review');
   fs.copyFileSync(path.join(process.cwd(), 'tools/fixtures/mini_graph.yaml'), graph);
-  fs.mkdirSync(wiki); fs.mkdirSync(review);
-  serverProcess = spawn('python3', [
-    'tools/review_server.py', '--graph', graph, '--wiki-dir', wiki, '--review-dir', review,
-    '--port', '0', '--by', 'human:default',
-  ], { cwd: process.cwd(), env: cleanEnvironment(), stdio: ['ignore', 'pipe', 'pipe'] });
+  fs.mkdirSync(wiki);
+  fs.mkdirSync(review);
+  serverProcess = spawn(
+    'python3',
+    [
+      'tools/review_server.py',
+      '--graph',
+      graph,
+      '--wiki-dir',
+      wiki,
+      '--review-dir',
+      review,
+      '--port',
+      '0',
+      '--by',
+      'human:default',
+    ],
+    { cwd: process.cwd(), env: cleanEnvironment(), stdio: ['ignore', 'pipe', 'pipe'] },
+  );
   url = await new Promise<string>((resolve, reject) => {
     let output = '';
-    const timer = setTimeout(() => reject(new Error(`review server did not start: ${output}`)), 10_000);
-    serverProcess.stdout?.on('data', chunk => {
+    const timer = setTimeout(
+      () => reject(new Error(`review server did not start: ${output}`)),
+      10_000,
+    );
+    serverProcess.stdout?.on('data', (chunk) => {
       output += String(chunk);
       const match = output.match(/http:\/\/127\.0\.0\.1:\d+\/\?token=\S+/);
-      if (match) { clearTimeout(timer); resolve(match[0]); }
+      if (match) {
+        clearTimeout(timer);
+        resolve(match[0]);
+      }
     });
-    serverProcess.once('exit', code => { clearTimeout(timer); reject(new Error(`review server exited ${code}: ${output}`)); });
+    serverProcess.once('exit', (code) => {
+      clearTimeout(timer);
+      reject(new Error(`review server exited ${code}: ${output}`));
+    });
   });
 });
 

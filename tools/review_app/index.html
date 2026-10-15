@@ -7,22 +7,71 @@
     <link rel="stylesheet" href="app.css" />
   </head>
   <body>
-    <header><h1>AIXON 검수 화면</h1><p>로컬 전용 · 승인 전에는 공개되지 않습니다.</p></header>
+    <header>
+      <h1>AIXON 검수 화면</h1>
+      <p>로컬 전용 · 승인 전에는 공개되지 않습니다.</p>
+    </header>
     <main>
       <aside aria-label="검수 대기열">
         <label>검토자 <input id="reviewer" placeholder="human:이름" /></label>
         <label>찾기 <input id="search" placeholder="ID 또는 이름" /></label>
         <div class="filters">
-          <label>상태 <select id="state"><option value="">모두</option><option value="pending">대기</option><option value="approved">승인</option><option value="stale">오래됨</option><option value="invalid">잘못됨</option></select></label>
-          <label>종류 <select id="kind"><option value="">모두</option><option value="entity">엔티티</option><option value="claim">주장</option><option value="item">문항</option><option value="wiki">위키</option></select></label>
-          <label>사전 검수 <select id="pre"><option value="">모두</option><option value="approve">승인 권고</option><option value="fix">수정 권고</option><option value="exclude">제외 권고</option></select></label>
-          <label>교차 검증 <select id="cross"><option value="">모두</option><option value="pass">통과</option><option value="fail">실패</option><option value="none">없음</option></select></label>
+          <label
+            >상태
+            <select id="state">
+              <option value="">모두</option>
+              <option value="pending">대기</option>
+              <option value="approved">승인</option>
+              <option value="stale">오래됨</option>
+              <option value="invalid">잘못됨</option>
+            </select></label
+          >
+          <label
+            >종류
+            <select id="kind">
+              <option value="">모두</option>
+              <option value="entity">엔티티</option>
+              <option value="claim">주장</option>
+              <option value="item">문항</option>
+              <option value="wiki">위키</option>
+            </select></label
+          >
+          <label
+            >사전 검수
+            <select id="pre">
+              <option value="">모두</option>
+              <option value="approve">승인 권고</option>
+              <option value="fix">수정 권고</option>
+              <option value="exclude">제외 권고</option>
+            </select></label
+          >
+          <label
+            >교차 검증
+            <select id="cross">
+              <option value="">모두</option>
+              <option value="pass">통과</option>
+              <option value="fail">실패</option>
+              <option value="none">없음</option>
+            </select></label
+          >
         </div>
-        <p id="counts" aria-live="polite"></p><ol id="queue"></ol>
+        <p id="counts" aria-live="polite"></p>
+        <ol id="queue"></ol>
       </aside>
       <section id="detail" aria-live="polite"><p>대기열에서 항목을 선택하세요.</p></section>
     </main>
-    <template id="decision-template"><section class="decision"><h2>결정</h2><div class="actions"><button data-decision="approve">승인 (a)</button><button data-decision="fix">수정 필요 (f)</button><button data-decision="exclude">제외 (x)</button></div><label>메모 <textarea id="note" rows="3" placeholder="검토 메모"></textarea></label><label class="publish"><input id="publish" type="checkbox" /> 승인 후 게시</label></section></template>
+    <template id="decision-template"
+      ><section class="decision">
+        <h2>결정</h2>
+        <div class="actions">
+          <button data-decision="approve">승인 (a)</button
+          ><button data-decision="fix">수정 필요 (f)</button
+          ><button data-decision="exclude">제외 (x)</button>
+        </div>
+        <label>메모 <textarea id="note" rows="3" placeholder="검토 메모"></textarea></label
+        ><label class="publish"><input id="publish" type="checkbox" /> 승인 후 게시</label>
+      </section></template
+    >
     <script src="app.js"></script>
   </body>
 </html>
