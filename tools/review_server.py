@@ -245,7 +245,7 @@ class ReviewService:
             entries.append({"id": ident, "decision": action, "notes": str(decision.get("note", "")), "publish": bool(decision.get("publish", False))})
         self.review_dir.joinpath("decisions").mkdir(parents=True, exist_ok=True)
         now = dt.datetime.now(dt.timezone.utc)
-        path = self.review_dir / "decisions" / f"{now.strftime('%Y%m%dT%H%M%SZ')}.yaml"
+        path = self.review_dir / "decisions" / f"{now.strftime('%Y%m%dT%H%M%S%fZ')}.yaml"
         path.write_text(yaml.safe_dump({"reviewed_at": now.isoformat(), "by": by, "items": entries}, allow_unicode=True, sort_keys=False), encoding="utf-8")
         result = review.approve_batch(self.paths, str(self.wiki_dir), path, by, now.date().isoformat(), entries)
         return {**result, "decision_file": str(path)}
