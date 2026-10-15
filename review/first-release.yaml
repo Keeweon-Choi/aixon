@@ -1,0 +1,310 @@
+release: first-release
+prepared_by: agent:claude-opus-5-5   # pre-review only; approvals are made by a person
+prepared_at: 2026-10-15
+# 범위: wiki 1 + claim 12 + entity 15 + field 11 + lab 1 + 문항 4 = 44건 (요청서의 "45"는 목록을 세면 44다).
+# 근거: data/cache/fulltext 원문(arXiv HTML), seedtool quotes --offline(16/16 found), arXiv API·OpenAlex 온라인 대조(2026-10-15),
+#       wiki의 python verify 블록 3개 실행(모두 통과), lab_fixtures/softmax_temperature.json 재계산.
+# fix 항목은 approval이 내용 해시에 묶이므로, 고친 뒤에 decision을 approve로 바꿔 실행해야 한다.
+items:
+  # ---------------------------------------------------------------- wiki
+  - id: wiki:scaled-dot-product-attention
+    kind: wiki
+    recommendation: fix
+    decision: fix
+    publish: true   # decision이 approve일 때만 적용된다. 아래 fix를 반영한 뒤 decision을 approve로 바꾸면 승인과 공개가 함께 된다.
+    checked: [support, direction, numbers, conditions, wording]
+    notes: "모든 문장·수식·예제·그림·Cite를 1706.03762v7 §1–§4, 1409.0473v7 §1, 2010.11929v2 §1·§3, 2103.14030v2 §1·§3.2 원문과 lab fixture로 대조했고 verify 블록 3개는 통과한다. 필수 수정 3곳(L104 독립 가정 누락과 'We suspect'의 단정, L118·L219 0.9548을 0.96으로 반올림, L267 창 이동 설명)과 권장 수정 4곳이 있다."
+    fix: |
+      [필수 1] L104 (기초 단계 요약: 독립 가정이 빠졌고 논문의 추정을 사실처럼 씀)
+        현재: query와 key의 성분이 평균 0, 분산 1이라고 가정하면 dot product의 분산은 $d_k$입니다. $d_k$가 크면 점수가 커지고, softmax가 한 key에 쏠려 기울기가 아주 작아집니다.
+        변경: query와 key의 성분이 서로 독립이고 평균 0, 분산 1이라고 가정하면 dot product의 분산은 $d_k$입니다. 논문은 $d_k$가 크면 점수의 크기가 커져 softmax가 한 key에 쏠리고 기울기가 아주 작은 영역으로 밀려난다고 추정합니다(We suspect).
+      [필수 2] L118, L219 (수치: fixture 0.9548, Lab 표시 0.9548, verify 0.9547 → 소수 둘째 자리는 0.95)
+        L118 현재: $d_k = 512$에서는 약 0.96으로 거의 원-핫이 됩니다.
+        L118 변경: $d_k = 512$에서는 약 0.95로 거의 원-핫이 됩니다.
+        L219 현재: 평균 최대 가중치가 약 0.53에서 0.96으로 한 key에 몰립니다.
+        L219 변경: 평균 최대 가중치가 약 0.53에서 0.95로 한 key에 몰립니다.
+      [필수 3] L267 (Swin: 창을 '층마다' 옮기는 것이 아니라 연속한 두 블록에서 일반 창과 옮긴 창을 번갈아 쓴다(§3.2). 선형 비용은 창 분할에서 나온다(§1))
+        현재: Swin Transformer는 이미지를 겹치지 않는 창으로 나눠 창 안에서만 attention을 계산하고<Cite claim="clm:swin-mitigates-quadratic" loc="Swin §1" />, 층마다 창을 어긋나게 옮겨 창 사이를 잇는 방식으로<Cite claim="clm:intro-shifted-window" loc="Swin §3.2" /> 계산량을 이미지 크기에 선형으로 줄였습니다.
+        변경: Swin Transformer는 이미지를 겹치지 않는 창으로 나눠 창 안에서만 attention을 계산해, 창 크기가 고정이면 계산량이 이미지 크기에 선형이 되게 했습니다<Cite claim="clm:swin-mitigates-quadratic" loc="Swin §1" />. 창 사이는 연속한 두 블록에서 창 분할을 번갈아 바꿔(일반 창, 창 크기의 절반만큼 옮긴 창) 잇습니다<Cite claim="clm:intro-shifted-window" loc="Swin §3.2" />.
+      [권장 4] L108 (유도 3번째 줄 '분산의 합'에는 성분 전체가 서로 독립이어야 함. 원문: components of q and k are independent)
+        현재: query와 key의 성분 $q_i, k_i$가 서로 독립이고 평균 0, 분산 1이라고 가정하면:
+        변경: query와 key의 모든 성분 $q_1,\dots,q_{d_k}, k_1,\dots,k_{d_k}$가 서로 독립이고 평균 0, 분산 1이라고 가정하면:
+      [권장 5] L44 (MHA를 '같은 연산을 여러 번'으로 오해할 수 있음. §3.2.2: head마다 다른 학습된 투영 후 병렬 계산, 이어 붙임)
+        현재: Multi-head attention</ConceptLink>은 이 연산을 여러 개 나란히 돌린 것이고
+        변경: Multi-head attention</ConceptLink>은 query·key·value를 head마다 다른 학습된 행렬로 투영한 뒤 이 연산을 여러 개 나란히 돌리고 결과를 이어 붙인 것이고
+      [권장 6] L276 (비교 대상이 빠짐. 원문: dot-product attention is much faster and more space-efficient [than additive])
+        현재: 고도로 최적화된 행렬 곱셈 코드로 구현할 수 있어 실제로 더 빠르고 메모리를 덜 쓴다고 설명합니다
+        변경: 고도로 최적화된 행렬 곱셈 코드로 구현할 수 있어 additive attention보다 실제로 더 빠르고 메모리를 덜 쓴다고 설명합니다
+      [권장 7] L52 ('토큰이 n개'라고 한 뒤 key를 m개로 둠)
+        현재: 토큰이 n개, query·key 차원이 $d_k$, value 차원이 $d_v$라고 합시다.
+        변경: query가 n개, key·value가 m개, query·key 차원이 $d_k$, value 차원이 $d_v$라고 합시다.
+      [선택] L37 "벡터의 길이(성분 개수)" → "벡터의 차원(성분 개수)", L214 "벡터 길이 d_k만" → "벡터 차원 d_k만" ('길이'는 노름으로 읽힐 수 있음).
+      반영 후: verify 블록 재실행(숫자는 문장만 바뀌므로 assert 영향 없음), status/review는 approve-batch가 채운다.
+
+  # ---------------------------------------------------------------- claims
+  - id: clm:intro-sdpa
+    kind: claim
+    recommendation: approve
+    decision: approve
+    checked: [support, direction, wording]
+    notes: "1706.03762v7 §3.2.1 첫 문단 'We call our particular attention \"Scaled Dot-Product Attention\"'은 자기 기여로 제시한 진술이고 방향(논문→방법)도 맞다. 화면 문장 'Attention Is All You Need은(는) Scaled Dot-Product Attention을(를) 제시했다'는 정확하다(같은 절에서 스케일 외에는 기존 dot-product attention과 같다고 밝히므로 '최초 발명'으로 읽히지 않게 wiki L276이 보완한다)."
+  - id: clm:sdpa-is-a-attention
+    kind: claim
+    recommendation: approve
+    decision: approve
+    checked: [support, direction, wording]
+    notes: "§3.2의 attention 함수 정의와 §3.2.1 'our particular attention'을 합치면 'SDPA는 일종의 attention 메커니즘이다'가 참이다. 방향(SDPA IS_A attention)과 화면 문장 모두 맞다."
+  - id: clm:scaled-dot-product-attention-part-of-multi-head-attention
+    kind: claim
+    recommendation: approve
+    decision: approve
+    checked: [support, direction, wording]
+    notes: "Figure 2 캡션과 §3.2.2(head_i = Attention(QW_i^Q, KW_i^K, VW_i^V))를 보면 MHA를 설명하려면 SDPA를 부품으로 나열해야 한다. 두 번째 인용은 'yielding'에서 끊겨 있지만 대조에는 문제없다."
+  - id: clm:multi-head-attention-part-of-transformer-encoder-layer
+    kind: claim
+    recommendation: approve
+    decision: approve
+    checked: [support, direction, wording]
+    notes: "§3.1 Encoder 문단 'The first is a multi-head self-attention mechanism'이 인코더 층의 첫 하위층임을 직접 말한다. 방향과 화면 문장이 맞다."
+  - id: clm:transformer-encoder-layer-part-of-bert
+    kind: claim
+    recommendation: approve
+    decision: approve
+    checked: [support, direction, wording]
+    notes: "1810.04805v2 §3 Model Architecture 'multi-layer bidirectional Transformer encoder based on the original implementation'으로 BERT가 인코더 층을 쌓은 구조임이 확인된다."
+  - id: clm:transformer-encoder-layer-part-of-vit
+    kind: claim
+    recommendation: approve
+    decision: approve
+    checked: [support, direction, conditions, wording]
+    notes: "2010.11929v2 §3.1 'The Transformer encoder ... consists of alternating layers of multiheaded self-attention and MLP blocks'로 확인된다. ViT는 LayerNorm을 블록 앞에 두는(pre-LN) 변형이지만 구성요소 관계는 그대로 성립한다."
+  - id: clm:transformer-addresses-sequential
+    kind: claim
+    recommendation: approve
+    decision: approve
+    checked: [support, direction, wording]
+    notes: "§1 2문단(순차성이 학습 예제 안 병렬화를 막는다)과 4문단(recurrence를 버리고 attention에만 의존하는 Transformer를 제안)을 합치면 문제를 해결 대상으로 명시한 의도 진술이다. 화면 문장 '…문제를 다룬다'도 의도만 말해 정확하다."
+  - id: clm:transformer-mitigates-sequential
+    kind: claim
+    recommendation: approve
+    decision: approve
+    checked: [support, direction, numbers, wording]
+    notes: "§4와 Table 1의 분석(self-attention 순차 연산 O(1), recurrent O(n))이 analytical_result로 완화 효과를 보인다. 인용이 'requires'에서 끊겨 있으나(뒤는 수식 O(n)) 의미 왜곡은 없다."
+  - id: clm:intro-additive-attention
+    kind: claim
+    recommendation: approve
+    decision: approve
+    checked: [support, direction, wording]
+    notes: "1409.0473v7 §1 4문단 'we introduce an extension to the encoder–decoder model which learns to align and translate jointly'은 저자의 제안 진술이어서 INTRODUCES 판별 질문을 통과한다. '덧셈형 점수'라는 구체 근거는 §3.1 4문단 'We parametrize the alignment model a as a feedforward neural network …'(대조 도구로 found 확인)를 증거로 추가하면 더 단단하다(선택)."
+  - id: clm:vit-adapts-transformer
+    kind: claim
+    recommendation: approve
+    decision: approve
+    checked: [support, direction, conditions, wording]
+    notes: "§1 3문단(NLP의 표준 Transformer를 최소한만 바꿔 이미지에 적용)과 §3 첫 문단(원 Transformer를 최대한 따른다)으로 from NLP → to CV 이동이 확인된다. 화면 문장 'Vision Transformer은(는) Transformer을(를) 적용했다'는 분야 qualifier를 보여 주지 않아 덜 구체적이지만 틀리지는 않는다."
+  - id: clm:swin-mitigates-quadratic
+    kind: claim
+    recommendation: approve
+    decision: approve
+    checked: [support, direction, conditions, wording]
+    notes: "2103.14030v2 §1 3문단(S1.p3)에서 겹치지 않는 창 안의 self-attention으로 복잡도가 이미지 크기에 선형이 된다고 분석하고, §3.2 식 (1)(2)가 이를 뒷받침한다. 선형이 되는 조건(창 안 패치 수 고정)은 인용문 안에 들어 있다."
+  - id: clm:intro-shifted-window
+    kind: claim
+    recommendation: approve
+    decision: approve
+    checked: [support, direction, wording]
+    notes: "§3.2 3문단 'we propose a shifted window partitioning approach which alternates between two partitioning configurations in consecutive Swin Transformer blocks'는 직접적인 제안 진술이다. 단, 끝점 method:shifted-window-attention이 fix라서 그 엔티티가 승인되기 전에는 이 claim도 공개되지 않는다."
+
+  # ---------------------------------------------------------------- entities
+  - id: concept:attention-mechanism
+    kind: entity
+    recommendation: approve
+    decision: approve
+    checked: [wording]
+    notes: "요약(관련도 점수로 입력 여러 위치의 가중합을 만든다)은 1706.03762 §3.2 정의와 맞고, 별칭과 분야(딥러닝)도 적절하다."
+  - id: method:additive-attention
+    kind: entity
+    recommendation: approve
+    decision: approve
+    checked: [wording]
+    notes: "1409.0473 §3.1의 alignment model(피드포워드 신경망 점수)과 1706.03762 §3.2.1 'single hidden layer' 설명에 맞는다. 'query/key'는 후대 용어지만 요약 이해에 문제없다."
+  - id: method:multi-head-attention
+    kind: entity
+    recommendation: approve
+    decision: approve
+    checked: [wording]
+    notes: "서로 다른 선형 투영에서 병렬 계산 후 이어 붙인다는 요약이 §3.2.2와 맞다(출력 투영 W^O는 생략됐지만 오해를 만들지 않는다)."
+  - id: method:scaled-dot-product-attention
+    kind: entity
+    recommendation: approve
+    decision: approve
+    checked: [wording, numbers]
+    notes: "요약과 formula가 §3.2.1 식 (1)과 정확히 같다. 별칭(SDPA 등)과 분야가 적절하다."
+  - id: method:shifted-window-attention
+    kind: entity
+    recommendation: fix
+    decision: fix
+    checked: [wording]
+    notes: "Swin §3.2는 연속한 두 블록에서 일반 분할과 (⌊M/2⌋,⌊M/2⌋)만큼 옮긴 분할을 번갈아 쓴다고 한다. '층마다 창 위치를 어긋나게 옮겨'는 층마다 계속 이동한다고 읽힐 수 있다."
+    fix: "summary를 '이미지를 겹치지 않는 창으로 나눠 창 안에서만 self-attention을 계산하고, 연속한 두 블록에서 일반 창과 창 크기의 절반만큼 옮긴 창을 번갈아 써서 창 사이를 연결하는 방법이다.'로 바꾼다."
+  - id: method:transformer-encoder-layer
+    kind: entity
+    recommendation: approve
+    decision: approve
+    checked: [wording]
+    notes: "§3.1(MHSA + 위치별 FFN, 잔차 연결 + LayerNorm)과 맞고, BERT·ViT가 쌓는다는 서술은 해당 claim 2건으로 확인된다. 별칭 'Transformer encoder'·'Transformer block'은 층 하나보다 넓은 말이지만 검색용으로는 허용 범위다."
+  - id: model:bert
+    kind: entity
+    recommendation: approve
+    decision: approve
+    checked: [wording]
+    notes: "양방향 Transformer 인코더, MLM + NSP 사전학습, 미세조정이라는 요약이 1810.04805 §3과 맞다. 변형 Base/Large도 맞다(분야 정의 문제는 field:language-modeling에서 고친다)."
+  - id: model:swin
+    kind: entity
+    recommendation: approve
+    decision: approve
+    checked: [wording]
+    notes: "창 단위 attention, 창 이동, 계층적 특징 맵, 이미지 크기에 선형인 계산량이라는 요약이 2103.14030 초록·§1과 맞다. 변형 T/S/B/L도 맞다."
+  - id: model:transformer
+    kind: entity
+    recommendation: approve
+    decision: approve
+    checked: [wording]
+    notes: "순환·합성곱 없는 attention 기반 인코더–디코더, 기계 번역용이라는 요약은 1706.03762 초록('based solely on attention mechanisms')과 §1에 맞다. 변형 base/big도 맞다."
+  - id: model:vit
+    kind: entity
+    recommendation: approve
+    decision: approve
+    checked: [wording]
+    notes: "16×16 패치 시퀀스를 표준 Transformer 인코더로 처리하는 이미지 분류 모델이라는 요약이 2010.11929 §1·§3.1과 맞다. 변형 B/16, L/16, H/14와 분야 배치도 맞다."
+  - id: paper:bahdanau2014-attention
+    kind: entity
+    recommendation: approve
+    decision: approve
+    checked: [support, numbers, wording]
+    notes: "arXiv API(2026-10-15)와 대조해 제목·저자 3명·최초 공개 2014-09-01·최신 v7·코멘트 'Accepted at ICLR 2015 as oral presentation'이 일치하고, OpenAlex W2133564696도 같은 논문이다. dblp 키는 봇 차단으로 온라인 확인을 못 했다."
+  - id: paper:liu2021-swin
+    kind: entity
+    recommendation: approve
+    decision: approve
+    checked: [support, numbers, wording]
+    notes: "arXiv API와 대조해 제목·저자 8명·최초 공개 2021-03-25·최신 v2가 일치하고, OpenAlex W3138516171의 DOI 10.1109/iccv48922.2021.00986(ICCV 2021)이 기록과 같다."
+  - id: paper:vaswani2017-transformer
+    kind: entity
+    recommendation: approve
+    decision: approve
+    checked: [support, numbers, wording]
+    notes: "arXiv API와 대조해 제목·저자 8명(Łukasz Kaiser 표기 포함)·최초 공개 2017-06-12·최신 v7이 일치하고, OpenAlex W2626778328도 같은 논문이다. dblp 키 journals/corr/…는 arXiv(CoRR) 레코드라 venue(NIPS 2017)와 출처가 다르지만 틀린 값은 아니다."
+  - id: problem:quadratic-attention-cost-high-resolution
+    kind: entity
+    recommendation: approve
+    decision: approve
+    checked: [wording]
+    notes: "전역 self-attention이 토큰 수의 제곱이라 고해상도·밀집 예측에서 감당하기 어렵다는 요약이 Swin §1('quadratic to image size')·§3.2 첫 문단과 맞다. 질문도 그 문제를 정확히 묻는다."
+  - id: problem:sequential-computation-in-rnns
+    kind: entity
+    recommendation: approve
+    decision: approve
+    checked: [wording]
+    notes: "이전 상태가 필요해 한 학습 예제 안 병렬화가 어렵다는 요약이 1706.03762 §1 2문단과 그대로 맞는다."
+
+  # ---------------------------------------------------------------- fields
+  - id: field:artificial-intelligence
+    kind: entity
+    recommendation: approve
+    decision: approve
+    checked: [wording]
+    notes: "요약이 적절하고 최상위(parents 없음)다. OpenAlex subfields/1702가 'Artificial Intelligence'임을 온라인으로 확인했다."
+  - id: field:computer-vision
+    kind: entity
+    recommendation: approve
+    decision: approve
+    checked: [wording]
+    notes: "요약과 상위(인공지능)가 적절하다. OpenAlex subfields/1707 'Computer Vision and Pattern Recognition'을 확인했다."
+  - id: field:deep-learning
+    kind: entity
+    recommendation: approve
+    decision: approve
+    checked: [wording]
+    notes: "다층 신경망으로 표현을 단계적으로 학습하는 기계학습이라는 요약과 상위(기계학습)가 적절하다."
+  - id: field:efficient-transformers
+    kind: entity
+    recommendation: approve
+    decision: approve
+    checked: [wording]
+    notes: "긴 입력(토큰이 많은 입력)에서 어텐션 비용을 낮추는 구조라는 요약이 맞고, 상위(ML 시스템·효율적 추론, 딥러닝)도 적절하다. Swin 관련 문제·방법의 배치와도 맞는다."
+  - id: field:image-classification
+    kind: entity
+    recommendation: approve
+    decision: approve
+    checked: [wording]
+    notes: "이미지 전체에 미리 정한 범주 하나를 붙이는 과제라는 요약과 상위(컴퓨터 비전)가 적절하다."
+  - id: field:language-modeling
+    kind: entity
+    recommendation: fix
+    decision: fix
+    checked: [wording]
+    notes: "요약이 '앞선 문맥으로 다음 언어 단위를 예측'(자기회귀)으로만 정의돼 있다. 그런데 이 분야에 놓인 model:bert는 가려진 토큰을 양쪽 문맥으로 예측하는 마스크 언어 모델(1810.04805 §3.1)이라, 학습자가 BERT를 다음 토큰 예측 모델로 오해할 수 있다."
+    fix: "summary를 '언어 모델링은 텍스트의 확률 구조를 학습하는 분야로, 앞 문맥으로 다음 토큰을 예측하는 자기회귀 방식과 가려진 토큰을 양쪽 문맥으로 예측하는 마스크 언어 모델 방식을 포함한다.'로 바꾼다(또는 model:bert의 fields를 field:natural-language-processing으로 옮긴다)."
+  - id: field:machine-learning
+    kind: entity
+    recommendation: approve
+    decision: approve
+    checked: [wording]
+    notes: "데이터에서 패턴을 학습해 예측·결정을 하는 인공지능의 한 분야라는 요약과 상위가 적절하다."
+  - id: field:machine-translation
+    kind: entity
+    recommendation: approve
+    decision: approve
+    checked: [wording]
+    notes: "요약과 상위(자연어 처리)가 적절하다. Transformer·Bahdanau 논문의 분야 배치와 맞는다."
+  - id: field:ml-systems-efficient-inference
+    kind: entity
+    recommendation: approve
+    decision: approve
+    checked: [wording]
+    notes: "학습·배포의 계산·메모리 효율을 다룬다는 요약과 상위(기계학습)가 적절하다."
+  - id: field:natural-language-processing
+    kind: entity
+    recommendation: approve
+    decision: approve
+    checked: [wording]
+    notes: "요약과 상위(인공지능)가 적절하다. OpenAlex T10181 'Natural Language Processing Techniques'를 확인했다."
+  - id: field:vision-transformers
+    kind: entity
+    recommendation: approve
+    decision: approve
+    checked: [wording]
+    notes: "이미지를 패치 시퀀스로 바꿔 self-attention으로 처리하는 계열이라는 요약과 상위(컴퓨터 비전, 딥러닝)가 적절하다."
+
+  # ---------------------------------------------------------------- lab and items
+  - id: lab:softmax-temperature
+    kind: entity
+    recommendation: approve
+    decision: approve
+    checked: [numbers, wording]
+    notes: "Lab의 TS 구현(mulberry32 + Box–Muller, softmax(z/T), Jacobian Frobenius 노름)이 tools/gen_lab_fixtures.py와 같은 절차이고, fixture 값(0.5251/0.8718/0.9548, 스케일 시 0.34–0.37)을 확인했다. parameters의 n_keys 2–16은 UI에 노출되지 않는다(UI는 8 고정, d_k는 7개 값 선택). 화면에 나오지 않아 학습자 영향은 없다."
+  - id: ai:lab-softmax-temp-01
+    kind: item
+    recommendation: approve
+    decision: approve
+    checked: [numbers, wording]
+    notes: "softmax([2,1,0])의 최댓값은 0.66524이고 T=0.1이면 0.99995이므로 정답 0('커진다')과 해설이 맞다. 선택지가 겹치지 않는다."
+  - id: ai:lab-softmax-temp-02
+    kind: item
+    recommendation: approve
+    decision: approve
+    checked: [numbers, wording]
+    notes: "softmax([2,0]/2)_1 = e/(e+1) = 0.73106이므로 정답 0.731과 허용오차 0.005, 해설이 맞다. Lab 화면에 p_i = e^{z_i/T}/Σ 식이 나와 T의 정의가 모호하지 않다."
+  - id: ai:lab-sdpa-01
+    kind: item
+    recommendation: approve
+    decision: approve
+    checked: [numbers, conditions, wording]
+    notes: "scaling 없이 key 8개일 때 평균 최대 가중치가 0.5251에서 0.9548로 바뀐다(fixture seed 42, 표본 1,000). 정답 0('1에 가까워진다')과 해설 0.525→0.955가 맞다."
+  - id: ai:lab-sdpa-02
+    kind: item
+    recommendation: approve
+    decision: approve
+    checked: [numbers, conditions, wording]
+    notes: "독립·평균 0·분산 1 가정에서 Var(q·k)=64, 표준편차 8이다. 정답 8±0.5와 해설의 Var 64.65(fixture variance_check, 표본 10,000)가 맞다. 다만 Lab 화면은 표본 1,000이라 Var 61.74(표준편차 7.86)를 보여 주므로, 해설에 이 값을 함께 적으면 덜 헷갈린다(선택)."
