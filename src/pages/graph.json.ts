@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import fs from 'node:fs';
 import path from 'node:path';
 import { getGraph, entityPath, claimPath, publicSummary } from '../lib/graph';
+import type { GraphEdge } from '../lib/graph/view';
 import { url } from '../lib/url';
 
 type GraphEntity = {
@@ -15,12 +16,12 @@ type GraphEntity = {
 
 type GraphClaim = {
   id: string;
-  predicate?: unknown;
-  subject?: unknown;
-  object?: unknown;
-  status?: unknown;
-  review?: { decision?: unknown } | null;
-  qualifiers?: { for_dimension?: unknown } | null;
+  predicate?: string;
+  subject?: string;
+  object?: string;
+  status?: string;
+  review?: { decision?: string } | null;
+  qualifiers?: { for_dimension?: string } | null;
 };
 
 const strings = (value: unknown): string[] =>
@@ -61,14 +62,14 @@ export const GET: APIRoute = () => {
         url: url(entityPath(id, g)),
       };
     });
-  const edges = Object.values(g.claims).map((claim) => {
+  const edges: GraphEdge[] = Object.values(g.claims).map((claim) => {
     const edge = claim as GraphClaim;
     return {
       id: edge.id,
       kind: 'claim' as const,
-      predicate: edge.predicate,
-      source: edge.subject,
-      target: edge.object,
+      predicate: edge.predicate || '',
+      source: edge.subject || '',
+      target: edge.object || '',
       status: edge.status,
       reviewed: edge.review?.decision === 'approve',
       qualifiers: { for_dimension: edge.qualifiers?.for_dimension },

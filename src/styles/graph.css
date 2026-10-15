@@ -1,0 +1,146 @@
+.graph-view {
+  --graph-edge: #365b94;
+  --graph-muted: #8290a5;
+  display: grid;
+  gap: 1rem;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.graph-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 0.85rem;
+  align-items: center;
+}
+
+.graph-controls label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.graph-canvas {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  height: 70vh;
+  min-height: 420px;
+  overflow: hidden;
+  border: 1px solid #cbd5e4;
+  border-radius: 0.5rem;
+  background: #fff;
+}
+
+.graph-canvas-local {
+  height: 360px;
+  min-height: 360px;
+}
+
+.graph-view .react-flow {
+  background: #f8fbff;
+}
+
+.aixon-flow-node {
+  width: 180px;
+}
+
+.aixon-flow-node button {
+  display: grid;
+  width: 100%;
+  min-height: 54px;
+  gap: 0.15rem;
+  padding: 0.45rem 0.55rem;
+  overflow-wrap: anywhere;
+  color: #172033;
+  text-align: left;
+  background: #fff;
+  border: 2px solid #7390bc;
+  border-radius: 0.4rem;
+  cursor: pointer;
+}
+
+.aixon-flow-node.is-selected button,
+.aixon-flow-node button:focus-visible {
+  outline: 3px solid #1e64b7;
+  outline-offset: 2px;
+  border-color: #1e64b7;
+}
+
+.aixon-flow-node small {
+  color: #4d5d75;
+}
+
+.aixon-edge-label {
+  position: absolute;
+  padding: 0.1rem 0.3rem;
+  color: #173d75;
+  font-size: 0.72rem;
+  white-space: nowrap;
+  background: #fff;
+  border: 1px solid #b9c8dc;
+  border-radius: 0.2rem;
+}
+
+.graph-trace-labels {
+  position: absolute;
+  z-index: 2;
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.35rem;
+  color: #40516b;
+  font-size: 0.75rem;
+  pointer-events: none;
+  background: rgb(255 255 255 / 85%);
+}
+
+.node-panel {
+  display: grid;
+  gap: 0.6rem;
+  padding: 1rem;
+  border: 1px solid #cbd5e4;
+  border-radius: 0.5rem;
+  background: #fff;
+}
+
+.node-panel > * {
+  margin: 0;
+}
+
+.node-panel a + a,
+.node-panel a + button {
+  margin-left: 0.7rem;
+}
+
+.graph-view [data-testid='graph-list'] tr:focus-visible {
+  outline: 3px solid #1e64b7;
+  outline-offset: -3px;
+}
+
+.graph-fallback-fields {
+  padding-left: 1.25rem;
+}
+
+@media (max-width: 700px) {
+  .graph-canvas {
+    min-height: 360px;
+  }
+
+  .graph-controls {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .graph-view [data-testid='graph-list'] {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .graph-view * {
+    scroll-behavior: auto !important;
+    transition: none !important;
+  }
+}
