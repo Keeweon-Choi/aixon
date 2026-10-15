@@ -196,6 +196,9 @@
       defaultBy = data.default_by;
       agentSession = data.agent_session;
       $('#reviewer').value = localStorage.getItem('aixon-reviewer') || defaultBy;
+      if (agentSession)
+        $('#message').textContent =
+          '이 서버는 AI 에이전트 세션에서 시작되어 결정 기록과 커밋·배포가 거부됩니다. 사람의 터미널에서 다시 시작하세요.';
       render();
     } catch (e) {
       $('#detail').innerHTML = `<p class="bad">대기열을 열 수 없습니다: ${esc(e.message)}</p>`;
