@@ -15,3 +15,6 @@ playwright-report/
 .env
 *.local
 .aixon/
+dist-e2e/
+dist-seed/
+dist-public-e2e/

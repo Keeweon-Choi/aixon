@@ -12,3 +12,8 @@ study/
 *.md
 package-lock.json
 tools/fixtures/
+dist-e2e/
+dist-seed/
+dist-public-e2e/
+playwright-report/
+test-results/
