@@ -133,6 +133,7 @@
   }
   function choose(decision) {
     const r = records[selected];
+    if (!r) return;
     saved[r.id] = {
       decision,
       note: $('#note')?.value || '',
@@ -209,6 +210,7 @@
     $('#save').onclick = save;
     $('#commit').onclick = commit;
     document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey || e.metaKey || e.altKey) return; // Ctrl+A / Ctrl+F are not decisions
       if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
       const items = visible();
       const at = items.indexOf(records[selected]);
