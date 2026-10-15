@@ -679,7 +679,6 @@ papers:
     - W2108598243
     - W4239072543
   metadata_checked:
-    arxiv: '2026-10-15'
     openalex: '2026-10-15'
   fields:
   - field:computer-vision
@@ -698,7 +697,6 @@ papers:
     - W2163605009
     - W3147600416
   metadata_checked:
-    arxiv: '2026-10-15'
     openalex: '2026-10-15'
   fields:
   - field:image-classification
