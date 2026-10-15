@@ -12,6 +12,7 @@ data/cache/
 artifacts/verification/runs/
 artifacts/verification/final-review-*/
 artifacts/verification/deploy-smoke-*/
+artifacts/verification/verify-*/
 test-results/
 playwright-report/
 .env
