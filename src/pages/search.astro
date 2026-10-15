@@ -14,7 +14,11 @@ import Base from '../layouts/Base.astro';
     css.href = url('pagefind/pagefind-ui.css');
     document.head.append(css);
     import(url('pagefind/pagefind-ui.js'))
-      .then(({ PagefindUI }) => {
+      .then(() => {
+        // pagefind-ui.js is a classic script that registers window.PagefindUI; it exports nothing.
+        const { PagefindUI } = window as unknown as {
+          PagefindUI: new (options: Record<string, unknown>) => unknown;
+        };
         new PagefindUI({ element: '#search', showSubResults: true, baseUrl: url('') });
         if (note) note.textContent = '';
       })
