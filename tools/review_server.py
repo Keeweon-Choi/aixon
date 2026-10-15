@@ -286,7 +286,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def authorized(self) -> bool:
         token = parse_qs(urlparse(self.path).query).get("token", [self.headers.get("X-Review-Token", "")])[0]
-        return hmac.compare_digest(str(token), self.service.token)
+        return hmac.compare_digest(str(token).encode(), self.service.token.encode())
 
     def do_GET(self):
         parsed = urlparse(self.path)
