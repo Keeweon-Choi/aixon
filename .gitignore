@@ -13,6 +13,7 @@ artifacts/verification/runs/
 artifacts/verification/final-review-*/
 artifacts/verification/deploy-smoke-*/
 artifacts/verification/verify-*/
+artifacts/verification/online/
 test-results/
 playwright-report/
 .env
