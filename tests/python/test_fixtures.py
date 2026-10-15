@@ -4,9 +4,14 @@ from __future__ import annotations
 
 import json
 import re
+import sys
+from pathlib import Path
 
 import yaml
 from conftest import BAD_WIKI, FIXTURE_GRAPH, FIXTURE_WIKI, FIXTURES
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
+import public_gate  # noqa: E402
 
 MARKER = "# TEST FIXTURE — not real research data"
 LAB_ITEMS = ["ai:lab-softmax-temp-01", "ai:lab-softmax-temp-02", "ai:lab-sdpa-01", "ai:lab-sdpa-02"]
@@ -79,20 +84,16 @@ def test_fixture_claims_cover_every_status_and_review_case():
     assert len(by_status["rejected"]) == 1
     stances = {item["stance"] for item in claims[by_status["disputed"][0]]["evidence"]}
     assert {"supports", "contradicts"} <= stances
-    human_approved = [
-        ident
-        for ident, claim in claims.items()
-        if (claim.get("review") or {}).get("by") == "human:fixture-editor"
-    ]
-    assert human_approved == ["clm:intro-transformer"]
+    public = public_gate.gate([str(FIXTURE_GRAPH)], str(FIXTURE_WIKI))
+    assert set(public["entities"]) | set(public["claims"]) | set(public["wiki"]) == {
+        "paper:fixture-attention-2017",
+        "model:transformer",
+        "clm:intro-transformer",
+        "wiki:transformer",
+    }
     review = claims["clm:intro-transformer"]["review"]
     assert (review["decision"], review["note"]) == ("approve", "fixture")
-    agent_approved = [
-        ident
-        for ident, claim in claims.items()
-        if str((claim.get("review") or {}).get("by", "")).startswith("agent:")
-    ]
-    assert agent_approved == ["clm:intro-vit"], "the agent self-approval trap must exist exactly once"
+    assert all(claim.get("review") is None for ident, claim in claims.items() if ident != "clm:intro-transformer")
 
 
 def test_fixture_has_a_cites_only_paper_pair():

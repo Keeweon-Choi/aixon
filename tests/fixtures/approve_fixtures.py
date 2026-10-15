@@ -1,4 +1,6 @@
-"""Write the TEST FIXTURE approvals with real content hashes (ADR-021). Test data only.
+"""
+# TEST FIXTURE — not real research data
+Write the TEST FIXTURE approvals with real content hashes (ADR-021). Test data only.
 
 Run after any edit of an approved fixture record:  .venv/bin/python tests/fixtures/approve_fixtures.py
 It calls the same functions as `tools/review.py approve`; the CLI itself refuses inside agent sessions,
