@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   atlasVisible,
   dagreLayout,
+  edgeStyle,
   localNeighbourhood,
   nodeAnchor,
   parseNodeAnchor,
@@ -148,5 +149,14 @@ describe('graph view helpers', () => {
   it('uses distinct dagre positions for connected nodes', () => {
     const nodes = dagreLayout([{ id: 'a' }, { id: 'b' }], [{ source: 'a', target: 'b' }]);
     expect(nodes[0].position).not.toEqual(nodes[1].position);
+  });
+
+  it('maps predicate and review status to accessible edge notation', () => {
+    expect(edgeStyle('IMPROVES_ON', 'verified').strokeWidth).toBe(3);
+    expect(edgeStyle('COMPARED_WITH', 'verified').markerEnd).toBe(false);
+    expect(edgeStyle('ADAPTS', 'verified').markerMiddle).toBe(true);
+    expect(edgeStyle('ADDRESSES', 'proposed')).toMatchObject({ dash: '2 4', badge: '미검증' });
+    expect(edgeStyle('MITIGATES', 'disputed').warning).toBe(true);
+    expect(edgeStyle('EXTENDS', 'deprecated').hidden).toBe(true);
   });
 });
