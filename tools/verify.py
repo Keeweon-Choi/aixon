@@ -51,6 +51,7 @@ STEPS = (
 DEFAULT_RUNS_DIR = "artifacts/verification/runs"
 STEP_TIMEOUT_SECONDS = 1800
 LOG_TAIL_LINES = 12
+CAPTURE_TIMEOUT_SECONDS = 5
 GRAPH_SETS = (
     ("seed+atlas", ["data/seed/seed_graph.yaml", "data/graph/atlas.yaml"]),
     ("fixture", ["tests/fixtures/graph/site_graph.yaml"]),
@@ -71,7 +72,7 @@ def iso(moment: datetime) -> str:
 def capture(command: list[str]) -> str | None:
     """Run a command and return its stripped stdout, or None when it cannot run."""
     try:
-        result = subprocess.run(command, capture_output=True, text=True, timeout=60)
+        result = subprocess.run(command, capture_output=True, text=True, timeout=CAPTURE_TIMEOUT_SECONDS)
     except (OSError, subprocess.TimeoutExpired):
         return None
     return result.stdout.strip() if result.returncode == 0 else None
@@ -87,7 +88,7 @@ def git_info() -> dict[str, Any]:
 
 def tool_versions() -> dict[str, str | None]:
     """Return the versions of the tools the steps rely on."""
-    playwright = capture(["npx", "--no-install", "playwright", "--version"])
+    playwright = capture(["npx", "--no-install", "playwright", "--version"]) if Path("node_modules").is_dir() else None
     make = capture(["make", "--version"])
     return {
         "node": capture(["node", "--version"]),
