@@ -1,9 +1,27 @@
 ---
 import Base from '../layouts/Base.astro';
 import GraphView from '../islands/GraphView';
+import { entityPath, getGraph } from '../lib/graph';
+import { url } from '../lib/url';
+const graph = getGraph();
+type Field = { id: string; name: string; parents?: string[] };
+const topFields = (Object.values(graph.fields) as Field[])
+  .filter((field) => !(field.parents || []).length)
+  .map((field) => ({ id: field.id, name: field.name, url: url(entityPath(field.id, graph)) }));
 ---
 
 <Base title="아틀라스 | AIXON" description="AI 연구 분야와 관계를 탐색합니다.">
   <h1>Interactive Atlas</h1>
-  <GraphView client:visible mode="atlas" />
+  <p>분야를 선택해 하위 분야와 소속 항목을 펼치고, 노드에서 상세 정보를 확인하세요.</p>
+  <GraphView client:only="react" mode="atlas" topFields={topFields} />
+  <noscript>
+    <h2>최상위 분야</h2>
+    <ul>
+      {topFields.map((field) => (
+        <li>
+          <a href={field.url}>{field.name}</a>
+        </li>
+      ))}
+    </ul>
+  </noscript>
 </Base>

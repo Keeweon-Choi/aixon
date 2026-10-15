@@ -1,9 +1,52 @@
 ---
 import Base from '../layouts/Base.astro';
 import GraphView from '../islands/GraphView';
+import { claimPath, getGraph } from '../lib/graph';
+import { url } from '../lib/url';
+const graph = getGraph();
+type Field = { id: string; name: string; parents?: string[] };
+type Claim = { id: string; predicate: string; status: string };
+const topFields = (Object.values(graph.fields) as Field[])
+  .filter((field) => !(field.parents || []).length)
+  .map((field) => ({
+    id: field.id,
+    name: field.name,
+    url: url('fields/' + field.id.split(':')[1] + '/'),
+  }));
+const researchPredicates = new Set([
+  'INTRODUCES',
+  'EXTENDS',
+  'ADAPTS',
+  'IMPROVES_ON',
+  'ADDRESSES',
+  'MITIGATES',
+  'COMPARED_WITH',
+]);
+const researchClaims = (Object.values(graph.claims) as Claim[]).filter(
+  (claim) => claim.status === 'verified' && researchPredicates.has(claim.predicate),
+);
 ---
 
 <Base title="연구 계보 | AIXON" description="검증된 연구 관계의 시간축">
   <h1>연구 계보</h1>
-  <GraphView client:visible mode="trace" />
+  <p>시간축을 따라 연구 관계를 보고, 간선 라벨을 눌러 근거 Claim으로 이동하세요.</p>
+  <ul aria-label="간선 표기">
+    <li>실선 ▶: 확장·적용·완화</li>
+    <li>굵은 실선 ▶: 성능 향상</li>
+    <li>파선: 비교</li>
+    <li>점선: 해결 대상</li>
+    <li>미검증: 점선과 “미검증” 배지</li>
+    <li>⚠: 이의가 있는 관계</li>
+  </ul>
+  <GraphView client:only="react" mode="trace" topFields={topFields} />
+  <noscript>
+    <h2>검증된 연구 관계</h2>
+    <ul>
+      {researchClaims.map((claim) => (
+        <li>
+          <a href={url(claimPath(claim.id))}>{claim.predicate}</a>
+        </li>
+      ))}
+    </ul>
+  </noscript>
 </Base>

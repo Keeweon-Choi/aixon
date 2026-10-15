@@ -267,8 +267,3 @@ export function entityPath(id: string, graph = getGraph()): string {
 export function claimPath(id: string): string {
   return `claims/${id.replace(/^clm:/, '')}/`;
 }
-
-/** @deprecated Consumers should use the entity summary directly after visibility filtering. */
-export function publicSummary(entity: RecordMap, _build?: BuildMode): string {
-  return str(entity.summary) || '준비 중';
-}
