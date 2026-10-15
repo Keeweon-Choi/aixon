@@ -45,3 +45,4 @@
 | I-37 | Major | 공개 관문 | public `graph.json`의 노드 `fields`·`parents`에 비공개 분야 ID가 남고, 노드 패널이 그 ID를 그대로 표시(E2E 검증에서 발견) | 노드 속성의 참조를 공개 여부로 거르지 않음 | 공개 엔티티만 남기도록 필터, E2E-9에 참조 검사 추가 | E2E-9 "references the non-public" | Fixed |
 | I-38 | Minor | 검색 | 실데이터에서 "어텐션"을 검색하면 SDPA가 상위 8개 밖으로 밀림 | 같은 점수 안의 정렬이 이름 길이뿐 | 같은 점수면 Wiki가 있는 노드를 먼저 | `tests/unit/search.test.ts`, E2E-1(seed) | Fixed |
 | I-39 | Minor | 검증기 | MDX 검사 우회: Markdown 링크·중괄호 속성의 `javascript:`, `\$` 사이에 숨긴 HTML(H1 검증에서 발견) | 속성 이름에 묶인 정규식, 이스케이프를 모르는 수식 정규식 | 코드·수식 밖 어디서든 `javascript:` 검사, `\$` 무시, MDX 주석 제외 | `test_mdx_security_rules_reject_unsafe_content` 3건 추가 | Fixed |
+| I-40 | Major | 사이트(Atlas) | 2코어 제한 깨끗한 환경 검증(커밋 118eb36)에서 데스크톱 Atlas의 분야 노드 클릭이 간헐적으로 펼침에 실패하거나 클릭 시간 초과(E2E-11, E2E-10 ①). 제한 없는 환경에서는 통과 | 분석 중(선택·펼침·해시·화면 맞춤·측면 패널 스크롤의 경쟁 추정) | 원인 분석·수정 진행 중(Opus 5.5 High) | 증거: `artifacts/verification/clean-fail-20261015T034011Z/` | Open |
