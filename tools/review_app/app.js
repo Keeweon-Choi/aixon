@@ -4,6 +4,7 @@
   const saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
   let records = [],
     selected = 0,
+    approvedSinceCommit = 0,
     defaultBy = '',
     agentSession = false;
   const $ = (s) => document.querySelector(s);
@@ -168,6 +169,7 @@
           decisions: Object.entries(saved).map(([id, v]) => ({ id, ...v })),
         }),
       });
+      approvedSinceCommit += result.approved.length;
       localStorage.removeItem(storageKey);
       Object.keys(saved).forEach((k) => delete saved[k]);
       $('#message').textContent =
@@ -182,8 +184,9 @@
       const output = await api('/api/commit-push', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ by: $('#reviewer').value.trim(), approved: 0 }),
+        body: JSON.stringify({ by: $('#reviewer').value.trim(), approved: approvedSinceCommit }),
       });
+      approvedSinceCommit = 0;
       $('#message').textContent = output.output;
     } catch (e) {
       $('#message').textContent = `커밋/배포 거부 또는 실패: ${e.message}`;
