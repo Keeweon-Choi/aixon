@@ -51,6 +51,12 @@ Astro 명령은 쓰기 가능한 설정 폴더가 필요합니다: `XDG_CONFIG_H
 
 문서 형식은 [docs/CONTENT_SCHEMA.md](docs/CONTENT_SCHEMA.md), 검사 규칙(V-\*)은 [docs/CONTENT_VALIDATION_PLAN.md](docs/CONTENT_VALIDATION_PLAN.md)에 있습니다.
 
+## 검수 화면
+
+지속적인 사람 검수에는 `make review`를 실행합니다. 시작할 때 출력되는 `http://127.0.0.1:4400/?token=...` 주소만 브라우저에서 여세요. 서버는 localhost에만 바인딩하고 매번 새 토큰을 만듭니다. 화면에서 대기열·근거·사전 검수·AI 교차 검증 보고서를 읽고 결정을 모은 뒤 **결정 기록**을 누르면 `review/decisions/`에 기록하고 승인만 현재 콘텐츠 해시에 묶습니다. Wiki는 **승인 후 게시**를 함께 선택할 수 있습니다.
+
+검토자 ID는 `human:<id>` 형식이어야 하며 `AIXON_REVIEWER=human:<id> make review`로 기본값을 바꿀 수 있습니다. 에이전트 세션에서 실행한 서버는 실수 방지를 위해 승인 기록과 커밋·배포를 거부합니다. 검토는 사람의 브라우저 세션에서 다시 시작하세요. 이 도구와 `tools/review_app/`은 공개 Astro 사이트나 GitHub Pages에 포함되지 않습니다.
+
 ## 검증
 
 `make verify`는 아래 단계를 순서대로 모두 실행하고(하나가 실패해도 계속), 하나라도 실패하면 0이 아닌 코드로 끝납니다.

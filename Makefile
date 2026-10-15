@@ -24,7 +24,7 @@ E2E_ENV := AIXON_BASE=$(E2E_BASE) AIXON_SITE=$(E2E_SITE)
 PUBLIC_BASE ?= /aixon/
 PUBLIC_SITE ?= http://localhost:4321
 
-.PHONY: install format lint typecheck test validate validate-fixtures gate gate-e2e dev \
+.PHONY: install format lint typecheck test validate validate-fixtures gate gate-e2e dev review \
 	build build-public build-e2e build-public-e2e build-seed \
 	check-dist check-dist-public check-dist-seed e2e e2e-seed secrets verify verify-online clean
 
@@ -65,6 +65,10 @@ gate-e2e:
 
 dev:
 	$(ASTRO_ENV) AIXON_BUILD=preview npx astro dev
+
+# Local-only human approval screen; it deliberately binds to 127.0.0.1.
+review:
+	$(PYTHON) tools/review_server.py --by "$${AIXON_REVIEWER:-human:keeweon}"
 
 validate-fixtures:
 	$(PYTHON) tools/seedtool.py validate $(FIXTURE_GRAPH)
