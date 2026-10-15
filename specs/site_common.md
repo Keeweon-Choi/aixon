@@ -37,6 +37,8 @@ If you need a change in a file you do not own, describe it under "## Requests fo
 | claim page (B) | `h1` = natural-language claim sentence, `[data-testid=claim-status]` (three badges: 인용 확인 / 사람 검토 / 공개), `[data-testid=evidence] [data-stance]` items each with `blockquote`, `[data-testid=locator]`, `a[data-testid=source-link]` (href contains `#:~:text=`) | Evidence Inspector |
 | lab (B) | `input[aria-label="logit 0"]`…`logit 4`, `[data-testid=temperature]` (number input; the slider mirrors it), `[data-testid=prob-0…4]`, `max-prob`, `entropy`; `[data-testid=dk]` select, `[data-testid=scaling]` checkbox, `[data-testid=seed]`, `[data-testid=compute]`, `var-qk`, `mean-max-weight`, `jac`; quiz `[data-testid=quiz-<item slug>]`, `[data-testid=quiz-submit-<item slug>]`, `[data-testid=quiz-result-<item slug>]` (text contains `정답` or `오답`) | numbers are rendered with 4 decimals |
 | coverage (B) | `[data-testid=coverage-table]` | |
+| wiki page (final review) | `[data-testid=wiki-entity-link]`, `[data-testid=wiki-atlas-link]` (`atlas/#node-<id with : → ~>`); related groups `[data-testid=related-prerequisites|related-dependents|related-parts|related-wholes|related-subtypes|related-supertypes]` with `li[data-node-id][data-predicate]` | direction follows 02 §6: prerequisites are verified claims whose object is the page entity |
+| trace (final review) | `[data-testid=predicate-filter-<PREDICATE>]` for INTRODUCES, EXTENDS, ADAPTS, IMPROVES_ON, ADDRESSES, MITIGATES, COMPARED_WITH (all on by default), `predicate-filter-CITES` (off by default), `[data-testid=trace-labels]` | |
 | search (B) | `#search` (Pagefind UI) | |
 
 `<item slug>` = the part after `ai:` in the assessment item id (e.g. `ai:lab-sdpa-01` → `lab-sdpa-01`).
