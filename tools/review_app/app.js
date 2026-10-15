@@ -18,6 +18,11 @@
       /[&<>"']/g,
       (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch],
     );
+  // Only http(s) URLs become links; anything else (javascript:, data:) is shown as text.
+  const link = (url, label) =>
+    /^https?:\/\//i.test(String(url || ''))
+      ? `<a href="${esc(url)}" target="_blank" rel="noreferrer">${esc(label)}</a>`
+      : esc(url || '—');
   const text = (value) =>
     value === undefined || value === null || value === ''
       ? '—'
@@ -80,7 +85,7 @@
     return (items || [])
       .map(
         (e) =>
-          `<article class="card"><strong>${esc(e.source_title)} ${e.source_version ? `(${esc(e.source_version)})` : ''}</strong><div>${esc(e.type)} · ${esc(e.stance)} · ${esc(e.locator || '위치 미지정')}</div><blockquote lang="en">${esc(e.quote || '')}</blockquote>${e.text_link ? `<a href="${esc(e.text_link)}" target="_blank" rel="noreferrer">원문 열기</a>` : ''}</article>`,
+          `<article class="card"><strong>${esc(e.source_title)} ${e.source_version ? `(${esc(e.source_version)})` : ''}</strong><div>${esc(e.type)} · ${esc(e.stance)} · ${esc(e.locator || '위치 미지정')}</div><blockquote lang="en">${esc(e.quote || '')}</blockquote>${e.text_link ? link(e.text_link, '원문 열기') : ''}</article>`,
       )
       .join('');
   }
@@ -108,7 +113,7 @@
             const bad =
               !['supported', 'computed', 'analogy-sourced', 'no-claim'].includes(c.verdict) ||
               (c.sources || []).some((s) => s.confirm && s.confirm !== 'found');
-            return `<tr class="${bad ? 'fail' : ''}"><td>${esc(c.field)}</td><td>${esc(c.verdict)}</td><td>${(c.sources || []).map((s) => (s.url ? `<a href="${esc(s.url)}" target="_blank">원문</a> (${esc(s.tier || '—')})` : '—')).join('<br>')}</td><td>${(c.sources || []).map((s) => esc(s.passage || '—')).join('<br>')}</td><td>${(c.sources || []).map((s) => esc(s.confirm || '미확인')).join('<br>')}</td></tr>`;
+            return `<tr class="${bad ? 'fail' : ''}"><td>${esc(c.field)}</td><td>${esc(c.verdict)}</td><td>${(c.sources || []).map((s) => `${link(s.url, '원문')} (${esc(s.tier || '—')})`).join('<br>')}</td><td>${(c.sources || []).map((s) => esc(s.passage || '—')).join('<br>')}</td><td>${(c.sources || []).map((s) => esc(s.confirm || '미확인')).join('<br>')}</td></tr>`;
           })
           .join('');
         return `<article class="card ${x.decision === 'approve' && !problems.length ? 'ok' : 'bad'}"><h3>${esc(x.reviewer)} · ${esc(x.decision)} · ${esc(x.start)}</h3><p>수정: ${esc(x.fix || '없음')}<br>미확인: ${text(x.unchecked)}</p><table><thead><tr><th>필드</th><th>판정</th><th>출처 / 등급</th><th>구절</th><th>대조</th></tr></thead><tbody>${rows}</tbody></table>${problems.length ? `<pre>${esc(problems.join('\n'))}</pre>` : ''}</article>`;
