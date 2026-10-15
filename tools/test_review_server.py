@@ -138,3 +138,23 @@ def test_decisions_refuse_agent_server_and_apply_clean_server(tmp_path):
 
 def test_commit_push_scopes_paths_without_touching_remote():
     assert server.COMMIT_PATHS == ("review", "data", "src/content/wiki")
+
+
+def test_commit_push_refuses_non_human_reviewer(monkeypatch):
+    for key in [k for k in os.environ if k in {"CLAUDECODE", "AI_AGENT"} or k.startswith("CODEX_")]:
+        monkeypatch.delenv(key)
+    monkeypatch.setattr(server.subprocess, "run", lambda *a, **k: pytest.fail("git must not run"))
+    for by in ("agent:x", "panel:rel1", 123):
+        with pytest.raises(PermissionError):
+            server.ReviewService.commit_push(by, 1)
+
+
+def test_two_saves_in_one_second_keep_both_decision_files(tmp_path, monkeypatch):
+    for key in [k for k in os.environ if k in {"CLAUDECODE", "AI_AGENT"} or k.startswith("CODEX_")]:
+        monkeypatch.delenv(key)
+    graph = tmp_path / "g.yaml"
+    shutil.copy(HERE / "fixtures/mini_graph.yaml", graph)
+    service = server.ReviewService([str(graph)], str(tmp_path / "wiki"), str(tmp_path / "review"), "human:t", "tok")
+    for ident in ("method:attention", "concept:softmax"):
+        service.write_decisions("human:t", [{"id": ident, "decision": "exclude"}])
+    assert len(list((tmp_path / "review/decisions").glob("*.yaml"))) == 2
