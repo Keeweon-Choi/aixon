@@ -287,17 +287,17 @@ export default function GraphView({
                 nodeRow(node, selectNode, mode === 'atlas' ? expanded : undefined),
               )}
             </tbody>
-            {(mode === 'local' || mode === 'trace') && (
-              <tbody>
-                {projection.edges.map((edge) => (
+            <tbody>
+              {projection.edges
+                .filter((edge) => edge.kind === 'claim')
+                .map((edge) => (
                   <tr key={edge.id} data-claim-id={edge.id}>
                     <td colSpan={2}>{edge.source}</td>
                     <td>{edge.predicate}</td>
                     <td>{edge.url && <a href={edge.url}>근거 보기</a>}</td>
                   </tr>
                 ))}
-              </tbody>
-            )}
+            </tbody>
           </table>
         ) : (
           <div className={`graph-canvas graph-canvas-${mode}`}>
@@ -323,7 +323,6 @@ export default function GraphView({
               nodesFocusable
               edgesFocusable={false}
               nodesDraggable={false}
-              onlyRenderVisibleElements
               fitView
             >
               <Background />
