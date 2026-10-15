@@ -185,6 +185,9 @@ def test_published_document_outside_public_gate_is_a_status_error(tmp_path, vali
         '<div>not an allowed MDX element</div>',
         '<Callout onclick="bad()">unsafe</Callout>',
         '<Callout href="javascript:bad()">unsafe</Callout>',
+        "[x](javascript:alert(1))",
+        '<Callout kind={"javascript:alert(1)"}>x</Callout>',
+        r'\$5 <img src="x" onerror="alert(1)" /> \$10',
     ],
 )
 def test_mdx_security_rules_reject_unsafe_content(tmp_path, validate, snippet):

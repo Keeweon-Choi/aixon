@@ -89,7 +89,8 @@ ENTITY_ID_RE = re.compile(r"^[a-z]+:[a-z0-9]+(?:-[a-z0-9]+)*$")
 FRONTMATTER_RE = re.compile(r"\A---[ \t]*\r?\n(.*?)\r?\n---[ \t]*(?:\r?\n|\Z)(.*)\Z", re.S)
 FENCE_RE = re.compile(r"^(?P<fence>`{3,}|~{3,})[^\n]*\n.*?^(?P=fence)[ \t]*$", re.S | re.M)
 INLINE_CODE_RE = re.compile(r"`[^`\n]+`")
-MATH_RE = re.compile(r"\$\$.*?\$\$|\$[^$\n]*\$", re.S)
+MATH_RE = re.compile(r"(?<!\\)\$\$.*?(?<!\\)\$\$|(?<!\\)\$[^$\n]*?(?<!\\)\$", re.S)  # \$ is a literal dollar
+MDX_COMMENT_RE = re.compile(r"\{/\*.*?\*/\}", re.S)
 VERIFY_BLOCK_RE = re.compile(r"^```python[ \t]+verify[ \t]*\n(.*?)^```[ \t]*$", re.S | re.M)
 ATTRIBUTE_RE = re.compile(r"([A-Za-z_][\w:.-]*)\s*=\s*(?:\"([^\"]*)\"|'([^']*)')")
 SECTION_BLOCK_RE = re.compile(r"<Section\b((?:[^>\"']|\"[^\"]*\"|'[^']*')*)>(.*?)</Section>", re.S)
@@ -97,7 +98,7 @@ DEEP_LEVEL_RE = re.compile(r"<Level\b(?=[^>]*\bof\s*=\s*[\"']deep[\"'])[^>]*>.*?
 MDX_TAG_RE = re.compile(r"</?([A-Za-z][A-Za-z0-9:-]*)\b[^>]*>")
 IMPORT_EXPORT_RE = re.compile(r"^\s*(?:import|export)\b", re.M)
 EVENT_ATTRIBUTE_RE = re.compile(r"\bon[a-z][\w:-]*\s*=", re.I)
-JAVASCRIPT_URL_RE = re.compile(r"\b(?:href|src|action|formaction)\s*=\s*[\"']?\s*javascript:", re.I)
+JAVASCRIPT_URL_RE = re.compile(r"javascript\s*:", re.I)  # anywhere outside code/math: attributes, {"…"}, [x](…)
 ALLOWED_MDX_ELEMENTS = frozenset(
     (
         "Section", "Level", "ConceptLink", "Cite", "Callout", "Figure", "Lab",
@@ -218,7 +219,7 @@ def blank_out(match: re.Match[str]) -> str:
 
 def mask_code(body: str) -> str:
     """Blank fenced code blocks and inline code so component tags inside code are ignored."""
-    without_fences = FENCE_RE.sub(blank_out, body)
+    without_fences = FENCE_RE.sub(blank_out, MDX_COMMENT_RE.sub(blank_out, body))
     return INLINE_CODE_RE.sub(blank_out, without_fences)
 
 

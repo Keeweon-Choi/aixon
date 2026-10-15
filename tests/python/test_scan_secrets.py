@@ -58,13 +58,14 @@ def test_slugs_are_not_keys_but_runtime_fake_keys_are(repo, run_tool):
     slugs = "same-risk-of-hallucination-as-other-ai-tools sk-learn-style-names"
     anthropic = "sk" + "-ant-" + "a1B2c3D4e5" * 3
     aws = "AK" + "IA" + "ABCDEFGHIJKLMNOP"
-    stage(repo, "content.txt", f"{slugs}\n{anthropic}\n{aws}\n")
+    stage(repo, "slugs.txt", f"{slugs}\n")
+    stage(repo, "keys.txt", f"{anthropic}\n{aws}\n")
     result = scan(run_tool, repo)
     assert result.returncode == 1
     assert "anthropic-api-key" in result.stdout
     assert "aws-access-key" in result.stdout
-    assert "same-risk-of-hallucination-as-other-ai-tools" not in result.stdout
-    assert "sk-learn-style-names" not in result.stdout
+    assert "keys.txt" in result.stdout
+    assert "slugs.txt" not in result.stdout  # hits are masked, so check the file, not the text
 
 
 @pytest.mark.parametrize("name", sorted(fake_keys()))
