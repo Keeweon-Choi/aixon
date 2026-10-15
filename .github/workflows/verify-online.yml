@@ -24,6 +24,7 @@ jobs:
       - run: pip install -r requirements-dev.txt
       - run: make verify-online
       - uses: actions/upload-artifact@v4
+        if: always() # keep the evidence when a check fails
         with:
           name: verification-online
           path: artifacts/verification/online/*.json
