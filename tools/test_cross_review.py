@@ -219,3 +219,33 @@ def test_human_skip_and_agent_signature_invalid(tmp_path):
     record = st.load_graph(paths)["entities"][ENTITY]
     record["review"] = {"by": "agent:x", "decision": "approve", "at": "2026-10-15", "reviewed_hash": st.review_hash(record)}
     assert st.approval_state(record) == "invalid"
+
+
+def test_panel_signature_and_content_freshness(tmp_path, monkeypatch):
+    paths, wiki, directory = setup_release(tmp_path)
+    _, available = cr.records(paths, wiki)
+    dump(directory / "audit.yaml", {"release": "test", "reviewer": "agent:audit", "start": "audit", "items": [make_item(ENTITY, available)]})
+    assert cr.approve("test", paths, wiki, tmp_path, "2026-10-15")["approved"] == 1
+    monkeypatch.chdir(tmp_path)
+    assert ENTITY in pg.gate(paths, wiki)["entities"]
+    raw = yaml.safe_load(Path(paths[0]).read_text())
+    raw["concepts"][0]["summary"] = "Changed after approval."
+    dump(Path(paths[0]), raw)
+    record = st.load_graph(paths)["entities"][ENTITY]
+    assert st.approval_state(record) == "stale"
+    assert {"id": ENTITY, "reason": "review stale"} in pg.gate(paths, wiki)["excluded"]
+
+
+@pytest.mark.parametrize("change", [
+    lambda block: block.update(method="manual"),
+    lambda block: block.update(reviewers=["agent:source", "agent:source"]),
+    lambda block: block.update(audit="agent:source"),
+    lambda block: block.update(report="review/cross/other"),
+    lambda block: block.update(at=""),
+])
+def test_panel_signature_requires_all_fields(change):
+    block = {"by": "panel:test", "method": "cross-review", "reviewers": ["agent:source", "agent:claim"],
+             "audit": "agent:audit", "report": "review/cross/test", "at": "2026-10-15", "decision": "approve"}
+    assert st.approval_kind(block) == "panel"
+    change(block)
+    assert st.approval_kind(block) is None

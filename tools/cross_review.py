@@ -258,9 +258,19 @@ def _check_release(release, paths, wiki_dir, root, include_audit=True):
     except (OSError, ValueError, KeyError):
         return {ident: ["missing or invalid confirm.json"] for ident in ids}
     all_reports = reports(directory)
+    report_schema = []
+    for stem, report in all_reports.items():
+        if not include_audit and report.get("start") == "audit":
+            continue
+        if report.get("reviewer") != f"agent:{stem}":
+            report_schema.append(f"{stem}: reviewer does not match file stem")
+        if report.get("release") != release:
+            report_schema.append(f"{stem}: release mismatch")
+        if report.get("start") not in ("source-first", "claim-first", "audit"):
+            report_schema.append(f"{stem}: invalid start")
     result = {}
     for ident in ids:
-        problems = []
+        problems = report_schema.copy()
         if ident not in available:
             result[ident] = ["record is missing"]
             continue
@@ -274,12 +284,6 @@ def _check_release(release, paths, wiki_dir, root, include_audit=True):
             if not containing:
                 continue
             start = report.get("start")
-            if report.get("reviewer") != f"agent:{stem}":
-                problems.append(f"{stem}: reviewer does not match file stem")
-            if report.get("release") != release:
-                problems.append(f"{stem}: release mismatch")
-            if start not in ("source-first", "claim-first", "audit"):
-                problems.append(f"{stem}: invalid start")
             if start != "audit":
                 found.append((report.get("reviewer"), start))
             if include_audit or start != "audit":
