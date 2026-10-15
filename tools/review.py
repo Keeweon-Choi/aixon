@@ -63,6 +63,11 @@ def approve_record(paths: list[str], ident: str, by: str, note: str, checked: li
     review = {"by": by, "at": today, "decision": "approve", "reviewed_hash": st.review_hash(record), "note": note}
     if checked:
         review["checked"] = checked
+    write_record_review(paths, ident, review)
+
+
+def write_record_review(paths: list[str], ident: str, review: dict) -> None:
+    """Write an already constructed human or panel review without reformatting the graph."""
     for path in paths:
         text = Path(path).read_text(encoding="utf-8").split("\n")
         try:

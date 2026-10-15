@@ -155,6 +155,8 @@ def claim_content_hash(claim: dict) -> str:
 
 
 HUMAN_RE = re.compile(r"^human:[a-z0-9][a-z0-9_-]*$")
+PANEL_RE = re.compile(r"^panel:([a-z0-9][a-z0-9_-]*)$")
+AGENT_RE = re.compile(r"^agent:[a-z0-9][a-z0-9_.-]*$")
 SURFACE_RE = re.compile(r"[^0-9a-z\uac00-\ud7a3]+")
 
 
@@ -164,12 +166,32 @@ def review_hash(record: dict) -> str:
     return hashlib.sha256(_dump(body).encode()).hexdigest()[:12]
 
 
+def approval_kind(review: dict) -> str | None:
+    """Return the structurally valid approval signature type."""
+    if not isinstance(review, dict) or review.get("decision") != "approve" or not review.get("at"):
+        return None
+    by = str(review.get("by", ""))
+    if HUMAN_RE.fullmatch(by):
+        return "human"
+    panel = PANEL_RE.fullmatch(by)
+    reviewers = review.get("reviewers")
+    audit = review.get("audit")
+    if (panel and review.get("method") == "cross-review"
+            and isinstance(reviewers, list) and len(reviewers) >= 2
+            and all(isinstance(name, str) and AGENT_RE.fullmatch(name) for name in reviewers)
+            and len(set(reviewers)) == len(reviewers)
+            and isinstance(audit, str) and AGENT_RE.fullmatch(audit) and audit not in reviewers
+            and review.get("report") == f"review/cross/{panel.group(1)}"):
+        return "panel"
+    return None
+
+
 def approval_state(record: dict) -> str | None:
     """None (no approval), "approved", "stale" (record changed after approval) or "invalid"."""
     review = record.get("review")
     if not isinstance(review, dict) or review.get("decision") != "approve":
         return None
-    if not HUMAN_RE.match(str(review.get("by", ""))) or not review.get("at"):
+    if approval_kind(review) is None:
         return "invalid"
     if review.get("reviewed_hash") != review_hash(record):
         return "stale"
@@ -424,7 +446,7 @@ def validate(graph: dict) -> list[Issue]:
     # G022 approvals must be human-signed and bound to the current content (ADR-021).
     for ident, rec in sorted(e.items()):
         state = approval_state(rec)
-        if state == "invalid": _issue(out, "G022", ident, "review must be by human:<id> with a date")
+        if state == "invalid": _issue(out, "G022", ident, "review must be by human:<id> or a cross-review panel, with a date")
         if state == "stale": _issue(out, "G022", ident, "stale review: record changed after approval (re-approve with tools/review.py)")
     # G023 definitional_dependency evidence must mention the subject concept in at least one quote (ADR-022).
     for cid, c in sorted(graph["claims"].items()):

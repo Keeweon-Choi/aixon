@@ -52,7 +52,7 @@ def wiki_approval(meta: dict, body: str) -> str | None:
     review = meta.get("review")
     if not isinstance(review, dict) or review.get("decision") != "approve":
         return None
-    if not st.HUMAN_RE.match(str(review.get("by", ""))) or not review.get("at"):
+    if st.approval_kind(review) is None:
         return "invalid"
     return "approved" if review.get("reviewed_hash") == wiki_hash(meta, body) else "stale"
 
