@@ -23,9 +23,19 @@
 | 11:57–12:02 | 깨끗한 환경 검증(새 clone + `npm ci` + 새 venv + `make verify`) 2회: 1회차 12단계 PASS 뒤 증거 복사에서 중단(I-36) → 수정 → 2회차 PASS | `artifacts/verification/runs/20261015T030106Z` |
 | 12:0x–12:3x | 최종 독립 리뷰(Opus 5.5 High): ACCEPT WITH FIXES → 수정(Sonnet) → 검증(Opus 5.5 High) MERGE, 상태 문구 "인용 확인" | e2e 122, seed 50 + 4 fixme |
 | 12:40–13:08 | 깨끗한 환경 3회차 FAIL(I-40, 2코어 간헐 실패) → 원인 분석·수정(Opus 5.5 High) → 4회차 PASS + 반복 안정성 확인 | `runs/20261015T040334Z` |
+| 13:5x–14:3x | 공개 저장소 `Keeweon-Choi/aixon` 생성·GitHub Pages 배포(사용자 승인). 첫 Pages 실패(V-SEO 대소문자, `e8f9adc`), CI lint 실패(`review/` prettier, `67854ae`), Verify Online 실패 2회(W106을 경고로 `c6851db`, 증거 업로드 `76a139e`) → 모두 수정 | CI 38686155036·Pages 38686154994(`c6851db`) 성공, Verify Online 38686154873 성공(인용 132 found + 경고 31, 식별자 67/67) |
+| 13:55 | 배포 사이트 스모크 테스트(Playwright, 1280×800·390×844): 6개 경로 200, 404 페이지, 콘솔 오류·가로 넘침 없음. 한글 글꼴이 없어 스크린샷은 네모(텍스트는 DOM으로 확인) | `artifacts/verification/deploy-smoke-20261015T045518Z/` |
+| (시각 미기록) | 사전 검수표 44건(승인 권고 41, 수정 3) → 수정 `89310e5`, 일괄 승인 `approve-batch`·`publish` 병합(`ea87acf`, `2355c44`). 사용자 결정: 사람 승인 대신 AI 교차 검증 패널 자동 게시(ADR-026). 도구(`codex/1015-140312-aixon`)와 로컬 검수 화면(`codex/1015-140314-aixon`)은 검증 중. 게시 0건 | — |
+| 14:10 | 깨끗한 환경 5회차(`67854ae`, 새 clone + `npm ci` + 새 venv, 2코어) | `runs/20261015T051054Z` 13/13 PASS |
 
 ## 마지막 테스트 결과 (13:08, 커밋 b6ca3d7, 깨끗한 환경, 2코어)
 
 - `make verify` 13단계 PASS: lint, typecheck, test(vitest 22 · pytest 201), validate, validate-fixtures, build(632쪽), check-dist, build-public(7쪽, 승인 0건), check-dist-public, e2e(fixture 122/122), e2e-seed(50 + 4 fixme: P2), check-dist-seed(632쪽), secrets
 - I-40 시나리오 반복(2코어, 데스크톱): E2E-11 ×5 35 통과, E2E-10 ×5 20 통과(10 fixme)
 - 증거: `artifacts/verification/runs/20261015T040334Z/` (summary.json, logs, Playwright 보고서, clean-env-job.log)
+
+## 마지막 테스트 결과 (14:1x, 커밋 67854ae, 깨끗한 환경, 2코어)
+
+- `make verify` 13단계 PASS, 108.15초: lint, typecheck, test(vitest 22 · pytest 206), validate, validate-fixtures, build(632쪽), check-dist, build-public(7쪽, 승인 0건), check-dist-public, e2e(fixture 122), e2e-seed(50 + 4 skipped: P2), check-dist-seed(632쪽), secrets(3323개 파일)
+- 67854ae 뒤 c6851db까지는 문서, `.gitignore`, verify-online 워크플로, `seedtool quotes` 종료 코드만 바뀌었다. GitHub CI가 c6851db에서 전체 `make verify`를 통과했다.
+- 증거: `artifacts/verification/runs/20261015T051054Z/` (summary.json, logs, clean-env-job.log). 위 13:08 항목은 첫 인수 때의 이력이다.
