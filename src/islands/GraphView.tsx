@@ -14,11 +14,13 @@ import {
   edgeStyle,
   localNeighbourhood,
   parseNodeAnchor,
+  TRACE_PREDICATES,
   traceLayout,
   type GraphEdge,
   type GraphNode as GraphDataNode,
   type GraphViewData,
 } from '../lib/graph/view';
+import { predicateName } from '../lib/predicates';
 import ClaimEdge, { type ClaimEdgeData } from './graph/ClaimEdge';
 import GraphNode, { type FlowNodeData } from './graph/GraphNode';
 import '@xyflow/react/dist/style.css';
@@ -112,6 +114,7 @@ export default function GraphView({
   const [enabledTypes, setEnabledTypes] = useState<Set<string>>();
   const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [showCites, setShowCites] = useState(false);
+  const [predicates, setPredicates] = useState(() => new Set(TRACE_PREDICATES));
   const [flow, setFlow] = useState<ReactFlowInstance<FlowGraphNode, FlowGraphEdge>>();
 
   useEffect(() => {
@@ -144,8 +147,8 @@ export default function GraphView({
     if (mode === 'atlas')
       return atlasVisible(data, expanded, { types: enabledTypes, verifiedOnly });
     if (mode === 'local') return localNeighbourhood(data, focus || selected, { showCites });
-    return traceLayout(data, { showCites });
-  }, [data, enabledTypes, expanded, focus, mode, selected, showCites, verifiedOnly]);
+    return traceLayout(data, { showCites, predicates });
+  }, [data, enabledTypes, expanded, focus, mode, predicates, selected, showCites, verifiedOnly]);
 
   function selectNode(id: string) {
     setSelected(id);
@@ -209,7 +212,9 @@ export default function GraphView({
     projection.nodes.find((node) => node.id === selected) ||
     data?.nodes.find((node) => node.id === selected);
   const trace =
-    mode === 'trace' ? traceLayout(data || { nodes: [], edges: [] }, { showCites }) : undefined;
+    mode === 'trace'
+      ? traceLayout(data || { nodes: [], edges: [] }, { showCites, predicates })
+      : undefined;
   const fieldName = (id: string) => data?.nodes.find((node) => node.id === id)?.name || id;
   // Field path from a top field down to `id` (first parent at each step; the field graph is a DAG).
   const fieldPath = (id: string): string => {
@@ -269,12 +274,32 @@ export default function GraphView({
           <label>
             <input
               type="checkbox"
+              data-testid="predicate-filter-CITES"
               checked={showCites}
               onChange={(event) => setShowCites(event.target.checked)}
             />
             인용 관계 보기
           </label>
         )}
+        {mode === 'trace' &&
+          TRACE_PREDICATES.map((predicate) => (
+            <label key={predicate}>
+              <input
+                type="checkbox"
+                data-testid={`predicate-filter-${predicate}`}
+                checked={predicates.has(predicate)}
+                onChange={() =>
+                  setPredicates((current) => {
+                    const next = new Set(current);
+                    if (next.has(predicate)) next.delete(predicate);
+                    else next.add(predicate);
+                    return next;
+                  })
+                }
+              />
+              {predicateName(predicate)}
+            </label>
+          ))}
       </div>
 
       {!data && !failed && <p>그래프를 불러오는 중…</p>}

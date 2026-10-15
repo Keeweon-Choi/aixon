@@ -99,3 +99,22 @@ test('E2E-4 only research claims are drawn: no CITES, no rejected, no prerequisi
   );
   expect(joining).toEqual([]);
 });
+
+test('E2E-4 predicate filters: all on by default, unchecking ADAPTS removes the ViT-Transformer edge', async ({
+  page,
+}) => {
+  for (const predicate of RESEARCH_PREDICATES)
+    await expect(page.getByTestId(`predicate-filter-${predicate}`)).toBeChecked();
+  await expect(page.getByTestId('predicate-filter-CITES')).not.toBeChecked();
+
+  await showView(page, 'list');
+  const row = page.locator(`tr[data-claim-id="${ADAPTS}"]`);
+  await expect(row).toBeVisible();
+  await page.getByTestId('predicate-filter-ADAPTS').uncheck();
+  await expect(row).toHaveCount(0);
+  await showView(page, 'graph');
+  await expect(claimElement(page, ADAPTS)).toHaveCount(0);
+  await page.getByTestId('predicate-filter-ADAPTS').check();
+  await showView(page, 'list');
+  await expect(row).toBeVisible();
+});

@@ -66,7 +66,7 @@ const localPredicates = new Set([
   'PART_OF',
   'IS_A',
 ]);
-const tracePredicates = new Set([
+export const TRACE_PREDICATES = [
   'INTRODUCES',
   'EXTENDS',
   'ADAPTS',
@@ -74,7 +74,7 @@ const tracePredicates = new Set([
   'ADDRESSES',
   'MITIGATES',
   'COMPARED_WITH',
-]);
+];
 
 export function nodeAnchor(id: string): string {
   return `#node-${id.replace(/:/g, '~')}`;
@@ -176,6 +176,8 @@ export function localNeighbourhood(
 
 export type TraceLayoutOptions = {
   showCites?: boolean;
+  /** Research predicates to draw (default: all of TRACE_PREDICATES). CITES has its own switch. */
+  predicates?: Set<string>;
 };
 
 export type TraceLayout = GraphProjection & {
@@ -187,7 +189,7 @@ export function traceLayout(data: GraphViewData, options: TraceLayoutOptions = {
   const researchEdges = data.edges.filter(
     (edge) =>
       visibleClaim(edge) &&
-      (tracePredicates.has(edge.predicate || '') ||
+      ((options.predicates ?? new Set(TRACE_PREDICATES)).has(edge.predicate || '') ||
         (options.showCites && edge.predicate === 'CITES')),
   );
   const introducedBy = new Map<string, string[]>();

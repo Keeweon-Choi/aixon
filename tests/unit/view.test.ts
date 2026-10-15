@@ -6,6 +6,7 @@ import {
   localNeighbourhood,
   nodeAnchor,
   parseNodeAnchor,
+  TRACE_PREDICATES,
   traceLayout,
   type GraphViewData,
 } from '../../src/lib/graph/view';
@@ -126,6 +127,37 @@ describe('graph view helpers', () => {
     expect(result.edges.map((edge) => edge.id)).toEqual(['clm:vit-adapts-transformer']);
     expect(result.nodes.map((item) => item.id)).toEqual(['model:transformer', 'model:vit']);
     expect(result.nodes[0].paperTitles).toEqual(['Transformer paper']);
+  });
+
+  it('filters trace edges by predicate and exposes the filterable predicates', () => {
+    expect(TRACE_PREDICATES).toEqual([
+      'INTRODUCES',
+      'EXTENDS',
+      'ADAPTS',
+      'IMPROVES_ON',
+      'ADDRESSES',
+      'MITIGATES',
+      'COMPARED_WITH',
+    ]);
+    const data: GraphViewData = {
+      nodes: [
+        node('model:transformer', 'Model', { fields: ['field:nlp'], year: 2017 }),
+        node('model:vit', 'Model', { fields: ['field:vision'], year: 2020 }),
+        node('model:deit', 'Model', { fields: ['field:vision'], year: 2021 }),
+      ],
+      edges: [
+        claim('clm:adapts', 'model:vit', 'model:transformer', 'ADAPTS'),
+        claim('clm:extends', 'model:deit', 'model:vit', 'EXTENDS'),
+      ],
+    };
+    const all = new Set(TRACE_PREDICATES);
+    expect(traceLayout(data, { predicates: all }).edges).toHaveLength(2);
+    const noAdapts = new Set(all);
+    noAdapts.delete('ADAPTS');
+    const result = traceLayout(data, { predicates: noAdapts });
+    expect(result.edges.map((edge) => edge.id)).toEqual(['clm:extends']);
+    expect(result.nodes.map((item) => item.id)).not.toContain('model:transformer');
+    expect(traceLayout(data).edges).toHaveLength(2);
   });
 
   it('orders trace positions by introduction year and puts unknown dates at the left', () => {
