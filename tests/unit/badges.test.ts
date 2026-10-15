@@ -3,9 +3,9 @@ import { reviewLabel } from '../../src/lib/badges';
 
 describe('reviewLabel', () => {
   it('shows a human review', () => {
-    expect(reviewLabel({ review: { by: 'human:choi', at: '2026-10-15', decision: 'approve' } })).toBe(
-      '사람 검토: human:choi, 2026-10-15',
-    );
+    expect(
+      reviewLabel({ review: { by: 'human:choi', at: '2026-10-15', decision: 'approve' } }),
+    ).toBe('사람 검토: human:choi, 2026-10-15');
   });
 
   it('shows the panel size and approval date', () => {

@@ -128,7 +128,7 @@ test('E2E-9 the published wiki has no draft banner; its claim citation links to 
 }) => {
   await page.goto(url(wikiPath('transformer')));
   await expect(page.locator('h1')).toHaveText('Transformer');
-  await expect(page.getByTestId('status-banner')).toContainText('검토 완료');
+  await expect(page.getByTestId('status-banner')).toContainText('사람 검토');
   await expect(page.getByTestId('status-banner')).not.toContainText(DRAFT_BANNER);
   await expect(page.locator('main')).not.toContainText(DRAFT_BANNER);
   const claimLink = page

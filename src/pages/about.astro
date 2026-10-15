@@ -1,5 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
+const criteria =
+  'https://github.com/Keeweon-Choi/aixon/blob/main/docs/verification/CROSS_REVIEW.md';
 ---
 
 <Base title="방법론 | AIXON" description="AIXON의 온톨로지와 검증 정책">
@@ -9,8 +11,8 @@ import Base from '../layouts/Base.astro';
     <h2>세 가지 배지</h2>
     <p>
       <strong>인용 확인(기계)</strong>은 인용문이 지정한 판의 원문에 있음을 뜻합니다.{' '}
-      <strong>검토</strong>는 사람 승인 또는 통과한 AI 교차 검증을 뜻합니다. <strong>공개</strong>는 public
-      빌드에 포함된 항목에 붙습니다.
+      <strong>검토</strong>는 사람 승인 또는 통과한 AI 교차 검증을 뜻합니다. <strong>공개</strong>는
+      public 빌드에 포함된 항목에 붙습니다.
     </p>
     <h2>AI 콘텐츠 정책</h2>
     <p>
@@ -26,7 +28,7 @@ import Base from '../layouts/Base.astro';
     <p>
       같은 모델 계열은 같은 실수를 할 수 있습니다. 도구는 구절이 원문에 있는지만 확인하며, 그 구절이
       서술을 뒷받침하는지는 검증자가 판단합니다. 자세한 기준은{' '}
-      <a href="https://github.com/Keeweon-Choi/aixon/blob/main/docs/verification/CROSS_REVIEW.md">AI 교차 검증 기준</a>에 있습니다.
+      <a href={criteria}>AI 교차 검증 기준</a> 문서에 있습니다.
     </p>
     <h2>오류 알리기</h2>
     <p>
