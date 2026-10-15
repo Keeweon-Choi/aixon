@@ -27,6 +27,13 @@ const strings = (value: unknown): string[] =>
 
 export const GET: APIRoute = () => {
   const g = getGraph();
+  const paperTitles: Record<string, string[]> = {};
+  for (const claim of Object.values(g.claims) as GraphClaim[]) {
+    if (claim.predicate !== 'INTRODUCES' || claim.status !== 'verified') continue;
+    const paper = g.entities[claim.subject || ''] as GraphEntity | undefined;
+    if (typeof paper?.title === 'string' && claim.object)
+      (paperTitles[claim.object] ||= []).push(paper.title);
+  }
   const nodes = Object.entries(g.entities)
     .filter(([id]) => !['Claim', 'Source'].includes(g.types[id]))
     .map(([id, entity]) => {
@@ -42,9 +49,10 @@ export const GET: APIRoute = () => {
               ? node.title
               : id,
         aliases: strings(node.aliases),
-        fields: strings(node.fields),
-        parents: g.types[id] === 'ResearchField' ? strings(node.parents) : [],
+        fields: strings(node.fields).filter((field) => Boolean(g.entities[field])),
+        parents: g.types[id] === 'ResearchField' ? (g.parents[id] ?? []) : [],
         year: g.introYears[id],
+        paperTitles: paperTitles[id] || [],
         summary: typeof entity.summary === 'string' ? entity.summary : '',
         status: typeof node.status === 'string' ? node.status : 'active',
         hasWiki: Boolean(wiki),

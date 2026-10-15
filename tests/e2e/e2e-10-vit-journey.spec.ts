@@ -31,11 +31,8 @@ test.describe('E2E-10 Understanding Vision Transformer @seed @seed-only', () => 
       .split(' ')
       .pop() as string;
     const year = String(paper!.earliest_public_date).slice(0, 4);
-    const fieldNames = data.fieldChain(VIT, CV).map((id) => data.name(id));
     const showsFieldAndPaper = async (where: Locator, label: string) => {
-      await expect
-        .soft(where, `${label} names the field`)
-        .toContainText(new RegExp(fieldNames.length ? fieldNames.join('|') : data.name(CV)));
+      await expect.soft(where, `${label} names the field`).toContainText(data.name(CV));
       await expect
         .soft(where, `${label} names the paper (${surname} ${year})`)
         .toContainText(new RegExp(`${surname}|${String(paper!.title).slice(0, 20)}`));
@@ -44,7 +41,8 @@ test.describe('E2E-10 Understanding Vision Transformer @seed @seed-only', () => 
 
     await page.goto('atlas/');
     await expect(page.locator('[data-testid=graph-view][data-mode=atlas]')).toBeVisible();
-    await expect(node(page, CV), 'fields start collapsed').toHaveAttribute(
+    const [topField] = data.fieldChain(VIT, CV);
+    await expect(node(page, topField), 'fields start collapsed').toHaveAttribute(
       'aria-expanded',
       'false',
     );

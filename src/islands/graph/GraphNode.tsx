@@ -20,12 +20,13 @@ function GraphNode({ data, selected }: NodeProps<FlowNode>) {
     data.activate(node.id);
   };
   return (
-    <div className={`aixon-flow-node ${selected ? 'is-selected' : ''}`} data-year={node.year}>
+    <div className={`aixon-flow-node ${selected ? 'is-selected' : ''}`}>
       <Handle type="target" position={Position.Top} />
       <button
         type="button"
         className="nodrag nopan"
         data-node-id={node.id}
+        data-year={node.year}
         aria-label={`${node.type} ${node.name} ${node.status || 'active'}`}
         aria-expanded={field ? data.expanded : undefined}
         onClick={() => data.activate(node.id)}

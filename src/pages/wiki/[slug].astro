@@ -56,8 +56,11 @@ const review = entry.data.review;
 <Base title={`${entry.data.title} | AIXON`} description={entry.data.subtitle}>
   <Fragment slot="head">
     <script is:inline>
-      {
-        `(()=>{try{const value=localStorage.getItem('aixon-wiki-level')||'fundamentals';document.documentElement.dataset.level=value}catch{document.documentElement.dataset.level='fundamentals'}})()`;
+      try {
+        document.documentElement.dataset.level =
+          localStorage.getItem('aixon-wiki-level') || 'fundamentals';
+      } catch {
+        document.documentElement.dataset.level = 'fundamentals';
       }
     </script>
   </Fragment>

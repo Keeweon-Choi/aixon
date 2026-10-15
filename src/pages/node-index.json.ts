@@ -9,9 +9,10 @@ export const GET: APIRoute = () => {
       Object.entries(g.entities).map(([id, n]: any) => ({
         id,
         type: entityTypeLabels[g.types[id]] || g.types[id],
-        name: n.name || n.title,
+        name: String(n.name || n.title || id),
         aliases: n.aliases || [],
         url: url(entityPath(id, g)),
+        hasWiki: Boolean(g.wikiFor(id)),
       })),
     ),
     { headers: { 'Content-Type': 'application/json' } },

@@ -79,6 +79,12 @@ test('E2E-1 Graph → Wiki → Related → Graph @seed', async ({ page }) => {
   });
 });
 
+test('E2E-1 a 2-character Korean query finds at least one node @seed', async ({ page }) => {
+  await page.goto('./');
+  await quickSearch(page, QUICK_QUERY.short);
+  expect(await page.locator('#quick-results a[data-node-id]').count()).toBeGreaterThanOrEqual(1);
+});
+
 test('E2E-1 quick search results are keyboard navigable @seed', async ({ page }) => {
   await page.goto('./');
   await quickSearch(page, QUICK_QUERY.short);

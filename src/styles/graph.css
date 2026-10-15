@@ -74,6 +74,7 @@
 
 .aixon-edge-label {
   position: absolute;
+  pointer-events: all;
   padding: 0.1rem 0.3rem;
   color: #173d75;
   font-size: 0.72rem;

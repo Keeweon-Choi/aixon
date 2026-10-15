@@ -21,6 +21,7 @@ import {
 } from '../lib/graph/view';
 import ClaimEdge, { type ClaimEdgeData } from './graph/ClaimEdge';
 import GraphNode, { type FlowNodeData } from './graph/GraphNode';
+import '@xyflow/react/dist/style.css';
 import '../styles/graph.css';
 
 type Mode = 'atlas' | 'local' | 'trace';
@@ -70,11 +71,12 @@ function edgeLabel(edge: GraphEdge): string {
   return `${style.badge || style.label || edge.predicate || '관계'}${review}`;
 }
 
-function nodeRow(node: GraphDataNode, select: (id: string) => void) {
+function nodeRow(node: GraphDataNode, select: (id: string) => void, expanded?: Set<string>) {
   return (
     <tr
       key={node.id}
       data-node-id={node.id}
+      aria-expanded={expanded && node.type === 'ResearchField' ? expanded.has(node.id) : undefined}
       aria-label={`${node.type} ${node.name} ${node.status || 'active'}`}
       tabIndex={0}
       onClick={() => select(node.id)}
@@ -208,6 +210,19 @@ export default function GraphView({
     data?.nodes.find((node) => node.id === selected);
   const trace =
     mode === 'trace' ? traceLayout(data || { nodes: [], edges: [] }, { showCites }) : undefined;
+  const fieldName = (id: string) => data?.nodes.find((node) => node.id === id)?.name || id;
+  // Field path from a top field down to `id` (first parent at each step; the field graph is a DAG).
+  const fieldPath = (id: string): string => {
+    const chain = [id];
+    for (
+      let parent = data?.nodes.find((node) => node.id === id)?.parents?.[0];
+      parent && !chain.includes(parent);
+    ) {
+      chain.unshift(parent);
+      parent = data?.nodes.find((node) => node.id === parent)?.parents?.[0];
+    }
+    return chain.map(fieldName).join(' › ');
+  };
   const allTypes = data ? [...new Set(data.nodes.map((node) => node.type))].sort() : [];
 
   return (
@@ -280,18 +295,22 @@ export default function GraphView({
                 <th>도입 연도</th>
               </tr>
             </thead>
-            <tbody>{projection.nodes.map((node) => nodeRow(node, selectNode))}</tbody>
-            {(mode === 'local' || mode === 'trace') && (
-              <tbody>
-                {projection.edges.map((edge) => (
+            <tbody>
+              {projection.nodes.map((node) =>
+                nodeRow(node, selectNode, mode === 'atlas' ? expanded : undefined),
+              )}
+            </tbody>
+            <tbody>
+              {projection.edges
+                .filter((edge) => edge.kind === 'claim')
+                .map((edge) => (
                   <tr key={edge.id} data-claim-id={edge.id}>
                     <td colSpan={2}>{edge.source}</td>
                     <td>{edge.predicate}</td>
                     <td>{edge.url && <a href={edge.url}>근거 보기</a>}</td>
                   </tr>
                 ))}
-              </tbody>
-            )}
+            </tbody>
           </table>
         ) : (
           <div className={`graph-canvas graph-canvas-${mode}`}>
@@ -317,7 +336,6 @@ export default function GraphView({
               nodesFocusable
               edgesFocusable={false}
               nodesDraggable={false}
-              onlyRenderVisibleElements
               fitView
             >
               <Background />
@@ -333,7 +351,10 @@ export default function GraphView({
           <p className="badge">{selectedNode.status || 'active'}</p>
           <p>{selectedNode.summary || '준비 중'}</p>
           <p>도입 연도: {selectedNode.year || '연도 미상'}</p>
-          {selectedNode.paperTitles?.length && (
+          {!!selectedNode.fields?.length && (
+            <p>분야: {selectedNode.fields.map(fieldPath).join(', ')}</p>
+          )}
+          {!!selectedNode.paperTitles?.length && (
             <p>소개 논문: {selectedNode.paperTitles.join(', ')}</p>
           )}
           {selectedNode.url && (
