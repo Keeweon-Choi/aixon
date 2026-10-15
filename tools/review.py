@@ -79,15 +79,7 @@ def approve_record(paths: list[str], ident: str, by: str, note: str, checked: li
 def approve_wiki(path: Path, by: str, note: str, today: str) -> None:
     meta, body = pg.read_wiki(path)
     review = {"by": by, "at": today, "decision": "approve", "reviewed_hash": pg.wiki_hash(meta, body), "note": note}
-    text = path.read_text(encoding="utf-8")
-    head, rest = text.split("\n---\n", 1)
-    lines = head.split("\n")
-    start = next(i for i, line in enumerate(lines) if line.startswith("review:"))
-    stop = start + 1
-    while stop < len(lines) and lines[stop].startswith((" ", "-")):
-        stop += 1
-    block = yaml.safe_dump({"review": review}, allow_unicode=True, sort_keys=False, width=1000).rstrip("\n").split("\n")
-    path.write_text("\n".join(lines[:start] + block + lines[stop:]) + "\n---\n" + rest, encoding="utf-8")
+    set_wiki_frontmatter(path, {"review": review})
     meta, body = pg.read_wiki(path)
     assert pg.wiki_approval(meta, body) == "approved", "self-check failed"
 
@@ -134,7 +126,7 @@ def worksheet_items(worksheet_path: str | Path) -> list[dict]:
     return items
 
 
-def approve_batch(paths, wiki_dir, worksheet_path, by, today) -> dict:
+def approve_batch(paths, wiki_dir, worksheet_path, by, today, items=None) -> dict:
     """Approve worksheet items, returning processed IDs grouped by outcome.
 
     This deliberately has no agent-session or confirmation check so tests and the CLI can
@@ -142,7 +134,8 @@ def approve_batch(paths, wiki_dir, worksheet_path, by, today) -> dict:
     """
     wikis = wiki_files(wiki_dir)
     result = {"approved": [], "published": [], "skipped": [], "failed": []}
-    for item in worksheet_items(worksheet_path):
+    # items: what the CLI already showed the person, so the confirmed list is the one applied
+    for item in worksheet_items(worksheet_path) if items is None else items:
         ident = item.get("id")
         kind = item.get("kind", "")
         decision = item.get("decision", item.get("recommendation"))
@@ -236,7 +229,7 @@ def main(argv=None) -> int:
             if answer != "y":
                 print(f"approved 0, published 0, skipped {len(skipped)}, failed 0")
                 return 0
-        result = approve_batch(paths, args.wiki_dir, args.worksheet, args.by, today)
+        result = approve_batch(paths, args.wiki_dir, args.worksheet, args.by, today, items)
         for failed in result["failed"]:
             print(f"failed {failed['id']}: {failed['error']}", file=sys.stderr)
         print(

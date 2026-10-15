@@ -172,3 +172,11 @@ def test_approve_batch_cli_refuses_agent_session(tmp_path, monkeypatch):
     ])
 
     assert code == 2
+
+
+def test_approve_wiki_adds_review_when_frontmatter_has_no_review_line(tmp_path):
+    _, wiki = setup(tmp_path)
+    page = Path(wiki) / "softmax.mdx"
+    page.write_text(page.read_text(encoding="utf-8").replace("review: null\n", ""), encoding="utf-8")
+    review.approve_wiki(page, "human:tester", "ok", "2026-10-15")
+    assert pg.wiki_approval(*pg.read_wiki(page)) == "approved"
