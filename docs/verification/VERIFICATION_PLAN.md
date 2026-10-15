@@ -8,7 +8,7 @@
 |---|---|---|---|
 | 1 | 정적 분석 | `make lint` (prettier, eslint, astro check, ruff) | 문법·형식 오류 |
 | 2 | 타입 | `make typecheck` (astro check, tsc) | 타입 불일치 |
-| 3 | 단위 | `make test` (vitest: 로더·공개 필터·Lab L1–L7·검색, pytest: `tools` 60개(seedtool 58 + 식별자 2)·검증기) | 계산·규칙 회귀 |
+| 3 | 단위 | `make test` (vitest: 로더·공개 필터·Lab L1–L7·검색, pytest: `tools`·`tests/python` 201개(2026-10-15 최종 실행)) | 계산·규칙 회귀 |
 | 4 | 데이터·콘텐츠 | `make validate` (seedtool G·W, validate_content V-*) | 그래프 불변식, Wiki 계약, 계산 블록 |
 | 5 | 빌드 | `make build`, `make build-public` | MDX·KaTeX·컴포넌트 참조 오류(빌드 실패) |
 | 6 | 산출물 | `make check-dist`, `make check-dist-public` | 깨진 링크, SEO 기본, 공개 관문 |

@@ -32,10 +32,10 @@
 | Fixed | 20 | F-01–09, 11, 12, 14–17, 19, 21, 24, 27, 31 (F-08은 설정만 고침, 실제 배포 NOT RUN) |
 | Fixed(일부) + Backlog | 5 | F-18, 20, 22, 25, 29 |
 | Accepted | 2 | F-10, F-26 |
-| In progress | 1 | F-13 |
+| In progress | 0 | (F-13은 F13 병합으로 Fixed) |
 | Backlog | 3 | F-23, 28, 30 |
 
-Critical 2건은 모두 고쳤다. 남은 Major는 F-13(진행 중)과 F-10(수용)이다. 첫 공개의 선행 조건은 이 문서가 아니라 BLOCKERS B-01–B-07의 사용자 결정이다.
+Critical 2건은 모두 고쳤다. 남은 Major는 F-10(수용)뿐이다. F-13은 작업 F13 병합으로 고쳤다. 첫 공개의 선행 조건은 이 문서가 아니라 BLOCKERS B-01–B-07의 사용자 결정이다.
 
 ## 4. 지적 목록
 
@@ -53,7 +53,7 @@ Critical 2건은 모두 고쳤다. 남은 Major는 F-13(진행 중)과 F-10(수�
 | F-10 | Major | ID·URL에 타입 접두가 있어 재분류 시 링크가 깨짐 | Accepted | ADR-023: 공개 전 위험 수용, 이후 재분류는 merged tombstone + 이동 안내, G024 slug 유일. 이동 안내 페이지 생성은 미구현 |
 | F-11 | Major | 유형 사이 중복 엔티티 | Fixed | 중복 분야 4개 제거·구성원 이동, G024, W108 |
 | F-12 | Major | Astro 7 함정(remark 분리, MDX import) | Fixed | `@astrojs/markdown-remark` 7.3.1 + remark-math/rehype-katex, `<Lab id>` 래퍼로 MDX에 import 없음, MDX import 금지를 콘텐츠 검증기에 추가(작업 H1). V-MATH |
-| F-13 | Major | 검사 결과가 재현되지 않음 | In progress | 작업 F13: `quotes --pin`으로 `content_sha256` 고정, `--write-checked` 정상화, 잘못된 arXiv 확인 표시 제거. pypdf는 I-18에서 requirements에 추가 |
+| F-13 | Major | 검사 결과가 재현되지 않음 | Fixed | 작업 F13: `quotes --pin`으로 `content_sha256` 고정, `--write-checked` 정상화, 잘못된 arXiv 확인 표시 제거. pypdf는 I-18에서 requirements에 추가 |
 | F-14 | Major | E2E 계획이 실제 데이터와 맞지 않음 | Fixed | 시드 KU 한국어 이름·별칭(“스케일드”, 2글자 “어텐”), d_k 512 선택지, `make e2e-seed` + E2E-10, `.katex-display` 넘침 CSS |
 | F-15 | Major | 테스트 품질(T16, 느슨한 단언) | Fixed | T16 재작성(논문 사이 CITES가 선수 관계를 만들면 안 됨), T1–T15가 G 코드 집합을 정확히 단언(본질적 연쇄는 문서화), fixture 기준 오류 수정, golden 비교가 내용 해시 무시, T18 경고 스냅샷 `data/seed/validate_snapshot.json`, coverage 집계 단위 테스트 |
 | F-16 | Major | Wiki 단계 구조(직관 단계가 자족적이지 않음) | Fixed | 직관 단계에서 d_k 정의, 기초 단계에 “왜 √d_k”와 인용, 한계를 기초 단계로, 단계는 첫 그림 전에 CSS로 적용, V-CITE-2는 deep 밖의 인용만 셈(H1) |
@@ -102,6 +102,6 @@ Critical 2건은 모두 고쳤다. 남은 Major는 F-13(진행 중)과 F-10(수�
 
 | 항목 | 상태 |
 |---|---|
-| F-13 재현 가능한 검사 | 진행 중 |
+| F-13 재현 가능한 검사 | 완료(F13 병합, 검증 MERGE) |
 | 실제 배포, 저장소 공개 정책, 라이선스, 승인 0건 → 공개 콘텐츠 | 사용자 결정(BLOCKERS B-01–B-07) |
-| 전체 `make verify` 녹색 기록 | 이 문서 작성 시점에 없음 |
+| 전체 `make verify` 녹색 기록 | 있음: 깨끗한 환경 13단계 PASS (`artifacts/verification/runs/20261015T040334Z`, [MVP_ACCEPTANCE_REPORT](verification/MVP_ACCEPTANCE_REPORT.md) §7) |

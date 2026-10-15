@@ -131,7 +131,7 @@ R-03, R-06, R-10, R-13의 PARTIAL은 수정 뒤 PASS로 올렸다. 근거는 수
 
 ## 6. 깨끗한 환경 재현 방법
 
-`b6ca3d7`의 새 clone에서 아래 순서로 돌렸다(`clean-env-job.log`). 2코어 제한은 작업 환경에서 걸었고, 제한 방법은 로그에 남아 있지 않다.
+`b6ca3d7`의 새 clone에서 [`tools/clean_env_verify.sh`](../../tools/clean_env_verify.sh)로 돌렸다(`clean-env-job.log`). 이 스크립트가 `npm ci`와 `make verify`를 `taskset -c 0,1 nice -n 10`(2코어, 낮은 우선순위)으로 실행한다. 손으로 하면 아래와 같다.
 
 ```bash
 git clone <저장소> aixon-clean && cd aixon-clean
@@ -143,7 +143,7 @@ make verify
 
 - Playwright용 Chromium이 있어야 한다(없으면 `npx playwright install chromium`).
 - Node v22.23.2, Python 3.12.7, Playwright 1.64.1, GNU Make 4.3, WSL2 Linux에서 돌렸다(`summary.json`).
-- 2코어에서 같은 조건을 만들려면 `taskset -c 0,1 make verify`가 있다. 이 명령은 이번에 실행하지 않았다.
+- 2코어 조건: `taskset -c 0,1 nice -n 10 make verify` (최종 실행은 이 조건이었다).
 - 한 단계가 실패해도 끝까지 돌고, 하나라도 실패하면 exit 1이다. 증거는 `artifacts/verification/runs/<UTC 시각>/`에 쌓인다.
 - 개별 실행: `make lint | typecheck | test | validate | build | check-dist | e2e | e2e-seed | secrets`.
 - 안정성 반복(E2E-11, E2E-10 데스크톱 ×5)은 같은 작업 로그(`clean-env-job.log`)에 결과 줄만 남아 있고 명령은 남아 있지 않다.
@@ -218,12 +218,7 @@ make verify
 | 경고 | seedtool 경고 159건(W103 1, W104 149 참조되지 않는 엔티티, W111 9). W111은 선수 관계 9건이 PART_OF 근거를 그대로 쓴다는 뜻이며 사람 검토 힌트다 |
 | P2 | 학습 엔진 전체(I-12 포함) |
 
-문서 불일치 (이 변경에서 고치지 않았다. 다음 문서 정리 때 고칠 것):
-
-- [08 문서](../08_ARCHITECTURE_REVIEW.md) §3·§4는 F-13을 "In progress"로, §7은 "전체 `make verify` 녹색 기록 없음"으로 적는다. ISSUE_LOG I-32는 Fixed이고, 녹색 기록은 이 보고서의 §7에 있다.
-- [VERIFICATION_PLAN.md](VERIFICATION_PLAN.md)는 pytest `tools` 60개로 적는다. 실제로는 `tools`와 `tests/python`을 합쳐 201개다.
-- [07 문서](../07_MVP_ROADMAP.md) Sprint 4는 "12단계 PASS", Sprint 5는 "진행 중"으로 적는다. 현재는 13단계 PASS이고 Sprint 5는 이 보고서로 끝난다.
-- ISSUE_LOG에 최종 리뷰 지적(M1, M2, R-06, R-13)의 행이 없다.
+문서 불일치는 이 보고서를 쓴 직후 고쳤다: 08 문서의 F-13 상태와 `make verify` 기록, VERIFICATION_PLAN의 pytest 수, 07 문서 Sprint 4·5 상태, ISSUE_LOG의 최종 리뷰 지적 행(I-41…I-44).
 
 ## 11. 사용자 결정이 필요한 것
 
