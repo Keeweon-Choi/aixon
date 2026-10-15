@@ -4,7 +4,7 @@ import { graph, normalize } from './data';
 
 /** Status badge wording: the enum value or the Korean label (docs/02 section 7, docs/05 section 4.3). */
 export const STATUS_PATTERN: Record<string, RegExp> = {
-  verified: /verified|검증/i,
+  verified: /인용 확인/,
   disputed: /disputed|논쟁|이견|다툼|상충|반박/i,
   proposed: /proposed|미검증|제안|후보/i,
   rejected: /rejected|기각/i,

@@ -363,7 +363,7 @@ export default function GraphView({
                     ),
                   )}
                   {trace.lanes.map((lane) => (
-                    <span key={lane}>{lane.replace(/^field:/, '')}</span>
+                    <span key={lane}>{fieldName(lane)}</span>
                   ))}
                 </div>
               )}

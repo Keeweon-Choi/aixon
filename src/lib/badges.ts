@@ -1,6 +1,7 @@
 import type { RecordMap } from './graph/types';
 
 const statusLabels: Record<string, string> = {
+  verified: '인용 확인', // ADR-022: never the bare word "verified"/"검증됨"
   proposed: '후보(미검증)',
   disputed: '논쟁 중',
   rejected: '기각됨',

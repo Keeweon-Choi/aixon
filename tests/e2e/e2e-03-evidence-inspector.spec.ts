@@ -50,6 +50,7 @@ test('E2E-3 entity page → verified claim page shows quote, locator, source lin
     await expect(page.locator('h1')).not.toBeEmpty();
     const status = page.getByTestId('claim-status');
     await expect(status).toContainText(STATUS_PATTERN[claim.status]);
+    await expect(status, 'no bare status word (ADR-022)').not.toContainText(/\bverified\b|검증됨/);
     await expect(status, 'human review state').toContainText('fixture-editor');
     await expect(status, 'human review state').toContainText(/승인/);
   });
