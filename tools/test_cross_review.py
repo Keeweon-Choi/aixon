@@ -266,3 +266,28 @@ def test_panel_signature_requires_all_fields(change):
     assert st.approval_kind(block) == "panel"
     change(block)
     assert st.approval_kind(block) is None
+
+
+def test_verifier_regressions(tmp_path, monkeypatch):
+    found = {"https://en.wikipedia.org/a\nP": "found", "https://de.wikipedia.org/b\nQ": {"status": "found"}}
+    two_langs = {"field": "summary", "verdict": "supported", "sources": [
+        {"url": "https://en.wikipedia.org/a", "tier": "C", "passage": "P"},
+        {"url": "https://de.wikipedia.org/b", "tier": "C", "passage": "Q"}]}
+    item = {"decision": "approve", "reviewed_hash": "h", "checks": [two_langs]}
+    assert "two C hosts" in " ".join(cr.report_item_problems(item, ["summary"], "h", "entity", found))
+    blank_note = {"decision": "approve", "reviewed_hash": "h", "checks": [{"field": "summary", "verdict": "computed", "note": None}]}
+    assert "computed needs a note" in " ".join(cr.report_item_problems(blank_note, ["summary"], "h", "entity", {}))
+    paths, wiki, directory = setup_release(tmp_path, True)
+    mutate_report(directory, "source", lambda d: d["items"][0]["checks"][0].update(
+        sources=[{"url": "https://example.org/x", "tier": "A", "passage": "  "}]))
+    monkeypatch.setattr(cr, "fetch_text", lambda url, root, graph_paths: "page text")
+    assert cr.confirm("test", paths, tmp_path, True)["sources"]["https://example.org/x\n  "]["status"] == "fetch-failed"
+    review.approve_wiki(Path(wiki) / "algebra.mdx", "human:tester", "ok", "2026-10-14")
+    write_confirm(directory)
+    _, available = cr.records(paths, wiki)
+    for stem in ("source", "claim"):
+        mutate_report(directory, stem, lambda d: d.update(items=[make_item(i, available) for i in (ENTITY, WIKI)]))
+    dump(directory / "audit.yaml", {"release": "test", "reviewer": "agent:audit", "start": "audit",
+                                    "items": [make_item(i, available) for i in cr.sampled_ids("test", paths, wiki, tmp_path)]})
+    assert cr.approve("test", paths, wiki, tmp_path, "2026-10-15")["skipped"] == 1
+    assert pg.read_wiki(Path(wiki) / "algebra.mdx")[0]["review"]["by"] == "human:tester"

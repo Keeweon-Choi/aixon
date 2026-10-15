@@ -163,7 +163,7 @@ def confirm(release, paths, root, refresh=False):
     for url, passage in sorted(keys, key=str):
         key = f"{url}\n{passage}"
         try:
-            if not isinstance(url, str) or not url.startswith(("https://", "http://")) or not isinstance(passage, str) or not passage:
+            if not isinstance(url, str) or not url.startswith(("https://", "http://")) or not isinstance(passage, str) or not st._normal(passage):
                 raise ValueError("URL and passage are required")
             saved = cache / (hashlib.sha256(url.encode()).hexdigest() + ".txt")
             if saved.exists() and not refresh:
@@ -183,7 +183,10 @@ def confirm(release, paths, root, refresh=False):
 
 def effective_tier(source):
     host = (urllib.parse.urlparse(str(source.get("url", ""))).hostname or "").lower()
-    if any(host == domain or host.endswith("." + domain) for domain in COMMUNITY) or host.endswith((".stackexchange.com", ".tistory.com", ".blogspot.com", ".wordpress.com", ".hashnode.dev")):
+    for domain in COMMUNITY:
+        if host == domain or host.endswith("." + domain):
+            return "C", domain  # en./de./www. are the same site for the two-C-sites rule
+    if host.endswith((".stackexchange.com", ".tistory.com", ".blogspot.com", ".wordpress.com", ".hashnode.dev")):
         return "C", host
     return source.get("tier"), host
 
@@ -208,7 +211,7 @@ def report_item_problems(item, fields, digest, kind, confirmed):
         if verdict in ("unsupported", "wrong", "analogy-unsourced"):
             problems.append(f"{field}: failing verdict {verdict}")
             continue
-        if verdict == "computed" and not str(check.get("note", "")).strip():
+        if verdict == "computed" and not str(check.get("note") or "").strip():
             problems.append(f"{field}: computed needs a note")
             continue
         if verdict == "no-claim" and not (kind == "wiki" and field in fields):
@@ -220,7 +223,8 @@ def report_item_problems(item, fields, digest, kind, confirmed):
                 if not isinstance(source, dict):
                     continue
                 key = f"{source.get('url')}\n{source.get('passage')}"
-                if confirmed.get(key, {}).get("status") == "found":
+                row = confirmed.get(key)
+                if isinstance(row, dict) and row.get("status") == "found":
                     found.append(effective_tier(source))
             if not found:
                 problems.append(f"{field}: no found source")
@@ -357,7 +361,8 @@ def approve(release, paths, wiki_dir, root, today):
                             if r.get("start") in ("source-first", "claim-first")
                             and any(entry.get("id") == ident for entry in r.get("items") or [])})
         old = rec.get("review")
-        if st.approval_kind(old) == "human" and (pg.wiki_approval(rec, rec["body"]) if kind == "wiki" else st.approval_state(rec)) == "approved":
+        meta = {k: v for k, v in rec.items() if k not in ("body", "_path")}
+        if st.approval_kind(old) == "human" and (pg.wiki_approval(meta, rec["body"]) if kind == "wiki" else st.approval_state(rec)) == "approved":
             result["skipped"] += 1
             continue
         block = {"by": f"panel:{release}", "method": "cross-review", "reviewers": reviewers,
