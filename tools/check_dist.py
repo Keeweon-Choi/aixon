@@ -544,7 +544,7 @@ def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     args.base = normalize_base(args.base)
     if args.site:
-        args.site = args.site.rstrip("/")
+        args.site = args.site.rstrip("/").lower()  # scheme and host are case-insensitive; Astro writes them lowercase
     dist = Path(args.dist)
     if not dist.is_dir():
         print(f"error: dist directory not found: {dist}", file=sys.stderr)

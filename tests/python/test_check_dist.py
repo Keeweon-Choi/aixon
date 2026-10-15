@@ -115,6 +115,12 @@ def has_error(report, code, needle):
     return any(item["code"] == code and needle in item["message"] for item in report["errors"])
 
 
+def test_site_origin_is_compared_case_insensitively(tmp_path, audit):
+    """GitHub passes the owner as written (Keeweon-Choi); Astro lowercases the host in the sitemap."""
+    code, report = audit(make_dist(tmp_path), "preview", "--site", SITE.upper())
+    assert code == 0, report["errors"]
+
+
 def test_clean_preview_tree_passes(tmp_path, audit):
     exit_code, report = audit(make_dist(tmp_path))
     assert exit_code == 0, report["errors"]
