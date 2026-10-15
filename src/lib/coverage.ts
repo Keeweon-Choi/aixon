@@ -1,4 +1,5 @@
-import type { GraphData, RecordMap } from './graph/types';
+import { reviewLabel } from './badges';
+import type { GraphData } from './graph/types';
 
 export const wikiStatuses = ['missing', 'outline', 'draft', 'reviewed', 'published'] as const;
 export type WikiStatus = (typeof wikiStatuses)[number];
@@ -54,10 +55,7 @@ function rowFor(graph: GraphData, fieldId: string): CoverageRow {
       (claim) =>
         ['verified', 'disputed'].includes(String(claim.status)) && Boolean(claim.verification),
     ).length,
-    reviewedClaims: claims.filter((claim) => {
-      const review = claim.review as RecordMap | undefined;
-      return review?.decision === 'approve' && String(review.by || '').startsWith('human:');
-    }).length,
+    reviewedClaims: claims.filter((claim) => reviewLabel(claim) !== '검토 대기').length,
   };
 }
 

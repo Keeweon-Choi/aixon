@@ -38,10 +38,15 @@ export const collections = {
         ai_generated: z.boolean(),
         review: z
           .object({
-            by: z.string().regex(/^human:/),
+            by: z.string().regex(/^(human|panel):/),
             at: z.coerce.date(),
             decision: z.literal('approve'),
             note: z.string(),
+            // ADR-026 panel approvals; the public gate re-checks the reports
+            method: z.literal('cross-review').optional(),
+            reviewers: z.array(z.string()).optional(),
+            audit: z.string().optional(),
+            report: z.string().optional(),
           })
           .nullable(),
         published_at: z.coerce.date().nullable(),
