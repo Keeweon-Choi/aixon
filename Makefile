@@ -26,7 +26,7 @@ PUBLIC_SITE ?= http://localhost:4321
 
 .PHONY: install format lint typecheck test validate validate-fixtures gate gate-e2e dev \
 	build build-public build-e2e build-public-e2e build-seed \
-	check-dist check-dist-public e2e e2e-seed secrets verify verify-online clean
+	check-dist check-dist-public check-dist-seed e2e e2e-seed secrets verify verify-online clean
 
 # Public builds read the allow-list computed by tools/public_gate.py (ADR-021).
 GATE := .aixon/public-gate.json
@@ -95,6 +95,9 @@ check-dist:
 
 check-dist-public:
 	$(PYTHON) tools/check_dist.py dist-public --base $(PUBLIC_BASE) --site $(PUBLIC_SITE) --mode public --graph "$${AIXON_GRAPH:-$(GRAPH_LIST)}" --gate $(GATE)
+
+check-dist-seed:
+	$(PYTHON) tools/check_dist.py dist-seed --base $(E2E_BASE) --mode preview
 
 e2e: build-e2e build-public-e2e
 	AIXON_E2E_TARGET=fixture npx playwright test

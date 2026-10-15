@@ -3,7 +3,7 @@
 
 Steps (each is a `make` target, run in this order, a failure does not stop the later steps):
     lint, typecheck, test, validate, validate-fixtures, build, check-dist, build-public, check-dist-public,
-    e2e, e2e-seed, secrets
+    e2e, e2e-seed, check-dist-seed, secrets
 
 Evidence is written to artifacts/verification/runs/<UTC yyyymmddTHHMMSSZ>/:
     summary.json            run id, times, git commit + dirty flag, tool versions, OS, per-step result
@@ -46,6 +46,7 @@ STEPS = (
     "check-dist-public",
     "e2e",
     "e2e-seed",
+    "check-dist-seed",
     "secrets",
 )
 DEFAULT_RUNS_DIR = "artifacts/verification/runs"
