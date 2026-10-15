@@ -49,8 +49,8 @@ export const GET: APIRoute = () => {
               ? node.title
               : id,
         aliases: strings(node.aliases),
-        fields: strings(node.fields),
-        parents: g.types[id] === 'ResearchField' ? strings(node.parents) : [],
+        fields: strings(node.fields).filter((field) => Boolean(g.entities[field])),
+        parents: g.types[id] === 'ResearchField' ? (g.parents[id] ?? []) : [],
         year: g.introYears[id],
         paperTitles: paperTitles[id] || [],
         summary: typeof entity.summary === 'string' ? entity.summary : '',

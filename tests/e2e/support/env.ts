@@ -20,10 +20,11 @@ export const GRAPH_FILES = isSeed
 export const WIKI_DIR = isSeed ? 'src/content/wiki' : 'tests/fixtures/wiki';
 
 /**
- * Quick-search queries. "스케일드" finds Scaled Dot-Product Attention through its Korean alias in both
- * data sets ("어텐션" matches many nodes); "어텐" is the 2-character query that must still find nodes.
+ * Quick-search queries. "어텐션" is the query of CONTENT_VALIDATION_PLAN E2E-1: it matches many attention
+ * nodes, and nodes with a wiki rank first among equal scores, so SDPA stays in the top 8 on the real seed.
+ * "어텐" is the 2-character query that must still find nodes.
  */
-export const QUICK_QUERY = { main: '스케일드', short: '어텐' };
+export const QUICK_QUERY = { main: '어텐션', short: '어텐' };
 
 /** A word that only the draft SDPA fixture document contains (Pagefind and public-gate tests). */
 export const FIXTURE_UNIQUE_WORD = '픽스처어텐션';

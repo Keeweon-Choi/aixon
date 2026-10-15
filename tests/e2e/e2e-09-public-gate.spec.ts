@@ -112,6 +112,10 @@ test('E2E-9 graph.json and node-index.json list only approved nodes and claims',
   expect(json.nodes.map((item) => item.id).sort()).toEqual([...PUBLIC.entities].sort());
   const claimEdges = json.edges.filter((edge) => edge.kind === 'claim');
   expect(claimEdges.map((edge) => edge.id)).toEqual(PUBLIC.claims);
+  const publicIds = new Set(PUBLIC.entities);
+  for (const node of json.nodes as Array<{ id: string; fields?: string[]; parents?: string[] }>)
+    for (const ref of [...(node.fields ?? []), ...(node.parents ?? [])])
+      expect(publicIds.has(ref), `${node.id} references the non-public ${ref}`).toBe(true);
 
   const index = (await (await request.get(url('node-index.json'))).json()) as Array<{
     id: string;

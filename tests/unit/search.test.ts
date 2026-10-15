@@ -20,4 +20,17 @@ describe('node quick search', () => {
   it('ranks exact/prefix before id matches', () => {
     expect(searchNodes(nodes, 'attention')[0].id).toBe('method:attention');
   });
+  it('puts nodes with a wiki first among equal scores', () => {
+    const many = Array.from({ length: 9 }, (_, i) => ({
+      id: `method:a${i}`,
+      name: `그래프 어텐션 ${i}`,
+      aliases: [],
+      type: '방법',
+      url: `/${i}/`,
+    }));
+    const sdpa = { ...nodes[0], hasWiki: true };
+    const hits = searchNodes([...many, sdpa], '어텐션').map((node) => node.id);
+    expect(hits).toHaveLength(8);
+    expect(hits[0]).toBe('method:scaled-dot-product-attention');
+  });
 });

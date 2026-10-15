@@ -4,6 +4,7 @@ export interface SearchNode {
   aliases: string[];
   type: string;
   url: string;
+  hasWiki?: boolean;
 }
 
 function words(value: string): string[] {
@@ -39,6 +40,7 @@ export function searchNodes(nodes: SearchNode[], rawQuery: string): SearchNode[]
     .sort(
       (a, b) =>
         b.score - a.score ||
+        Number(Boolean(b.node.hasWiki)) - Number(Boolean(a.node.hasWiki)) ||
         a.node.name.length - b.node.name.length ||
         a.node.name.localeCompare(b.node.name, 'ko'),
     )

@@ -12,6 +12,7 @@ export const GET: APIRoute = () => {
         name: String(n.name || n.title || id),
         aliases: n.aliases || [],
         url: url(entityPath(id, g)),
+        hasWiki: Boolean(g.wikiFor(id)),
       })),
     ),
     { headers: { 'Content-Type': 'application/json' } },

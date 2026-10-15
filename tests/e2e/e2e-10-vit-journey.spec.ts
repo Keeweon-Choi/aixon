@@ -31,11 +31,8 @@ test.describe('E2E-10 Understanding Vision Transformer @seed @seed-only', () => 
       .split(' ')
       .pop() as string;
     const year = String(paper!.earliest_public_date).slice(0, 4);
-    const fieldNames = data.fieldChain(VIT, CV).map((id) => data.name(id));
     const showsFieldAndPaper = async (where: Locator, label: string) => {
-      await expect
-        .soft(where, `${label} names the field`)
-        .toContainText(new RegExp(fieldNames.length ? fieldNames.join('|') : data.name(CV)));
+      await expect.soft(where, `${label} names the field`).toContainText(data.name(CV));
       await expect
         .soft(where, `${label} names the paper (${surname} ${year})`)
         .toContainText(new RegExp(`${surname}|${String(paper!.title).slice(0, 20)}`));

@@ -211,6 +211,18 @@ export default function GraphView({
   const trace =
     mode === 'trace' ? traceLayout(data || { nodes: [], edges: [] }, { showCites }) : undefined;
   const fieldName = (id: string) => data?.nodes.find((node) => node.id === id)?.name || id;
+  // Field path from a top field down to `id` (first parent at each step; the field graph is a DAG).
+  const fieldPath = (id: string): string => {
+    const chain = [id];
+    for (
+      let parent = data?.nodes.find((node) => node.id === id)?.parents?.[0];
+      parent && !chain.includes(parent);
+    ) {
+      chain.unshift(parent);
+      parent = data?.nodes.find((node) => node.id === parent)?.parents?.[0];
+    }
+    return chain.map(fieldName).join(' › ');
+  };
   const allTypes = data ? [...new Set(data.nodes.map((node) => node.type))].sort() : [];
 
   return (
@@ -340,7 +352,7 @@ export default function GraphView({
           <p>{selectedNode.summary || '준비 중'}</p>
           <p>도입 연도: {selectedNode.year || '연도 미상'}</p>
           {!!selectedNode.fields?.length && (
-            <p>분야: {selectedNode.fields.map(fieldName).join(', ')}</p>
+            <p>분야: {selectedNode.fields.map(fieldPath).join(', ')}</p>
           )}
           {!!selectedNode.paperTitles?.length && (
             <p>소개 논문: {selectedNode.paperTitles.join(', ')}</p>
