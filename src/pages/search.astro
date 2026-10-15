@@ -19,7 +19,12 @@ import Base from '../layouts/Base.astro';
         const { PagefindUI } = window as unknown as {
           PagefindUI: new (options: Record<string, unknown>) => unknown;
         };
-        new PagefindUI({ element: '#search', showSubResults: true, baseUrl: url('') });
+        new PagefindUI({
+          element: '#search',
+          showSubResults: true,
+          baseUrl: url(''),
+          bundlePath: url('pagefind/'),
+        });
         if (note) note.textContent = '';
       })
       .catch(() => {
