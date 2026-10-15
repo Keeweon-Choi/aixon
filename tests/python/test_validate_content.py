@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 import shutil
 
 import pytest
@@ -71,7 +72,10 @@ def test_bad_fixture_fails_with_only_its_rule(stem, tmp_path, validate):
     shutil.copy(BAD_WIKI / f"{stem}.mdx", tmp_path / "scaled-dot-product-attention.mdx")
     exit_code, report = validate(tmp_path)
     assert exit_code == 1, report
-    assert codes(report) == {EXPECTED_RULE[stem]}, report["errors"]
+    expected = {EXPECTED_RULE[stem]}
+    if stem == "v-status-published-without-review":
+        expected.add("V-STATUS")
+    assert codes(report) == expected, report["errors"]
     first = report["errors"][0]
     assert first["file"] == "scaled-dot-product-attention.mdx"
     assert first["line"] >= 1
@@ -123,7 +127,8 @@ def test_frontmatter_values_are_checked(old, new, tmp_path, validate):
 
 
 def test_unknown_lab_in_frontmatter_is_a_lab_reference_error(tmp_path, validate):
-    write_doc(tmp_path, "transformer.mdx", transformer_text().replace("labs: []", "labs: [lab:does-not-exist]"))
+    text = transformer_text().replace("status: published", "status: draft").replace("labs: []", "labs: [lab:does-not-exist]")
+    write_doc(tmp_path, "transformer.mdx", text)
     exit_code, report = validate(tmp_path)
     assert exit_code == 1
     assert codes(report) == {"V-LABREF-1"}
@@ -132,7 +137,7 @@ def test_unknown_lab_in_frontmatter_is_a_lab_reference_error(tmp_path, validate)
 def test_proposed_and_disputed_citations_are_warnings_not_errors(tmp_path, validate):
     proposed = "clm:prereq-multi-head-attention-vit"
     disputed = "clm:transformer-mitigates-sequential"
-    text = transformer_text()
+    text = transformer_text().replace("status: published", "status: draft")
     text = text.replace(
         "claims: [clm:intro-transformer]",
         f"claims: [clm:intro-transformer, {proposed}, {disputed}]",
@@ -156,13 +161,62 @@ def test_outline_documents_need_no_citations(tmp_path, validate):
 
 
 def test_components_inside_code_blocks_are_ignored(tmp_path, validate):
-    text = transformer_text().replace(
+    text = transformer_text().replace("status: published", "status: draft").replace(
         "</Section>",
         '\n```mdx\n<ConceptLink id="concept:nope">x</ConceptLink>\n<Cite claim="clm:nope" />\n```\n\n</Section>',
     )
     write_doc(tmp_path, "transformer.mdx", text)
     exit_code, report = validate(tmp_path)
     assert exit_code == 0, report["errors"]
+
+
+def test_published_document_outside_public_gate_is_a_status_error(tmp_path, validate):
+    text = re.sub(r"review:\n(?:  .*\n)+", "review: null\n", transformer_text())
+    write_doc(tmp_path, "transformer.mdx", text)
+    exit_code, report = validate(tmp_path)
+    assert exit_code == 1
+    assert "V-STATUS" in codes(report)
+
+
+@pytest.mark.parametrize(
+    "snippet",
+    [
+        'import Widget from "./widget"',
+        '<div>not an allowed MDX element</div>',
+        '<Callout onclick="bad()">unsafe</Callout>',
+        '<Callout href="javascript:bad()">unsafe</Callout>',
+        "[x](javascript:alert(1))",
+        '<Callout kind={"javascript:alert(1)"}>x</Callout>',
+        r'\$5 <img src="x" onerror="alert(1)" /> \$10',
+    ],
+)
+def test_mdx_security_rules_reject_unsafe_content(tmp_path, validate, snippet):
+    text = transformer_text().replace("status: published", "status: draft")
+    write_doc(tmp_path, "transformer.mdx", text.replace("</Section>", f"\n{snippet}\n</Section>"))
+    exit_code, report = validate(tmp_path)
+    assert exit_code == 1
+    assert codes(report) == {"V-SEC"}
+
+
+def test_mdx_security_ignores_code_and_math(tmp_path, validate):
+    text = transformer_text().replace("status: published", "status: draft")
+    text = text.replace("</Section>", '\n`<div onclick="bad()">code</div>`\n\n$<div>math</div>$\n</Section>')
+    write_doc(tmp_path, "transformer.mdx", text)
+    exit_code, report = validate(tmp_path)
+    assert exit_code == 0, report["errors"]
+
+
+def test_deep_level_citations_do_not_satisfy_section_coverage(tmp_path, validate):
+    text = transformer_text().replace("status: published", "status: draft")
+    text = text.replace("sections: [overview]", "sections: [math]")
+    text = text.replace('id="overview"', 'id="math"').replace(
+        '<Cite claim="clm:intro-transformer" loc="§1 (fixture)" />',
+        '<Level of="deep"><Cite claim="clm:intro-transformer" loc="§1 (fixture)" /></Level>',
+    )
+    write_doc(tmp_path, "transformer.mdx", text)
+    exit_code, report = validate(tmp_path)
+    assert exit_code == 1
+    assert codes(report) == {"V-CITE-2"}
 
 
 def test_verify_blocks_may_only_import_numpy_and_the_standard_library(tmp_path, validate):

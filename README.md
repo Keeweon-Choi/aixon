@@ -110,3 +110,7 @@ playwright-traces/      실패한 테스트의 trace: npx playwright show-trace 
 `.github/workflows/ci.yml`은 모든 push와 pull request에서 `make verify`를 돌리고 검증 결과와 Playwright 보고서를 올립니다.
 `.github/workflows/pages.yml`은 공개 빌드를 만들어 `make check-dist-public`을 통과한 뒤에만 GitHub Pages에 배포하며, 수동 실행 또는 `main` push로만 시작합니다.
 실제 배포(저장소 생성·push·Pages 활성화)는 사용자 승인 뒤에 합니다.
+
+## 공개 배포 전 체크
+
+GitHub 저장소의 **Settings → Environments → github-pages**에서 required reviewers를 지정합니다. 공개 대상의 사람 승인은 `tools/review.py`로 기록하고, 승인 뒤 내용을 고치면 다시 승인한 뒤 `make check-dist-public`을 실행합니다.

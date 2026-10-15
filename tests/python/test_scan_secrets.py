@@ -54,6 +54,20 @@ def test_clean_repository_passes(repo, run_tool):
     assert "secrets: OK" in result.stdout
 
 
+def test_slugs_are_not_keys_but_runtime_fake_keys_are(repo, run_tool):
+    slugs = "same-risk-of-hallucination-as-other-ai-tools sk-learn-style-names"
+    anthropic = "sk" + "-ant-" + "a1B2c3D4e5" * 3
+    aws = "AK" + "IA" + "ABCDEFGHIJKLMNOP"
+    stage(repo, "slugs.txt", f"{slugs}\n")
+    stage(repo, "keys.txt", f"{anthropic}\n{aws}\n")
+    result = scan(run_tool, repo)
+    assert result.returncode == 1
+    assert "anthropic-api-key" in result.stdout
+    assert "aws-access-key" in result.stdout
+    assert "keys.txt" in result.stdout
+    assert "slugs.txt" not in result.stdout  # hits are masked, so check the file, not the text
+
+
 @pytest.mark.parametrize("name", sorted(fake_keys()))
 def test_each_kind_of_secret_is_detected_and_masked(name, repo, run_tool):
     secret = fake_keys()[name]

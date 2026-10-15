@@ -41,6 +41,7 @@ from typing import Any
 
 import yaml
 
+import public_gate
 from seedtool import load_graph
 
 DEFAULT_GRAPH = "data/seed/seed_graph.yaml,data/graph/atlas.yaml"
@@ -88,9 +89,23 @@ ENTITY_ID_RE = re.compile(r"^[a-z]+:[a-z0-9]+(?:-[a-z0-9]+)*$")
 FRONTMATTER_RE = re.compile(r"\A---[ \t]*\r?\n(.*?)\r?\n---[ \t]*(?:\r?\n|\Z)(.*)\Z", re.S)
 FENCE_RE = re.compile(r"^(?P<fence>`{3,}|~{3,})[^\n]*\n.*?^(?P=fence)[ \t]*$", re.S | re.M)
 INLINE_CODE_RE = re.compile(r"`[^`\n]+`")
+MATH_RE = re.compile(r"(?<!\\)\$\$.*?(?<!\\)\$\$|(?<!\\)\$[^$\n]*?(?<!\\)\$", re.S)  # \$ is a literal dollar
+MDX_COMMENT_RE = re.compile(r"\{/\*.*?\*/\}", re.S)
 VERIFY_BLOCK_RE = re.compile(r"^```python[ \t]+verify[ \t]*\n(.*?)^```[ \t]*$", re.S | re.M)
 ATTRIBUTE_RE = re.compile(r"([A-Za-z_][\w:.-]*)\s*=\s*(?:\"([^\"]*)\"|'([^']*)')")
 SECTION_BLOCK_RE = re.compile(r"<Section\b((?:[^>\"']|\"[^\"]*\"|'[^']*')*)>(.*?)</Section>", re.S)
+DEEP_LEVEL_RE = re.compile(r"<Level\b(?=[^>]*\bof\s*=\s*[\"']deep[\"'])[^>]*>.*?</Level>", re.S)
+MDX_TAG_RE = re.compile(r"</?([A-Za-z][A-Za-z0-9:-]*)\b[^>]*>")
+IMPORT_EXPORT_RE = re.compile(r"^\s*(?:import|export)\b", re.M)
+EVENT_ATTRIBUTE_RE = re.compile(r"\bon[a-z][\w:-]*\s*=", re.I)
+JAVASCRIPT_URL_RE = re.compile(r"javascript\s*:", re.I)  # anywhere outside code/math: attributes, {"…"}, [x](…)
+ALLOWED_MDX_ELEMENTS = frozenset(
+    (
+        "Section", "Level", "ConceptLink", "Cite", "Callout", "Figure", "Lab",
+        "svg", "g", "defs", "marker", "path", "line", "rect", "circle", "ellipse", "polyline", "polygon",
+        "text", "tspan", "title", "desc", "br", "sup", "sub", "em", "strong", "code",
+    )
+)
 
 # Graph entity types that are not "concepts": they cannot be the target of a ConceptLink or an entity.
 NON_ENTITY_TYPES = ("Claim", "Source")
@@ -204,8 +219,13 @@ def blank_out(match: re.Match[str]) -> str:
 
 def mask_code(body: str) -> str:
     """Blank fenced code blocks and inline code so component tags inside code are ignored."""
-    without_fences = FENCE_RE.sub(blank_out, body)
+    without_fences = FENCE_RE.sub(blank_out, MDX_COMMENT_RE.sub(blank_out, body))
     return INLINE_CODE_RE.sub(blank_out, without_fences)
+
+
+def mask_code_and_math(body: str) -> str:
+    """Blank code and math so their illustrative text is not treated as executable MDX."""
+    return MATH_RE.sub(blank_out, mask_code(body))
 
 
 def parse_attributes(text: str) -> dict[str, str]:
@@ -455,9 +475,27 @@ def check_cite_coverage(document: Document, masked: str) -> None:
     for match in SECTION_BLOCK_RE.finditer(masked):
         attributes = parse_attributes(match.group(1))
         ident = attributes.get("id")
-        if ident in CITE_REQUIRED_SECTIONS and "<Cite" not in match.group(2):
+        visible = DEEP_LEVEL_RE.sub(blank_out, match.group(2))
+        if ident in CITE_REQUIRED_SECTIONS and "<Cite" not in visible:
             line = document.body_start_line + masked.count("\n", 0, match.start())
             document.report("V-CITE-2", f"section '{ident}' needs at least one <Cite>", line)
+
+
+def check_mdx_security(document: Document, masked: str) -> None:
+    """V-SEC: MDX has no module statements, unsafe URLs/events, or arbitrary HTML."""
+    for match in IMPORT_EXPORT_RE.finditer(masked):
+        line = document.body_start_line + masked.count("\n", 0, match.start())
+        document.report("V-SEC", "MDX must not contain import or export statements", line)
+    for match in EVENT_ATTRIBUTE_RE.finditer(masked):
+        line = document.body_start_line + masked.count("\n", 0, match.start())
+        document.report("V-SEC", "MDX must not contain on*= event attributes", line)
+    for match in JAVASCRIPT_URL_RE.finditer(masked):
+        line = document.body_start_line + masked.count("\n", 0, match.start())
+        document.report("V-SEC", "MDX must not contain javascript: URLs", line)
+    for match in MDX_TAG_RE.finditer(masked):
+        if match.group(1) not in ALLOWED_MDX_ELEMENTS:
+            line = document.body_start_line + masked.count("\n", 0, match.start())
+            document.report("V-SEC", f"raw HTML element <{match.group(1)}> is not allowed", line)
 
 
 def check_status(document: Document) -> None:
@@ -565,6 +603,7 @@ def check_verify_blocks(document: Document) -> None:
 def validate_document(document: Document, graph: GraphIndex) -> None:
     """Run every rule on one parsed document."""
     masked = mask_code(document.body)
+    security_masked = mask_code_and_math(document.body)
     frontmatter_ok = False
     if document.meta:
         frontmatter_ok = check_frontmatter_fields(document, graph)
@@ -577,7 +616,18 @@ def validate_document(document: Document, graph: GraphIndex) -> None:
     check_cites(document, graph, masked, frontmatter_ok)
     check_figures(document, masked, frontmatter_ok)
     check_labs(document, graph, masked, frontmatter_ok)
+    check_mdx_security(document, security_masked)
     check_verify_blocks(document)
+
+
+def check_public_gate(documents: list[Document], graph_files: list[str], wiki_dir: Path) -> None:
+    """V-STATUS: every published document must be admitted by ADR-021's single gate."""
+    by_id = {document.meta.get("id"): document for document in documents}
+    for error in public_gate.gate(graph_files, str(wiki_dir))["errors"]:
+        document = by_id.get(error["id"])
+        if document is None:
+            continue
+        document.report("V-STATUS", "; ".join(error["reasons"]), document.line_of_key("status"))
 
 
 def load_graph_index(spec: str) -> tuple[GraphIndex, list[str]]:
@@ -626,6 +676,7 @@ def main(argv: list[str] | None = None) -> int:
     for document in documents:
         validate_document(document, graph)
     check_unique_entities(documents)
+    check_public_gate(documents, graph_files, wiki_dir)
     issues = [issue for document in documents for issue in document.issues]
     errors = [issue for issue in issues if issue.level == "error"]
     warnings = [issue for issue in issues if issue.level == "warning"]
