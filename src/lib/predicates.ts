@@ -1,7 +1,7 @@
 import type { RecordMap } from './graph/types';
 
 export const predicateDescription: Record<string, string> = {
-  INTRODUCES: '논문이 방법·모델·데이터셋을 처음 제시한다.',
+  INTRODUCES: '논문이 방법·모델·데이터셋을 제시한다.',
   EXTENDS: '기존 방법 또는 모델을 확장한다.',
   ADAPTS: '한 분야의 설계를 다른 분야에 적용한다.',
   ADDRESSES: '연구 문제를 해결 대상으로 삼는다.',
@@ -21,7 +21,7 @@ export const predicateLabels: Record<string, string> = {
   INTRODUCES: '제시',
   EXTENDS: '확장',
   ADAPTS: '적용',
-  ADDRESSES: '문제 해결',
+  ADDRESSES: '다루는 문제',
   MITIGATES: '완화',
   PREREQUISITE_OF: '선수 지식',
   RECOMMENDED_BEFORE: '권장 선수',

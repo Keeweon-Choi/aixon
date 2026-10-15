@@ -522,7 +522,7 @@ methods:
   - field:vision-transformers
 - id: method:shifted-window-attention
   name: Shifted Window Attention
-  summary: 이미지를 겹치지 않는 창으로 나눠 창 안에서만 self-attention을 계산하고, 층마다 창 위치를 어긋나게 옮겨 창 사이를 연결하는 방법이다.
+  summary: 이미지를 겹치지 않는 창으로 나눠 창 안에서만 self-attention을 계산하고, 연속한 두 블록에서 일반 창과 창 크기의 절반만큼 옮긴 창을 번갈아 써서 창 사이를 연결하는 방법이다.
   summary_by: agent:claude-opus-5-5
   dimensions: *id002
   aliases:
@@ -2534,6 +2534,11 @@ sources:
   version: 1503.02531v1
   retrieved_at: '2026-10-15'
   content_sha256: 377ff8455af5015e7afce0fce0e6482fa359aa2d31f77ac0f05031fbe3d7e937
+- id: src:url:b301323053b2
+  name: 'Google Research Blog: Transformer: A Novel Neural Network Architecture for Language Understanding (Jakob Uszkoreit, 2017-08-31)'
+  kind: web_page
+  url: https://research.google/blog/transformer-a-novel-neural-network-architecture-for-language-understanding/
+  retrieved_at: '2026-10-15'
 claims:
 - id: clm:intro-imagenet
   predicate: INTRODUCES

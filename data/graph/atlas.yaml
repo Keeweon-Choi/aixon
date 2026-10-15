@@ -744,7 +744,7 @@ fields:
   aliases:
   - Language Modeling
   - LM
-  summary: 언어 모델링은 앞선 문맥에 조건부로 다음 언어 단위를 예측하는 분야이다.
+  summary: 언어 모델링은 텍스트의 확률 구조를 학습하는 분야로, 앞 문맥으로 다음 토큰을 예측하는 자기회귀 방식과 가려진 토큰을 양쪽 문맥으로 예측하는 마스크 언어 모델 방식을 포함한다.
   parents:
   - field:natural-language-processing
 - summary_by: agent:codex
