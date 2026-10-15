@@ -1,27 +1,66 @@
 ---
 import Base from '../layouts/Base.astro';
-import { getGraph, entityPath } from '../lib/graph';
+import { hasMachineCitation, humanReviewLabel } from '../lib/badges';
+import { entityPath, getGraph } from '../lib/graph';
 import { url } from '../lib/url';
-const g = getGraph();
-const top = Object.values(g.fields).filter((f: any) => !(f.parents || []).length);
-const entities = Object.keys(g.entities).filter((id) => !['Claim', 'Source'].includes(g.types[id]));
+const graph = getGraph();
+const topFields = Object.values(graph.fields).filter(
+  (field) => !(graph.parents[String(field.id)] || []).length,
+);
+const entityIds = Object.keys(graph.entities);
+const claims = Object.values(graph.claims);
+const featured = Object.values(graph.wikis)[0];
+const wikiStatus = Object.values(graph.wikis).reduce<Record<string, number>>((counts, wiki) => {
+  counts[wiki.status] = (counts[wiki.status] || 0) + 1;
+  return counts;
+}, {});
 ---
 
-<Base title="AIXON | AI 지식 지도" description="AI 연구 지식 그래프와 검증 가능한 Wiki">
-  <h1>AI 지식 지도, AIXON</h1>
-  <p>연구 관계와 교육용 설명을 함께 탐색하는 정적 Knowledge Atlas입니다.</p>
-  <h2>상위 분야</h2>
-  <ul>
-    {top.map((f: any) => (
-      <li>
-        <a href={url(entityPath(f.id, g))}>{f.name}</a> · {g.memberships[f.id]?.length || 0}개 노드
-      </li>
-    ))}
-  </ul>
-  <h2>커버리지</h2>
-  <p>
-    {entities.length}개 엔티티 · {Object.keys(g.claims).length}개 공개 관계
-  </p>
-  <h2>대표 Wiki</h2>
-  <a href={url('wiki/scaled-dot-product-attention/')}>Scaled Dot-Product Attention 읽기</a>
+<Base title="AIXON | AI 지식 지도" description="AI 연구 지식 그래프와 근거 중심 Wiki를 탐색합니다.">
+  <article>
+    <h1>AI 지식 지도, AIXON</h1>
+    <p>연구 관계와 교육용 설명을 근거와 함께 탐색하는 정적 Knowledge Atlas입니다.</p>
+    <p>상단 빠른 검색에서 이름, 별칭 또는 ID로 개념을 찾을 수 있습니다.</p>
+    {graph.build === 'public' && entityIds.length === 0 && (
+      <p class="banner">
+        아직 사람이 검토·승인한 공개 항목이 없습니다. <a href={url('about/')}>방법론 보기</a>
+      </p>
+    )}
+    <section>
+      <h2>상위 분야</h2>
+      <ul>
+        {topFields.map((field) => (
+          <li>
+            <a href={url(entityPath(String(field.id), graph))}>{String(field.name)}</a> ·{' '}
+            {graph.memberships[String(field.id)]?.length || 0}개 노드
+          </li>
+        ))}
+      </ul>
+    </section>
+    <section>
+      <h2>커버리지</h2>
+      <p>
+        분야 {Object.keys(graph.fields).length}개 · KU/엔티티 {entityIds.length}개 · 논문{' '}
+        {entityIds.filter((id) => graph.types[id] === 'Paper').length}개
+      </p>
+      <p>
+        Claim: 인용 확인 {claims.filter(hasMachineCitation).length}개 · 사람 검토{' '}
+        {claims.filter((claim) => humanReviewLabel(claim) !== '검토 대기').length}개
+      </p>
+      <p>
+        Wiki:{' '}
+        {Object.entries(wikiStatus)
+          .map(([status, count]) => `${status} ${count}개`)
+          .join(' · ') || '없음'}
+      </p>
+    </section>
+    {featured && (
+      <section>
+        <h2>대표 Wiki</h2>
+        <a href={url(`wiki/${featured.id.replace(/^wiki:/, '')}/`)}>
+          {String(featured.title || featured.id)} 읽기
+        </a>
+      </section>
+    )}
+  </article>
 </Base>

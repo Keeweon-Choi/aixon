@@ -1,50 +1,58 @@
 ---
 import Base from '../layouts/Base.astro';
+import { coverageRows, wikiStatuses } from '../lib/coverage';
 import { getGraph } from '../lib/graph';
-import { getCollection } from 'astro:content';
-const g = getGraph();
-const w = await getCollection('wiki');
-const byEntity = Object.fromEntries(w.map((x) => [x.data.entity, x.data.status]));
+const graph = getGraph();
+const { rows, total } = coverageRows(graph);
 ---
 
-<Base title="커버리지 | AIXON" description="분야별 지식과 Wiki 커버리지">
-  <h1>Knowledge Coverage</h1>
-  <table>
-    <thead>
-      <tr>
-        <th>분야</th>
-        <th>엔티티</th>
-        <th>Wiki</th>
-        <th>검증 Claim</th>
-        <th>검토 Claim</th>
-      </tr>
-    </thead>
-    <tbody>
-      {Object.values(g.fields).map((f: any) => {
-        const ids = g.memberships[f.id] || [];
-        const cs = Object.values(g.claims).filter(
-          (c: any) => ids.includes(c.subject) || ids.includes(c.object),
-        );
-        return (
+<Base title="커버리지 | AIXON" description="분야별 지식, Wiki, 인용과 사람 검토 커버리지">
+  <article>
+    <h1>Knowledge Coverage</h1>
+    <div class="table-scroll">
+      <table data-testid="coverage-table">
+        <thead>
           <tr>
-            <td>{f.name}</td>
-            <td>{ids.length}</td>
-            <td>
-              {ids.filter((id) => byEntity[id]).length}/{ids.length}
-            </td>
-            <td>{cs.filter((c: any) => c.status === 'verified').length}</td>
-            <td>{cs.filter((c: any) => c.review?.decision === 'approve').length}</td>
+            <th>분야</th>
+            <th>엔티티</th>
+            <th>KU</th>
+            <th>논문</th>
+            {wikiStatuses.map((status) => (
+              <th>Wiki {status}</th>
+            ))}
+            <th>인용 확인</th>
+            <th>사람 검토</th>
           </tr>
-        );
-      })}
-    </tbody>
-  </table>
-  <h2>Wiki가 없는 KU</h2>
-  <ul>
-    {Object.keys(g.entities)
-      .filter((id) => ['Concept', 'Method', 'Model'].includes(g.types[id]) && !byEntity[id])
-      .map((id) => (
-        <li>{g.entities[id].name}</li>
-      ))}
-  </ul>
+        </thead>
+        <tbody>
+          {rows.map((row) => (
+            <tr>
+              <td>{String(graph.fields[row.fieldId]?.name || row.fieldId)}</td>
+              <td>{row.entities}</td>
+              <td>{row.kus}</td>
+              <td>{row.papers}</td>
+              {wikiStatuses.map((status) => (
+                <td>{row.wiki[status]}</td>
+              ))}
+              <td>{row.citedClaims}</td>
+              <td>{row.reviewedClaims}</td>
+            </tr>
+          ))}
+        </tbody>
+        <tfoot>
+          <tr>
+            <th>합계 (중복 제외)</th>
+            <th>{total.entities}</th>
+            <th>{total.kus}</th>
+            <th>{total.papers}</th>
+            {wikiStatuses.map((status) => (
+              <th>{total.wiki[status]}</th>
+            ))}
+            <th>{total.citedClaims}</th>
+            <th>{total.reviewedClaims}</th>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </article>
 </Base>

@@ -1,50 +1,138 @@
 ---
-import fs from 'node:fs';
 import Base from '../../../layouts/Base.astro';
-import { getGraph, claimPath, publicSummary } from '../../../lib/graph';
-import { url, nodeAnchor } from '../../../lib/url';
+import ClaimBadges from '../../../components/ClaimBadges.astro';
+import { claimStatusLabel, entityTypeLabels } from '../../../lib/badges';
+import { claimPath, entityPath, getGraph } from '../../../lib/graph';
+import { claimSentence } from '../../../lib/predicates';
+import { nodeAnchor, url } from '../../../lib/url';
 import GraphView from '../../../islands/GraphView';
-const g = getGraph();
+const graph = getGraph();
 export function getStaticPaths() {
-  const graph = getGraph();
-  return Object.entries(graph.entities)
-    .filter(([id]) => !['clm', 'src'].includes(id.split(':')[0]))
-    .map(([id, entity]) => ({
-      params: { type: id.split(':')[0], slug: id.split(':')[1] },
-      props: { entity, id },
-    }));
+  const current = getGraph();
+  return Object.entries(current.entities).map(([id, entity]) => ({
+    params: { type: id.split(':')[0], slug: id.split(':')[1] },
+    props: { id, entity },
+  }));
 }
-const { entity, id } = Astro.props;
-const slug = id.split(':')[1];
-const claims = [...(g.claimsBySubject[id] || []), ...(g.claimsByObject[id] || [])];
+const { id, entity } = Astro.props;
+const name = String(entity.name || entity.title || id);
+const displayName = (entityId: string) =>
+  String(graph.entities[entityId]?.name || graph.entities[entityId]?.title || entityId);
+const grouped = Object.groupBy(graph.visibleClaimsOf(id), (claim) => String(claim.predicate));
+const prerequisiteGroups = Object.entries(graph.prerequisites)
+  .filter(([key]) => key.startsWith(`${id}@`))
+  .map(([key, rows]) => [key.split('@')[1], rows] as const);
+const fields = Array.isArray(entity.fields)
+  ? entity.fields.filter((field) => graph.isVisible('entity', String(field)))
+  : [];
+const wiki = graph.wikiFor(id);
+const mergedInto = String(entity.merged_into || '');
+const survivorVisible = mergedInto && graph.isVisible('entity', mergedInto);
+const paperYear = String(entity.earliest_public_date || entity.publication_date || '').slice(0, 4);
+const arxiv =
+  entity.identifiers && typeof entity.identifiers === 'object'
+    ? (entity.identifiers as Record<string, unknown>).arxiv
+    : undefined;
 ---
 
-<Base title={`${entity.name || entity.title} | AIXON`} description={publicSummary(entity, g.build)}>
+<Base title={`${name} | AIXON`} description={String(entity.summary || `${name} 상세 정보`)}>
+  {entity.status === 'merged' && survivorVisible && (
+    <meta http-equiv="refresh" content={`0; url=${url(entityPath(mergedInto, graph))}`} />
+  )}
   <article>
-    <h1>{entity.name || entity.title}</h1>
-    <p>{publicSummary(entity, g.build)}</p>
-    <p>
-      <span class="badge">{entity.status || 'active'}</span>
-    </p>
-    {g.types[id] !== 'ResearchField' && (
-      <p>
-        {g.build !== 'public' &&
-          fs.existsSync(`${process.env.AIXON_WIKI_DIR || 'src/content/wiki'}/${slug}.mdx`) && (
-            <>
-              <a href={url(`wiki/${slug}/`)}>Wiki 읽기</a> ·{' '}
-            </>
-          )}
-        <a href={`${url('atlas/')}#${nodeAnchor(id)}`}>그래프에서 보기</a>
+    <h1>{name}</h1>
+    <p>{entityTypeLabels[graph.types[id]] || graph.types[id]}</p>
+    {entity.status === 'merged' && (
+      <p class="banner">
+        병합됨 →{' '}
+        {survivorVisible ? (
+          <a href={url(entityPath(mergedInto, graph))}>{displayName(mergedInto)}</a>
+        ) : (
+          mergedInto
+        )}
       </p>
     )}
-    <h2>관계</h2>
-    <ul>
-      {claims.map((c: any) => (
-        <li>
-          <a href={url(claimPath(c.id))}>{c.predicate}</a> · {c.status}
-        </li>
+    {entity.status !== 'merged' && <p>{String(entity.summary || '요약이 아직 없습니다.')}</p>}
+    {Array.isArray(entity.aliases) && entity.aliases.length > 0 && (
+      <p>별칭: {entity.aliases.join(', ')}</p>
+    )}
+    {fields.length > 0 && (
+      <p>
+        분야:{' '}
+        {fields.map((field, index) => (
+          <>
+            {index > 0 && ', '}
+            <a href={url(entityPath(String(field), graph))}>{displayName(String(field))}</a>
+          </>
+        ))}
+      </p>
+    )}
+    {graph.introYears[id] && <p>도입 연도: {graph.introYears[id]}년</p>}
+    {graph.types[id] === 'Paper' && (
+      <p>
+        {Array.isArray(entity.authors) && entity.authors.join(', ')}{' '}
+        {entity.venue && `· ${entity.venue}`} {paperYear && `· ${paperYear}`}
+        {arxiv && (
+          <>
+            {' '}
+            ·{' '}
+            <a rel="noopener noreferrer" href={`https://arxiv.org/abs/${String(arxiv)}`}>
+              arXiv
+            </a>
+          </>
+        )}
+      </p>
+    )}
+    <p>
+      {wiki && (
+        <>
+          <a data-testid="wiki-link" href={url(`wiki/${wiki.id.replace(/^wiki:/, '')}/`)}>
+            Wiki 읽기
+          </a>{' '}
+          ·{' '}
+        </>
+      )}
+      <a data-testid="atlas-link" href={`${url('atlas/')}#${nodeAnchor(id)}`}>
+        아틀라스에서 보기
+      </a>
+    </p>
+    <section data-testid="prerequisites">
+      <h2>선수 지식</h2>
+      {prerequisiteGroups.map(([dimension, rows]) => (
+        <section>
+          <h3>{dimension}</h3>
+          <ul>
+            {rows.map((claim) => (
+              <li data-node-id={String(claim.subject)}>
+                <a href={url(entityPath(String(claim.subject), graph))}>
+                  {displayName(String(claim.subject))}
+                </a>
+                {claim.predicate === 'RECOMMENDED_BEFORE' && ' · 권장'}
+              </li>
+            ))}
+          </ul>
+        </section>
       ))}
-    </ul>
-    <GraphView client:visible mode="local" focus={id} />
+    </section>
+    <section data-testid="entity-claims">
+      <h2>관계</h2>
+      {Object.entries(grouped).map(([predicate, rows]) => (
+        <section>
+          <h3>{predicate}</h3>
+          <ul>
+            {rows?.map((claim) => (
+              <li>
+                <a data-claim-id={String(claim.id)} href={url(claimPath(String(claim.id)))}>
+                  {claimSentence(claim, displayName)}
+                </a>{' '}
+                · {claimStatusLabel(claim.status)}{' '}
+                <ClaimBadges claim={claim} publicBuild={graph.build === 'public'} />
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </section>
+    <GraphView client:only="react" mode="local" focus={id} />
   </article>
 </Base>

@@ -8,6 +8,7 @@
 }
 body {
   margin: 0;
+  overflow-x: hidden;
 }
 header,
 main,
@@ -30,11 +31,22 @@ nav {
   display: flex;
   gap: 0.8rem;
 }
+.skip-link {
+  position: absolute;
+  left: -9999px;
+}
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+  z-index: 20;
+  background: #fff;
+  padding: 0.5rem;
+}
 .quick {
   margin-left: auto;
   position: relative;
 }
-.quick output {
+#quick-results {
   position: absolute;
   display: grid;
   top: 100%;
@@ -45,8 +57,12 @@ nav {
   min-width: 16rem;
   z-index: 5;
 }
-.quick output:empty {
+#quick-results:empty {
   display: none;
+}
+#quick-results a {
+  display: block;
+  padding: 0.25rem;
 }
 a {
   color: #1558b0;
@@ -85,6 +101,10 @@ table {
   width: 100%;
   overflow-wrap: anywhere;
 }
+.table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
 th,
 td {
   padding: 0.5rem;
@@ -101,6 +121,24 @@ td {
 .banner {
   padding: 0.8rem;
   background: #fff2c9;
+}
+blockquote,
+code,
+dd,
+td,
+th,
+.cite {
+  overflow-wrap: anywhere;
+}
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+}
+html[data-level='intuition'] [data-level='fundamentals'],
+html[data-level='intuition'] [data-level='deep'],
+html[data-level='fundamentals'] [data-level='deep'] {
+  display: none;
 }
 @media (max-width: 700px) {
   header {

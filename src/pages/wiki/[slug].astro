@@ -1,44 +1,82 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import Section from '../../components/wiki/Section.astro';
-import Level from '../../components/wiki/Level.astro';
-import ConceptLink from '../../components/wiki/ConceptLink.astro';
-import Cite from '../../components/wiki/Cite.astro';
 import Callout from '../../components/wiki/Callout.astro';
+import Cite from '../../components/wiki/Cite.astro';
+import ConceptLink from '../../components/wiki/ConceptLink.astro';
 import Figure from '../../components/wiki/Figure.astro';
 import Lab from '../../components/wiki/Lab.astro';
-import { getGraph, claimPath, entityPath } from '../../lib/graph';
+import Level from '../../components/wiki/Level.astro';
+import Section from '../../components/wiki/Section.astro';
+import { claimPath, entityPath, getGraph } from '../../lib/graph';
 import { url } from '../../lib/url';
+const graph = getGraph();
 interface Props {
   entry: any;
 }
+const sectionTitles: Record<string, string> = {
+  overview: '개요와 직관',
+  why: '왜 중요한가',
+  mechanism: '핵심 작동 원리',
+  math: '수학적 기초',
+  example: '단계별 예제',
+  code: '구현',
+  visual: '시각적 설명',
+  limitations: '한계와 트레이드오프',
+  history: '역사적 발전',
+  related: '관련 개념',
+  references: '참고문헌과 근거',
+};
+const relatedLabels: Record<string, string> = {
+  PREREQUISITE_OF: '선수 지식',
+  RECOMMENDED_BEFORE: '권장 선수 지식',
+  PART_OF: '부분/전체',
+  IS_A: '상위 개념',
+};
 export async function getStaticPaths() {
+  const current = getGraph();
   return (await getCollection('wiki'))
-    .filter((x) => import.meta.env.AIXON_BUILD !== 'public' || x.data.status === 'published')
+    .filter((entry) => current.isVisible('wiki', entry.data.id))
     .map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
 }
-const entry = Astro.props.entry;
+const entry: any = Astro.props.entry;
 const { Content } = await render(entry);
-const graph = getGraph();
-const cited = [...entry.data.sources, ...entry.data.claims];
 const related = Object.values(graph.claims).filter(
-  (c: any) =>
-    (c.subject === entry.data.entity || c.object === entry.data.entity) &&
-    ['PREREQUISITE_OF', 'RECOMMENDED_BEFORE', 'PART_OF', 'IS_A'].includes(c.predicate as string),
+  (claim) =>
+    (claim.subject === entry.data.entity || claim.object === entry.data.entity) &&
+    ['PREREQUISITE_OF', 'RECOMMENDED_BEFORE', 'PART_OF', 'IS_A'].includes(String(claim.predicate)),
 );
+const references = [
+  ...entry.data.sources.filter((id) => graph.isVisible('source', id)),
+  ...entry.data.claims.filter((id) => graph.isVisible('claim', id)),
+];
+const review = entry.data.review;
 ---
 
 <Base title={`${entry.data.title} | AIXON`} description={entry.data.subtitle}>
+  <Fragment slot="head">
+    <script is:inline>
+      {
+        `(()=>{try{const value=localStorage.getItem('aixon-wiki-level')||'fundamentals';document.documentElement.dataset.level=value}catch{document.documentElement.dataset.level='fundamentals'}})()`;
+      }
+    </script>
+  </Fragment>
   <article>
     <h1>{entry.data.title}</h1>
     <p>{entry.data.subtitle}</p>
-    {entry.data.status === 'draft' && (
-      <p class="banner">검토 전 초안 · {entry.data.ai_generated ? 'AI 작성' : '작성 중'}</p>
+    {['outline', 'draft'].includes(entry.data.status) && (
+      <p data-testid="status-banner" class="banner">
+        검토 전 초안 · {entry.data.ai_generated ? 'AI 작성' : '작성 중'}
+      </p>
+    )}
+    {['reviewed', 'published'].includes(entry.data.status) && (
+      <p data-testid="status-banner" class="banner">
+        사람 검토 완료 · {review?.by} · {review?.at?.toISOString().slice(0, 10)}
+      </p>
     )}
     <nav class="toc" aria-label="목차">
-      {entry.data.sections.map((x) => (
-        <a href={`#${x}`}>{x}</a>
+      {entry.data.sections.map((section) => (
+        <a href={`#${section}`}>{sectionTitles[section] || section}</a>
       ))}
     </nav>
     <fieldset>
@@ -47,52 +85,60 @@ const related = Object.values(graph.claims).filter(
         ['intuition', '직관'],
         ['fundamentals', '기초'],
         ['deep', '심화'],
-      ].map(([v, n]) => (
+      ].map(([value, label]) => (
         <label>
-          <input type="radio" name="wiki-level" value={v} checked={v === 'fundamentals'} />
-          {n}
+          <input type="radio" name="wiki-level" value={value} checked={value === 'fundamentals'} />
+          {label}
         </label>
       ))}
     </fieldset>
     <Content components={{ Section, Level, ConceptLink, Cite, Callout, Figure, Lab }} />
-    <section>
+    <section data-testid="related">
       <h2>관련 개념</h2>
       <ul>
-        {related.map((c: any) => (
-          <li>
-            <a
-              href={url(entityPath(c.subject === entry.data.entity ? c.object : c.subject, graph))}
-            >
-              {String(c.predicate)} · {c.subject === entry.data.entity ? c.object : c.subject}
-            </a>
-          </li>
-        ))}
+        {related.map((claim) => {
+          const other =
+            claim.subject === entry.data.entity ? String(claim.object) : String(claim.subject);
+          return (
+            <li>
+              {relatedLabels[String(claim.predicate)] || claim.predicate}:{' '}
+              <a href={url(entityPath(other, graph))}>
+                {String(graph.entities[other]?.name || graph.entities[other]?.title || other)}
+              </a>
+            </li>
+          );
+        })}
       </ul>
     </section>
-    <section>
+    <section data-testid="references">
       <h2>참고문헌과 근거</h2>
-      <ul>
-        {cited.map((id) => (
-          <li>
+      <ol>
+        {references.map((id, index) => (
+          <li id={`ref-${index + 1}`}>
             {id.startsWith('clm:') ? (
               <a href={url(claimPath(id))}>{id}</a>
             ) : (
-              <a href={String(graph.sources[id]?.url)}>{graph.sources[id]?.name || id}</a>
+              <a rel="noopener noreferrer" href={String(graph.sources[id]?.url || '#')}>
+                {String(graph.sources[id]?.title || graph.sources[id]?.name || id)}
+              </a>
             )}
           </li>
         ))}
-      </ul>
+      </ol>
     </section>
   </article>
   <script>
-    const rank: Record<string, number> = { intuition: 0, fundamentals: 1, deep: 2 };
-    document.querySelectorAll<HTMLInputElement>('[name="wiki-level"]').forEach((i) =>
-      i.addEventListener('change', () => {
-        const n = rank[i.value];
-        document
-          .querySelectorAll<HTMLElement>('[data-level]')
-          .forEach((x) => (x.hidden = (rank[x.dataset.level || 'deep'] ?? 2) > n));
-      }),
-    );
+    const radios = document.querySelectorAll<HTMLInputElement>('[name="wiki-level"]');
+    const selected = document.documentElement.dataset.level || 'fundamentals';
+    radios.forEach((radio) => {
+      radio.checked = radio.value === selected;
+      radio.addEventListener('change', () => {
+        if (!radio.checked) return;
+        document.documentElement.dataset.level = radio.value;
+        try {
+          localStorage.setItem('aixon-wiki-level', radio.value);
+        } catch {}
+      });
+    });
   </script>
 </Base>

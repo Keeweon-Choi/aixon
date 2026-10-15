@@ -8,6 +8,10 @@ if (graph.types[id] !== 'LabExperiment') throw new Error(`Unknown Lab: ${id}`);
 const items = Object.values(graph.entities).filter(
   (e) => e.kind === 'lab_prediction' && e.lab === id,
 );
+const varianceClaim =
+  graph.emittedClaims['clm:prereq-variance-of-sum-scaled-dot-product-attention-derive'];
 ---
 
-{id === 'lab:softmax-temperature' && <SoftmaxTemperatureLab client:visible items={items} />}
+{id === 'lab:softmax-temperature' && (
+  <SoftmaxTemperatureLab client:visible items={items} varianceClaim={varianceClaim} />
+)}
